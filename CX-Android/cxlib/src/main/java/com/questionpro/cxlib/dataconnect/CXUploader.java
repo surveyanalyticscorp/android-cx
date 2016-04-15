@@ -1,11 +1,13 @@
-package com.questionpro.cxlib;
+package com.questionpro.cxlib.dataconnect;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -15,6 +17,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
+
+import com.questionpro.cxlib.constants.CXConstants;
+import com.questionpro.cxlib.CXObject;
+import com.questionpro.cxlib.util.CXUtils;
+import com.questionpro.cxlib.R;
 
 import org.json.JSONObject;
 
@@ -26,20 +34,23 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by sachinsable on 29/03/16.
  */
 public class CXUploader {
     private Activity activity;
-    public String UDID;
+    public String UUID;
     public  String URL;
     private CXObject cxObject;
     private final String LOG_TAG="CXUploader";
     public CXUploader(Activity activity, CXObject cxObject){
         this.activity = activity;
         this.cxObject = cxObject;
-        UDID =CXUtils.getUniqueDeviceId(activity);
+        UUID = CXUtils.getUniqueDeviceId(activity);
     }
 
 
@@ -63,7 +74,7 @@ public class CXUploader {
         protected String doInBackground(Void... params) {
             try {
                 JSONObject jsonObject = new JSONObject();
-                jsonObject.put(CXConstants.JSONUploadFields.UDID, CXUploader.this.UDID);
+                jsonObject.put(CXConstants.JSONUploadFields.UDID, CXUploader.this.UUID);
                 jsonObject.put(CXConstants.JSONUploadFields.TOUCH_POINT_ID, cxObject.touchPointID);
                 String result = uploadforCX(jsonObject.toString());
                 JSONObject resultJSON = new JSONObject(result);
@@ -136,6 +147,7 @@ public class CXUploader {
     }
 
     Dialog webViewDialog;
+    ProgressBar progressBar;
     public void showSurveyDialog(final String url){
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
                 activity);
@@ -158,14 +170,25 @@ public class CXUploader {
                                 R.color.dialog_bg_color);
                         webViewDialog.setCancelable(false);
                         View layoutView = activity.getLayoutInflater().inflate(R.layout.cx_webview_dialog,null);
+                        progressBar =(ProgressBar) layoutView.findViewById(R.id.progressBar);
                         final WebView webView = (WebView)layoutView.findViewById(R.id.surveyWebView);
                         webView.setWebViewClient(new CXWebViewClient());
                         webView.setWebChromeClient(new CXWebChromeClient());
-                        webView.setScrollbarFadingEnabled(false);
+                        webView.setVerticalScrollBarEnabled(false);
                         webView.setHorizontalScrollBarEnabled(false);
                         webView.getSettings().setJavaScriptEnabled(true);
-                        webView.getSettings().setUserAgentString("AndroidWebView");
+                        webView.getSettings().setLoadWithOverviewMode(true);
+                        webView.getSettings().setUseWideViewPort(true);
                         webView.clearCache(true);
+                        webView.getSettings().setUserAgentString("AndroidWebView");
+                        if (Build.VERSION.SDK_INT >= 19) {
+                            // chromium, enable hardware acceleration
+                            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                        } else {
+                            // older android version, disable hardware acceleration
+                            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+                        }
+
                         webView.loadUrl(url);
                         ImageButton closeButton = (ImageButton)layoutView.findViewById(R.id.closeButton);
                         closeButton.setOnClickListener(new View.OnClickListener() {
@@ -201,6 +224,13 @@ public class CXUploader {
     }
 
     private class CXWebViewClient extends WebViewClient{
+
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+           progressBar.setVisibility(View.VISIBLE);
+        }
+
         @Override
         public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event) {
             if (event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -224,9 +254,7 @@ public class CXUploader {
 
         @Override
         public void onPageFinished(WebView view, String url) {
-            super.onPageFinished(view, url);
-           //Log.d(LOG_TAG, "" + view.getTitle());
-
+            progressBar.setVisibility(View.GONE);
         }
 
     }
@@ -236,6 +264,11 @@ public class CXUploader {
         @Override
         public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
             Log.d(LOG_TAG, consoleMessage.message());
+            if(consoleMessage.message()!=null && consoleMessage.message().equalsIgnoreCase("cx_thank_you_page")){
+                runTimer();
+                return true;
+            }
+
             return super.onConsoleMessage(consoleMessage);
 
         }
@@ -246,6 +279,23 @@ public class CXUploader {
             webViewDialog.dismiss();
         }
 
+
+    }
+
+
+    private static final ScheduledExecutorService worker =
+            Executors.newSingleThreadScheduledExecutor();
+
+    private void runTimer() {
+
+        Runnable task = new Runnable() {
+            public void run() {
+                if (webViewDialog != null && webViewDialog.isShowing()) {
+                    webViewDialog.dismiss();
+                }
+            }
+        };
+        worker.schedule(task, 5, TimeUnit.SECONDS);
 
     }
 }

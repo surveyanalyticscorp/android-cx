@@ -1,10 +1,19 @@
-package com.questionpro.cxlib;
+package com.questionpro.cxlib.constants;
 
 /**
  * Created by sachinsable on 29/03/16.
  */
 public class CXConstants {
-    public static final String CX_URL = "http://192.168.1.25/a/api/questionpro.cx.mobileTouchpoint?apiKey=";
+    public static final String CX_URL = "http://cx.surveyanalytics.com/a/api/questionpro.cx.mobileTouchpoint?apiKey=";
+    public static final String PREF_NAME="questionpro_cx";
+    public static final String PREF_KEY_API_KEY="cx_pref_api_key";
+    public static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
+    public static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
+    public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
+    public static final String PREF_KEY_URL="cx_pref_key_url";
+    public static final String SURVEY_URL="survey_url";
+    public static final String EXTRA_TOUCH_POINT="touch_point";
+
 
     public static String globalDialogPromptTitleText="CX Feeback";
     public static  String globalDialogPromptMessageText="Would you like to give us some feedback?";
