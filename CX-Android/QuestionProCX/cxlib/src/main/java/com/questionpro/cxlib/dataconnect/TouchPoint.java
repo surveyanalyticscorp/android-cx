@@ -24,9 +24,9 @@ public class TouchPoint implements Serializable{
     private String dialogPromptPositiveButtonText =null;
     private String dialogPromptNegativeButtonText =null;
 
-    public TouchPoint(long touchPointID, boolean showPrompt) {
+    public TouchPoint(long touchPointID) {
         this.touchPointID = touchPointID;
-        this.showPrompt = showPrompt;
+        this.showPrompt = false;
     }
 
     public long getTouchPointID() {

@@ -22,7 +22,7 @@ ext {
     bintrayName = 'questionpro-cx-android'
 
     publishedGroupId = 'com.questionpro.cx'
-    libraryName = 'CXLib'
+    libraryName = 'cxlib'
     artifact = 'cxlib'
 
     libraryDescription = 'SDK for in app feedback'
@@ -30,7 +30,7 @@ ext {
     siteUrl = 'www.questionpro.com'
     gitUrl = 'https://github.com/surveyanalyticscorp/mobilecx/tree/master/CX-Android/cxlib'
 
-    libraryVersion = '0.1.1'
+    libraryVersion = '0.1.11'
 
     developerId = 'sachin-qp'
     developerName = 'Sachin Sable'
