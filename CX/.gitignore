@@ -6,11 +6,4 @@
 .DS_Store
 /build
 /captures
-/app/
 /.idea/
-/gradle/
-/build.gradle
-/gradle.properties
-/gradlew
-/gradlew.bat
-/settings.gradle
