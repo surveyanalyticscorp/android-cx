@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#AA000000"
+    >
 
 
     <LinearLayout
@@ -9,29 +11,58 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginBottom="60dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginBottom="80dp"
         android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="80dp"
+        android:background="@android:color/white"
         android:orientation="vertical">
 
-        <WebView
-            android:id="@+id/surveyWebView"
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/powered_two" />
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </WebView>
+            <WebView
+                android:id="@+id/surveyWebView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                >
+
+
+            </WebView>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/circle_shape"
+                android:max="100"
+                android:indeterminate="false"
+                android:progressDrawable="@drawable/circular_progress_bar"
+                 />
+
+        </RelativeLayout>
     </LinearLayout>
+
     <ImageButton
         android:id="@+id/closeButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:src="@drawable/close_selector"
-        android:layout_alignTop="@+id/dialogContent"
-        android:layout_alignRight="@+id/dialogContent"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_alignEnd="@+id/dialogContent"
-        android:layout_marginRight="-20dp"
-        android:layout_marginTop="-20dp"/>
+        android:layout_alignRight="@+id/dialogContent"
+        android:layout_alignTop="@+id/dialogContent"
+        android:layout_marginRight="-15dp"
+        android:layout_marginTop="-15dp"
+        android:background="@null"
+        android:src="@drawable/cross_selector" />
 
 </RelativeLayout>
