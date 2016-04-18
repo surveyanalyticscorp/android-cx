@@ -16,7 +16,7 @@
 	Example
 	dependencies {
 	 	// The QuestionPro CX SDK
-  		compile 'com.questionpro.cx:cxlib:0.1.14'
+  		compile 'com.questionpro.cx:cxlib:0.2.1'
 	}
 
 
