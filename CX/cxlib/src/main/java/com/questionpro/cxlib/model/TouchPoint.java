@@ -1,4 +1,4 @@
-package com.questionpro.cxlib.dataconnect;
+package com.questionpro.cxlib.model;
 
 import java.io.Serializable;
 

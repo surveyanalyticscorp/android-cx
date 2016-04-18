@@ -12,6 +12,7 @@ public class CXConstants {
     public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
     public static final String PREF_KEY_URL="cx_pref_key_url";
     public static final String SURVEY_URL="survey_url";
+    public static final String CX_INTERACTION_CONTENT="cx_interaction_content";
     public static final String EXTRA_TOUCH_POINT="touch_point";
 
 
@@ -34,6 +35,7 @@ public class CXConstants {
         public static final String STATUS = "status";
         public static final String RESPONSE = "response";
         public static final String SURVEY_URL = "surveyURL";
+        public static final String IS_DIALOG="isDialog";
         public static final String ID = "id";
         public static final String MESSAGE="message";
         public static final String EMPTY="empty";

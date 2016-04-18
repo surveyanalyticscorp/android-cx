@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
-import com.questionpro.cxlib.dataconnect.TouchPoint;
+import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.model.TouchPoint;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -55,11 +57,11 @@ public class CXGlobalInfo {
         ed.remove(activity.getLocalClassName()).commit();
     }
 
-    public static void clearInteraction(Activity activity, TouchPoint touchPoint){
+    public static void clearInteraction(Activity activity, long touchPointID){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(touchPoint.getTouchPointID()+"").commit();
+        ed.remove(touchPointID+"").commit();
     }
     public static void clearPayload(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
@@ -80,25 +82,26 @@ public class CXGlobalInfo {
         return prefs.getString(CXConstants.PREF_KEY_PAYLOAD,"");
     }
 
-    public static void setSurveyURL(Activity activity, String url){
+    public static void storeInteraction(Activity activity, String url){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(activity.getLocalClassName(), url);
         ed.commit();
     }
-    public static void setSurveyURL(Activity activity,long touchPointID, String url){
+    public static void storeInteraction(Activity activity, long touchPointID, CXInteraction cxInteraction){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(touchPointID+"", url);
+        ed.putString(touchPointID+"", CXInteraction.toJSON(cxInteraction).toString());
         ed.commit();
     }
-    public static String getSurveyURL(Activity activity){
+    public static String getInteraction(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return prefs.getString(activity.getLocalClassName(),"");
     }
-    public static String getSurveyURL(Activity activity, TouchPoint touchPoint){
+    public static CXInteraction getInteraction(Activity activity, long touchPointId) throws JSONException{
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return prefs.getString(touchPoint.getTouchPointID()+"","");
+        JSONObject jsonObject  = new JSONObject(prefs.getString(touchPointId+"",""));
+        return CXInteraction.fromJSON(jsonObject);
     }
 
     public static long getTouchPointIDFromPayload(String payload){

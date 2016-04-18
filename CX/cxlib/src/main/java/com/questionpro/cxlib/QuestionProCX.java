@@ -12,7 +12,7 @@ import android.util.Log;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.dataconnect.CXPayloadWorker;
-import com.questionpro.cxlib.dataconnect.TouchPoint;
+import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interaction.InteractionActivity;
 import com.questionpro.cxlib.util.CXUtils;
@@ -87,14 +87,11 @@ public class QuestionProCX {
             CXPayloadWorker.appWentToForeground(activity);
         }
         else{
-            Intent intent = new Intent(activity, InteractionActivity.class);
-            intent.putExtra(CXConstants.SURVEY_URL, CXGlobalInfo.getSurveyURL(activity,touchPoint));
-            intent.putExtra(CXConstants.EXTRA_TOUCH_POINT, touchPoint);
-            activity.startActivity(intent);
-            CXGlobalInfo.clearInteraction(activity,touchPoint);
+            launchFeedbackScreen(activity,touchPoint.getTouchPointID());
         }
 
     }
+
     public static void onStop(Activity activity){
         try {
             ActivityLifecycleManager.activityStopped(activity);
@@ -112,6 +109,16 @@ public class QuestionProCX {
         } catch (Exception e) {
             Log.w(LOG_TAG,"Error stopping Apptentive Activity.", e);
 
+        }
+    }
+    public static synchronized  void launchFeedbackScreen(Activity activity, long touchPointID){
+        try {
+            Intent intent = new Intent(activity, InteractionActivity.class);
+            intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
+            activity.startActivity(intent);
+            CXGlobalInfo.clearInteraction(activity, touchPointID);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

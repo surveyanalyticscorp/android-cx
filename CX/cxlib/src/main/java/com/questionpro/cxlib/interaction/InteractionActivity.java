@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.ConsoleMessage;
@@ -16,7 +15,8 @@ import android.widget.ProgressBar;
 
 import com.questionpro.cxlib.R;
 import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.dataconnect.TouchPoint;
+import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.util.CXUtils;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,11 +30,27 @@ public class InteractionActivity extends FragmentActivity {
     private ProgressBar progressBar;
     private WebView webView;
     private String url = "";
-    private TouchPoint touchPoint;
+    private CXInteraction cxInteraction;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.cx_webview_dialog);
+        cxInteraction =(CXInteraction) getIntent().getSerializableExtra(CXConstants.CX_INTERACTION_CONTENT);
+        url = cxInteraction.url;
+        if(cxInteraction.isDialog) {
+            setContentView(R.layout.cx_webview_dialog);
+            ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
+            closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    finish();
+                }
+            });
+
+        }
+        else {
+            setContentView(R.layout.cx_webview_fullscreen);
+        }
+        CXUtils.lockOrientation(this);
         progressBar =(ProgressBar) findViewById(R.id.progressBar);
         webView = (WebView)findViewById(R.id.surveyWebView);
         webView.setWebViewClient(new CXWebViewClient());
@@ -54,22 +70,8 @@ public class InteractionActivity extends FragmentActivity {
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
-        ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-        url = getIntent().getStringExtra(CXConstants.SURVEY_URL);
-        touchPoint = (TouchPoint)getIntent().getSerializableExtra(CXConstants.EXTRA_TOUCH_POINT);
-        if(touchPoint.isDialog()){
-            setTheme(android.R.style.Theme_Dialog);
-        }
-        else{
-            setTheme(android.R.style.Theme_NoTitleBar_Fullscreen);
-        }
-        if(url==null){
+
+        if(url==null || CXUtils.isEmpty(url)){
             finish();
         }
         else{
@@ -82,12 +84,6 @@ public class InteractionActivity extends FragmentActivity {
     private class CXWebChromeClient extends WebChromeClient {
         @Override
         public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-            Log.d(LOG_TAG, consoleMessage.message());
-            if(consoleMessage.message()!=null && consoleMessage.message().equalsIgnoreCase("cx_thank_you_page")){
-                runTimer();
-                return true;
-            }
-
             return super.onConsoleMessage(consoleMessage);
 
         }
@@ -142,10 +138,19 @@ public class InteractionActivity extends FragmentActivity {
             return super.shouldOverrideKeyEvent(view, event);
         }
 
+
         @Override
         public void onPageFinished(WebView view, String url) {
             progressBar.setVisibility(View.GONE);
+            if(url.contains("#autoClose")){
+                runTimer();
+            }
         }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
     }
 }

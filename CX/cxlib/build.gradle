@@ -30,7 +30,7 @@ ext {
     siteUrl = 'www.questionpro.com'
     gitUrl = 'https://github.com/surveyanalyticscorp/mobilecx/tree/master/CX-Android/cxlib'
 
-    libraryVersion = '0.1.14'
+    libraryVersion = '0.2.1'
 
     developerId = 'sachin-qp'
     developerName = 'Sachin Sable'

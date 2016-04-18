@@ -5,12 +5,15 @@ import android.content.Context;
 import android.util.Log;
 
 import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -80,18 +83,19 @@ public class CXPayloadWorker {
                     if (response != null) {
                         if (response.isSuccessful()) {
                             JSONObject jsonObject = new JSONObject(response.getContent());
-                            if(jsonObject.has("response")){
-                                JSONObject responseJson = jsonObject.getJSONObject("response");
-                                if(responseJson.has("surveyURL")){
-                                    String surveyURL = responseJson.getString("surveyURL");
-                                    if(!surveyURL.equalsIgnoreCase("Empty")) {
-                                        Activity activity = (Activity)contextRef.get();
-                                        CXGlobalInfo.setSurveyURL(activity,CXGlobalInfo.getTouchPointIDFromPayload(payload), surveyURL);
-                                        if(!activity.isFinishing()){
-                                            QuestionProCX.onStart(activity);
-                                        }
+                            if(jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)){
+                                JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
+                                CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
+                                if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
 
+                                    Activity activity = (Activity)contextRef.get();
+                                    long touchPointID = CXGlobalInfo.getTouchPointIDFromPayload(payload);
+                                    CXGlobalInfo.storeInteraction(activity, touchPointID, cxInteraction);
+                                    if(!activity.isFinishing()){
+                                        QuestionProCX.launchFeedbackScreen(activity, touchPointID);
                                     }
+
+
                                 }
                             }
                             Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
