@@ -151,6 +151,8 @@ public class InteractionActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
+        if(!cxInteraction.isDialog){
+            super.onBackPressed();
+        }
     }
 }
