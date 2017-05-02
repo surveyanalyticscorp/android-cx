@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.webkit.ConsoleMessage;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
@@ -25,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by sachinsable on 12/04/16.
  */
-public class InteractionActivity extends FragmentActivity {
+public class InteractionActivity extends FragmentActivity implements MyWebChromeClient.ProgressListener {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
     private WebView webView;
@@ -38,23 +36,25 @@ public class InteractionActivity extends FragmentActivity {
         url = cxInteraction.url;
         if(cxInteraction.isDialog) {
             setContentView(R.layout.cx_webview_dialog);
-            ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
-            closeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
 
         }
         else {
             setContentView(R.layout.cx_webview_fullscreen);
+
         }
+        ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         CXUtils.lockOrientation(this);
         progressBar =(ProgressBar) findViewById(R.id.progressBar);
         webView = (WebView)findViewById(R.id.surveyWebView);
         webView.setWebViewClient(new CXWebViewClient());
-        webView.setWebChromeClient(new CXWebChromeClient());
+        webView.setWebChromeClient(new MyWebChromeClient(this));
         webView.setVerticalScrollBarEnabled(false);
         webView.setHorizontalScrollBarEnabled(false);
         webView.getSettings().setJavaScriptEnabled(true);
@@ -80,22 +80,18 @@ public class InteractionActivity extends FragmentActivity {
 
     }
 
-
-    private class CXWebChromeClient extends WebChromeClient {
-        @Override
-        public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-            return super.onConsoleMessage(consoleMessage);
-
+    @Override
+    public void onUpdateProgress(int progressValue) {
+        if(progressBar != null){
+            progressBar.setProgress(progressValue);
+            if(progressValue == 100){
+                progressBar.setVisibility(View.INVISIBLE);
+            }
         }
-
-        @Override
-        public void onCloseWindow(WebView window) {
-            super.onCloseWindow(window);
-            finish();
-        }
-
-
     }
+
+
+
 
 
     private static final ScheduledExecutorService worker =
