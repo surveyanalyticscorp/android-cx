@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ECommerce-App-Android-master.iml" filepath="$PROJECT_DIR$/ECommerce-App-Android-master.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CX-Demo_App.iml" filepath="$PROJECT_DIR$/CX-Demo_App.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/cxlib/cxlib.iml" filepath="$PROJECT_DIR$/cxlib/cxlib.iml" />
     </modules>
