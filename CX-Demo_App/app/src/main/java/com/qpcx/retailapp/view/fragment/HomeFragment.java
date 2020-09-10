@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
 								new SearchProductFragment(),
 								((ECartHomeActivity) getActivity()), null,
 								AnimationType.SLIDE_UP);*/
-						QuestionProCX.engageTouchPoint(getActivity(), new TouchPoint(106));
+						QuestionProCX.engageTouchPoint(getActivity(), new TouchPoint(7657393));
 
 					}
 				});

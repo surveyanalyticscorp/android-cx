@@ -24,14 +24,14 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:padding="2dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/powered_by_white" />
+<!--            <ImageView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerInParent="true"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:padding="2dp"-->
+<!--                android:scaleType="fitCenter"-->
+<!--                android:src="@drawable/powered_by_white" />-->
 
             <ImageButton
                 android:id="@+id/closeButton"
