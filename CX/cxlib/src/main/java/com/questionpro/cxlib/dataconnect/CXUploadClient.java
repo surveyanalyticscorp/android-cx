@@ -72,9 +72,9 @@ public class CXUploadClient {
                 Log.w("Response: %s", cxHttpResponse.getContent());
             }
         } catch (IllegalArgumentException e) {
-            Log.w("Error communicating with server.", e);
+            Log.w("Error from server.", e);
         } catch (SocketTimeoutException e) {
-            Log.w("Timeout communicating with server.", e);
+            Log.w("Timeout from server.", e);
         } catch (final MalformedURLException e) {
             Log.w("MalformedUrlException", e);
         } catch (final IOException e) {
@@ -84,7 +84,7 @@ public class CXUploadClient {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w(LOG_TAG,"Response: " + cxHttpResponse.getContent());
             } catch (IOException ex) {
-                Log.w("Can't read error stream.", ex);
+                Log.w("Can't read error .", ex);
             }
         }
         return cxHttpResponse;
