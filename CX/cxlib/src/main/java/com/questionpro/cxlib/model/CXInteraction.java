@@ -23,7 +23,7 @@ public class CXInteraction implements Serializable{
                 cxInteraction.url = jsonObject.getString(CXConstants.JSONResponseFields.SURVEY_URL);
             }
             if (jsonObject.has(CXConstants.JSONResponseFields.IS_DIALOG)) {
-                cxInteraction.isDialog = jsonObject.getBoolean(CXConstants.JSONResponseFields.IS_DIALOG);
+                cxInteraction.isDialog = true;//jsonObject.getBoolean(CXConstants.JSONResponseFields.IS_DIALOG);
             }
         }
         catch (Exception e){

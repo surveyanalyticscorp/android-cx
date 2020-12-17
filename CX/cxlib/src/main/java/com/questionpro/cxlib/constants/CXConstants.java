@@ -4,7 +4,7 @@ package com.questionpro.cxlib.constants;
  * Created by sachinsable on 29/03/16.
  */
 public class CXConstants {
-    public static final String CX_URL = "http://cx.surveyanalytics.com/a/api/questionpro.cx.mobileTouchpoint?apiKey=";
+    public static final String CX_URL = "https://cxlabs2.questionpro.com/a/api/questionpro.cx.getSurveyURL?apiKey=";
     public static final String PREF_NAME="questionpro_cx";
     public static final String PREF_KEY_API_KEY="cx_pref_api_key";
     public static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
@@ -34,7 +34,7 @@ public class CXConstants {
     public static class JSONResponseFields{
         public static final String STATUS = "status";
         public static final String RESPONSE = "response";
-        public static final String SURVEY_URL = "surveyURL";
+        public static final String SURVEY_URL = "SurveyURL";
         public static final String IS_DIALOG="isDialog";
         public static final String ID = "id";
         public static final String MESSAGE="message";

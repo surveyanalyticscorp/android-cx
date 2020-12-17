@@ -63,7 +63,8 @@ public class HomeFragment extends Fragment {
 								new SearchProductFragment(),
 								((ECartHomeActivity) getActivity()), null,
 								AnimationType.SLIDE_UP);*/
-						QuestionProCX.engageTouchPoint(getActivity(), new TouchPoint(106));
+						/** TODO Touch point ID is from Nehal's account, Need to change */
+						QuestionProCX.engageTouchPoint(getActivity(), new TouchPoint(7657393));
 
 					}
 				});

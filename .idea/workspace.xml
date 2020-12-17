@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4f3afa2c-8472-4157-8ea5-7a676e90e76b" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle____local_aars____Users_nehal_Desktop_android_cx_CX_Demo_App_app_libs_com_google_guava_1_6_0_jar_unspecified_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle____local_aars____Users_nehal_android_cx_CX_Demo_App_app_libs_com_google_guava_1_6_0_jar_unspecified_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__ch_acra_acra_4_8_5_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_animated_vector_drawable_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_appcompat_v7_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_cardview_v7_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_design_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_palette_v7_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_recyclerview_v7_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_support_annotations_23_0_0_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_support_annotations_23_4_0_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_support_v4_23_0_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_support_v4_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_android_support_support_vector_drawable_23_4_0_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_flaviofaria_kenburnsview_1_0_7_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_github_bumptech_glide_glide_3_7_0_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_google_code_gson_gson_2_4_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_mcxiaoke_volley_library_1_0_19_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_nineoldandroids_library_2_4_0_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_squareup_picasso_picasso_2_5_2_jar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_twotoasters_jazzylistview_library_1_2_1_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_twotoasters_jazzylistview_library_recyclerview_1_2_1_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/libraries/Gradle__com_wang_avi_library_1_0_5_aar.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/app/src/main/java/com/qpcx/retailapp/view/fragment/HomeFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/app/src/main/java/com/qpcx/retailapp/view/fragment/HomeFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/java/com/questionpro/cxlib/constants/CXConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/java/com/questionpro/cxlib/constants/CXConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/java/com/questionpro/cxlib/model/CXInteraction.java" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/java/com/questionpro/cxlib/model/CXInteraction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/res/layout/cx_webview_dialog.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/cxlib/src/main/res/layout/cx_webview_dialog.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX-Demo_App/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/CX-Demo_App/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/CX/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX/cxlib/src/main/java/com/questionpro/cxlib/constants/CXConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/CX/cxlib/src/main/java/com/questionpro/cxlib/constants/CXConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" beforeDir="false" afterPath="$PROJECT_DIR$/CX/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX/cxlib/src/main/java/com/questionpro/cxlib/model/CXInteraction.java" beforeDir="false" afterPath="$PROJECT_DIR$/CX/cxlib/src/main/java/com/questionpro/cxlib/model/CXInteraction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX/cxlib/src/main/res/drawable/cross_selector.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CX/cxlib/src/main/res/drawable/cross_selector.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX/cxlib/src/main/res/layout/cx_webview_dialog.xml" beforeDir="false" afterPath="$PROJECT_DIR$/CX/cxlib/src/main/res/layout/cx_webview_dialog.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CX/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/CX/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="50" />
+    <option name="y" value="23" />
+    <option name="width" value="1314" />
+    <option name="height" value="793" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="android-cx" type="b2602c69:ProjectViewProjectNode" />
+              <item name="android-cx" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="AndroidView">
+        <subPane>
+          <expand>
+            <path>
+              <item name="android-cx" type="1abcf292:AndroidViewProjectNode" />
+              <item name="android-cx" type="e9137016:NonAndroidModuleNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4f3afa2c-8472-4157-8ea5-7a676e90e76b" name="Default Changelist" comment="" />
+      <created>1599732377348</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1599732377348</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="50" y="23" width="1314" height="793" extended-state="0" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" visible="true" weight="0.33490565" />
+      <window_info id="Structure" side_tool="true" />
+      <window_info id="Image Layers" />
+      <window_info id="Designer" />
+      <window_info id="Build Variants" side_tool="true" />
+      <window_info id="Resources Explorer" />
+      <window_info id="Capture Tool" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="TODO" />
+      <window_info anchor="bottom" id="Android Profiler" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Logcat" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="right" id="Device File Explorer" side_tool="true" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Palette&#9;" />
+    </layout>
+  </component>
+</project>
