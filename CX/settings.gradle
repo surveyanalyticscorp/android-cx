@@ -1,1 +1,2 @@
 include ':app', ':cxlib'
+project(':cxlib').projectDir = new File(settingsDir, '../cxlib')

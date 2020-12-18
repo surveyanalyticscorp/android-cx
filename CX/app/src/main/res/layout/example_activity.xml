@@ -19,12 +19,13 @@
         android:textStyle="italic"
         android:layout_margin="10dp"/>
 
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:padding="10dp"-->
-        <!--android:layout_margin="10dp"-->
-        <!--android:layout_gravity="center_horizontal"-->
-        <!--android:text="Send Feedback"/>-->
+    <Button
+        android:id="@+id/send_feedback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_margin="10dp"
+        android:layout_gravity="center_horizontal"
+        android:text="Send Feedback"/>
 
 </LinearLayout>
