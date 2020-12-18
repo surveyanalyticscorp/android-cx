@@ -33,11 +33,8 @@ public class QuestionProCX {
 
         if (!CXGlobalInfo.initialized) {
             SharedPreferences prefs = appContext.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
             // First, Get the api key, and figure out if app is debuggable.
-
             String apiKey = prefs.getString(CXConstants.PREF_KEY_API_KEY, null);
-
             try {
                 ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
                 Bundle metaData = ai.metaData;
@@ -46,12 +43,8 @@ public class QuestionProCX {
                         apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
                         Log.d(LOG_TAG,"Saving API key for the first time: %s"+apiKey);
                         prefs.edit().putString(CXConstants.PREF_KEY_API_KEY, apiKey).apply();
-                    } else {
-                        Log.d(LOG_TAG,"Using cached API Key: %s"+apiKey);
                     }
-
                 }
-
             } catch (Exception e) {
                 Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
             }
@@ -89,7 +82,6 @@ public class QuestionProCX {
         else{
             launchFeedbackScreen(activity,touchPoint.getTouchPointID());
         }
-
     }
 
     public static void onStop(Activity activity){

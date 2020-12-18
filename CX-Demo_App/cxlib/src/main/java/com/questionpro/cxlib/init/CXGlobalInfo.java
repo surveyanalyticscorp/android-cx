@@ -36,45 +36,40 @@ public class CXGlobalInfo {
     }
 
 
-
     public static boolean isInteractionPending(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return  prefs.contains(activity.getLocalClassName());
-
-
     }
+
     public static boolean isInteractionPending(Activity activity,TouchPoint touchPoint){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return  prefs.contains(touchPoint.getTouchPointID()+"");
-
-
     }
 
     public static void clearInteraction(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(activity.getLocalClassName()).commit();
+        ed.remove(activity.getLocalClassName()).apply();
     }
 
     public static void clearInteraction(Activity activity, long touchPointID){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(touchPointID+"").commit();
+        ed.remove(touchPointID+"").apply();
     }
     public static void clearPayload(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(CXConstants.PREF_KEY_PAYLOAD).commit();
+        ed.remove(CXConstants.PREF_KEY_PAYLOAD).apply();
     }
     public static void setPayLoad(Activity activity, CXPayload cxPayload){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(CXConstants.PREF_KEY_PAYLOAD, cxPayload.getPayloadJSON().toString());
-        ed.commit();
+        ed.apply();
     }
 
     public static String getCXPayload(Activity activity){
@@ -86,13 +81,13 @@ public class CXGlobalInfo {
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(activity.getLocalClassName(), url);
-        ed.commit();
+        ed.apply();
     }
     public static void storeInteraction(Activity activity, long touchPointID, CXInteraction cxInteraction){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(touchPointID+"", CXInteraction.toJSON(cxInteraction).toString());
-        ed.commit();
+        ed.apply();
     }
     public static String getInteraction(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);

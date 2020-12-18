@@ -10,15 +10,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4b8333b6-7cdb-4acb-90d2-2f5b2d376f03" name="Default" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle____local_aars____Users_nehal_Desktop_android_cx_CX_Demo_App_app_libs_com_google_guava_1_6_0_jar_unspecified_jar.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle____local_aars____Users_nehal_android_cx_CX_Demo_App_app_libs_com_google_guava_1_6_0_jar_unspecified_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle____app_libs_com_google_guava_1_6_0_jar.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/qpcx/retailapp/view/fragment/HomeFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/qpcx/retailapp/view/fragment/HomeFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/QuestionProCX.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/QuestionProCX.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/init/CXGlobalInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/init/CXGlobalInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/interaction/InteractionActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/interaction/InteractionActivity.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,15 +47,20 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="73" />
-    <option name="y" value="92" />
-    <option name="width" value="1279" />
-    <option name="height" value="740" />
-  </component>
+  <component name="ProjectId" id="1logQlVTsmzdAGpJTQ7KkOvKDm4" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
+    <property name="DEBUGGABLE_DEVICE" value="emulator-5554" />
+    <property name="DEBUGGABLE_PROCESS" value="com.questionpro.retailshop" />
+    <property name="DEBUGGER_ID" value="Auto" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SHOW_ALL_PROCESSES" value="false" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.15" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
@@ -241,97 +246,70 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
+    <state x="2256" y="143" key="AndroidProcessChooserDialog" timestamp="1608273689088">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state x="2256" y="143" key="AndroidProcessChooserDialog/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273689088" />
+    <state width="507" height="466" key="DebuggerActiveHint" timestamp="1608273739653">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="507" height="466" key="DebuggerActiveHint/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273739653" />
+    <state width="1878" height="348" key="GridCell.Tab.0.bottom" timestamp="1608273694843">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.bottom/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694843" />
+    <state width="1878" height="348" key="GridCell.Tab.0.center" timestamp="1608273694843">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.center/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694843" />
+    <state width="1878" height="348" key="GridCell.Tab.0.left" timestamp="1608273694842">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.left/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694842" />
+    <state width="1878" height="348" key="GridCell.Tab.0.right" timestamp="1608273694843">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.0.right/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694843" />
+    <state width="1878" height="348" key="GridCell.Tab.1.bottom" timestamp="1608273700932">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.bottom/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700932" />
+    <state width="1878" height="348" key="GridCell.Tab.1.center" timestamp="1608273700931">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.center/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700931" />
+    <state width="1878" height="348" key="GridCell.Tab.1.left" timestamp="1608273700930">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.left/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700930" />
+    <state width="1878" height="348" key="GridCell.Tab.1.right" timestamp="1608273700932">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="1878" height="348" key="GridCell.Tab.1.right/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700932" />
+    <state width="960" height="528" key="XDebugger.FullValuePopup" timestamp="1608273739634">
+      <screen x="1440" y="-157" width="1920" height="1057" />
+    </state>
+    <state width="960" height="528" key="XDebugger.FullValuePopup/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273739634" />
+    <state x="738" y="274" key="com.intellij.ide.util.TipDialog" timestamp="1608268855883">
+      <screen x="0" y="23" width="1440" height="838" />
+    </state>
+    <state x="738" y="274" key="com.intellij.ide.util.TipDialog/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608268855883" />
     <state x="2053" y="127" width="693" height="488" key="find.popup" timestamp="1608187414578">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
     <state x="2053" y="127" width="693" height="488" key="find.popup/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608187414578" />
-    <state x="2065" y="22" width="670" height="676" key="search.everywhere.popup" timestamp="1608187222698">
+    <state x="2065" y="22" width="670" height="676" key="search.everywhere.popup" timestamp="1608269779833">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state x="2065" y="22" width="670" height="676" key="search.everywhere.popup/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608187222698" />
+    <state x="2065" y="22" width="670" height="676" key="search.everywhere.popup/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608269779833" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java</url>
-          <line>37</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>81</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>82</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
+        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
           <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>35</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>86</line>
-          <option name="timeStamp" value="8" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>74</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>76</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>78</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>80</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>71</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>68</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>100</line>
-          <option name="timeStamp" value="15" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>103</line>
-          <option name="timeStamp" value="16" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>107</line>
-          <option name="timeStamp" value="17" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>117</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java</url>
-          <line>120</line>
-          <option name="timeStamp" value="19" />
+          <line>88</line>
+          <option name="timeStamp" value="21" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

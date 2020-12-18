@@ -58,8 +58,6 @@ public class CXPayloadWorker {
 
         public void run() {
             try {
-                Log.v("Started %s", toString());
-
                 if (appInForeground.get()) {
                     if (contextRef.get() == null) {
                         threadRunning.set(false);
@@ -94,8 +92,6 @@ public class CXPayloadWorker {
                                     if(!activity.isFinishing()){
                                         QuestionProCX.launchFeedbackScreen(activity, touchPointID);
                                     }
-
-
                                 }
                             }
                             Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
@@ -108,9 +104,6 @@ public class CXPayloadWorker {
                             Log.d(LOG_TAG,"Unable to send JSON");
 
                         }
-
-
-
                     }
                 }
             }

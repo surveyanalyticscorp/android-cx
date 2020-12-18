@@ -36,11 +36,8 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         url = cxInteraction.url;
         if(cxInteraction.isDialog) {
             setContentView(R.layout.cx_webview_dialog);
-
-        }
-        else {
+        } else {
             setContentView(R.layout.cx_webview_fullscreen);
-
         }
         ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
         closeButton.setOnClickListener(new View.OnClickListener() {

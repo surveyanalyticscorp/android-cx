@@ -72,35 +72,29 @@ public class CXUploadClient {
                 Log.w("Response: %s", cxHttpResponse.getContent());
             }
         } catch (IllegalArgumentException e) {
-            Log.w("Error communicating with server.", e);
+            Log.e("Server Error: ", e.getMessage());
         } catch (SocketTimeoutException e) {
-            Log.w("Timeout communicating with server.", e);
+            Log.e("Sever Timeout:", e.getMessage());
         } catch (final MalformedURLException e) {
-            Log.w("MalformedUrlException", e);
+            Log.e("MalformedUrlException", e.getMessage());
         } catch (final IOException e) {
-            Log.w("IOException", e);
-            // Read the error response.
+            Log.e("IOException", e.getMessage());
             try {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
-                Log.w(LOG_TAG,"Response: " + cxHttpResponse.getContent());
+                Log.e(LOG_TAG,"Response: " + cxHttpResponse.getContent());
             } catch (IOException ex) {
-                Log.w("Can't read error stream.", ex);
+                Log.e("Can't read error stream", ex.toString());
             }
         }
         return cxHttpResponse;
     }
     public static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
         if (connection != null) {
-            InputStream is = null;
-
-                is = new BufferedInputStream(connection.getInputStream());
-                if (is != null) {
-                    if (isZipped) {
-                        is = new GZIPInputStream(is);
-                    }
-                    return CXUtils.convertStreamToString(is);
-                }
-
+            InputStream is = new BufferedInputStream(connection.getInputStream());
+            if (isZipped) {
+                is = new GZIPInputStream(is);
+            }
+            return CXUtils.convertStreamToString(is);
         }
         return null;
     }
