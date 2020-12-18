@@ -6,7 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/CX-Demo_App-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/CX-Demo_App-app.iml" group="CX-Demo_App/app" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/android-cx-CX-Demo_App.iml" filepath="$PROJECT_DIR$/.idea/modules/android-cx-CX-Demo_App.iml" group="CX-Demo_App" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cxlib/com.questionpro.cx-cxlib.iml" filepath="$PROJECT_DIR$/.idea/modules/cxlib/com.questionpro.cx-cxlib.iml" group="CX-Demo_App/cxlib" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/2074321695/com.questionpro.cx-cxlib.iml" filepath="$PROJECT_DIR$/.idea/modules/2074321695/com.questionpro.cx-cxlib.iml" group="CX-Demo_App/cxlib" />
       <module fileurl="file://$PROJECT_DIR$/cxlib/cxlib.iml" filepath="$PROJECT_DIR$/cxlib/cxlib.iml" />
     </modules>
   </component>

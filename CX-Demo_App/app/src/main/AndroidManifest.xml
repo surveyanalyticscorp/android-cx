@@ -29,7 +29,7 @@
         <activity
             android:name="com.qpcx.retailapp.view.activities.ECartHomeActivity"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
 
         <!-- Splash Activity -->
         <activity

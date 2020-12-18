@@ -10,15 +10,107 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4b8333b6-7cdb-4acb-90d2-2f5b2d376f03" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/../.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/build_file_checksums.ser" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/QuestionProCX.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/QuestionProCX.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/init/CXGlobalInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/init/CXGlobalInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/interaction/InteractionActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/interaction/InteractionActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/androidTest/java/com/questionpro/cxlib/ApplicationTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/ActivityLifecycleManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/PersistentSessionQueue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/QuestionProCX.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/SessionEvent.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/SharedPreferencesPersistentSessionQueue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/constants/CXConstants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXHttpResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/init/CXGlobalInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/interaction/InteractionActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/interaction/MyWebChromeClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/model/CXInteraction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/model/TouchPoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/util/CXUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/close_white.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/cross_blue.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/cross_blue_hover.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/cross_orange_hover.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/cross_orange_normal.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/powered_by_white.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/powered_one.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable-hdpi/powered_two.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/circle_shape.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/circular_progress_bar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/close.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/close_selected.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/cross_selector.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/dialog_bg.9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/horizontal_progress_bar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/drawable/powered_by.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/layout/cx_webview_dialog.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/layout/cx_webview_fullscreen.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/values-land/dimen.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/values/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/values/dimen.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cxlib/src/test/java/com/questionpro/cxlib/ExampleUnitTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../CX/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/app/src/main/java/com/questionpro/cx/ExampleActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../CX/app/src/main/java/com/questionpro/cx/ExampleActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/app/src/main/res/layout/example_activity.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../CX/app/src/main/res/layout/example_activity.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/proguard-rules.pro" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/androidTest/java/com/questionpro/cxlib/ApplicationTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/ActivityLifecycleManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/PersistentSessionQueue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/QuestionProCX.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/SessionEvent.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/SharedPreferencesPersistentSessionQueue.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/constants/CXConstants.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXHttpResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayload.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXPayloadWorker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/init/CXGlobalInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/interaction/InteractionActivity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/interaction/MyWebChromeClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/model/CXInteraction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/model/TouchPoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/java/com/questionpro/cxlib/util/CXUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/close_white.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/cross_blue.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/cross_blue_hover.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/cross_orange_hover.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/cross_orange_normal.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/powered_by_white.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/powered_one.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable-hdpi/powered_two.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/circle_shape.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/circular_progress_bar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/close.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/close_selected.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/cross_selector.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/dialog_bg.9.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/horizontal_progress_bar.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/drawable/powered_by.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/layout/cx_webview_dialog.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/layout/cx_webview_fullscreen.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/values-land/dimen.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/values/colors.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/values/dimen.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/cxlib/src/test/java/com/questionpro/cxlib/ExampleUnitTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../CX/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../CX/settings.gradle" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +158,7 @@
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
     <property name="device.picker.selection" value="Nexus_5_API_25" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="memory.settings.postsync.last.time.stamp" value="1608187041084" />
+    <property name="memory.settings.postsync.last.time.stamp" value="1608275597569" />
     <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RunManager" selected="Android App.CX-Demo_App-app">
@@ -254,38 +346,38 @@
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
     <state width="507" height="466" key="DebuggerActiveHint/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273739653" />
-    <state width="1878" height="348" key="GridCell.Tab.0.bottom" timestamp="1608273694843">
+    <state width="1878" height="348" key="GridCell.Tab.0.bottom" timestamp="1608274135522">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.0.bottom/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694843" />
-    <state width="1878" height="348" key="GridCell.Tab.0.center" timestamp="1608273694843">
+    <state width="1878" height="348" key="GridCell.Tab.0.bottom/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135522" />
+    <state width="1878" height="348" key="GridCell.Tab.0.center" timestamp="1608274135522">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.0.center/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694843" />
-    <state width="1878" height="348" key="GridCell.Tab.0.left" timestamp="1608273694842">
+    <state width="1878" height="348" key="GridCell.Tab.0.center/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135522" />
+    <state width="1878" height="348" key="GridCell.Tab.0.left" timestamp="1608274135521">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.0.left/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694842" />
-    <state width="1878" height="348" key="GridCell.Tab.0.right" timestamp="1608273694843">
+    <state width="1878" height="348" key="GridCell.Tab.0.left/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135521" />
+    <state width="1878" height="348" key="GridCell.Tab.0.right" timestamp="1608274135522">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.0.right/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273694843" />
-    <state width="1878" height="348" key="GridCell.Tab.1.bottom" timestamp="1608273700932">
+    <state width="1878" height="348" key="GridCell.Tab.0.right/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135522" />
+    <state width="1878" height="348" key="GridCell.Tab.1.bottom" timestamp="1608274135523">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.1.bottom/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700932" />
-    <state width="1878" height="348" key="GridCell.Tab.1.center" timestamp="1608273700931">
+    <state width="1878" height="348" key="GridCell.Tab.1.bottom/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135523" />
+    <state width="1878" height="348" key="GridCell.Tab.1.center" timestamp="1608274135523">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.1.center/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700931" />
-    <state width="1878" height="348" key="GridCell.Tab.1.left" timestamp="1608273700930">
+    <state width="1878" height="348" key="GridCell.Tab.1.center/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135523" />
+    <state width="1878" height="348" key="GridCell.Tab.1.left" timestamp="1608274135523">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.1.left/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700930" />
-    <state width="1878" height="348" key="GridCell.Tab.1.right" timestamp="1608273700932">
+    <state width="1878" height="348" key="GridCell.Tab.1.left/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135523" />
+    <state width="1878" height="348" key="GridCell.Tab.1.right" timestamp="1608274135523">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
-    <state width="1878" height="348" key="GridCell.Tab.1.right/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608273700932" />
+    <state width="1878" height="348" key="GridCell.Tab.1.right/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608274135523" />
     <state width="960" height="528" key="XDebugger.FullValuePopup" timestamp="1608273739634">
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
@@ -302,16 +394,5 @@
       <screen x="1440" y="-157" width="1920" height="1057" />
     </state>
     <state x="2065" y="22" width="670" height="676" key="search.everywhere.popup/0.23.1440.838/1440.-157.1920.1057@1440.-157.1920.1057" timestamp="1608269779833" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="java-line">
-          <url>file://$PROJECT_DIR$/cxlib/src/main/java/com/questionpro/cxlib/dataconnect/CXUploadClient.java</url>
-          <line>88</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
