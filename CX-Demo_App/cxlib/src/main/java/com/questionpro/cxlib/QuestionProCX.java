@@ -1,6 +1,7 @@
 package com.questionpro.cxlib;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,10 +27,16 @@ public class QuestionProCX {
 
     }
     private static int runningActivities;
+    private static ProgressDialog progressDialog;
 
     private static void init(Activity activity){
 
         final Context appContext = activity.getApplicationContext();
+
+        progressDialog = new ProgressDialog(activity);
+        progressDialog.setMessage("loading");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
 
         if (!CXGlobalInfo.initialized) {
             SharedPreferences prefs = appContext.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
@@ -113,6 +120,8 @@ public class QuestionProCX {
     }
     public static synchronized  void launchFeedbackScreen(Activity activity, long touchPointID){
         try {
+            progressDialog.cancel();
+
             Intent intent = new Intent(activity, InteractionActivity.class);
             intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
             activity.startActivity(intent);

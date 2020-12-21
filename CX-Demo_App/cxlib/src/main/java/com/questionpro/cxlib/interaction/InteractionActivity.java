@@ -50,7 +50,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             }
         });
 
-        CXUtils.lockOrientation(this);
+        //CXUtils.lockOrientation(this);
         progressBar =(ProgressBar) findViewById(R.id.progressBar);
         webView = (WebView)findViewById(R.id.surveyWebView);
         webView.setWebViewClient(new CXWebViewClient());
