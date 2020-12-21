@@ -1,6 +1,6 @@
 package com.qpcx.retailapp.util;
 
-import androidx.recyclerview.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView;
 
 /**
  * Created by Suleiman on 18-04-2015.

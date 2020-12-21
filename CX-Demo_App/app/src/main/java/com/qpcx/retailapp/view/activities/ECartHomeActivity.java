@@ -2,9 +2,9 @@ package com.qpcx.retailapp.view.activities;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import com.google.android.material.navigation.NavigationView;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
+import android.support.design.widget.NavigationView;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +23,7 @@ import com.qpcx.retailapp.util.TinyDB;
 import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
+import com.qpcx.retailapp.view.fragment.WhatsNewDialog;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.math.BigDecimal;

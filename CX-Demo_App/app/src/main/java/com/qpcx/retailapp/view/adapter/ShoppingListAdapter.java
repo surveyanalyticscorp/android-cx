@@ -18,8 +18,8 @@ package com.qpcx.retailapp.view.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
-import androidx.core.view.MotionEventCompat;
-import androidx.recyclerview.widget.RecyclerView;
+import android.support.v4.view.MotionEventCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
@@ -55,7 +55,7 @@ import java.util.List;
 /**
  * Simple RecyclerView.Adapter that implements {@link ItemTouchHelperAdapter} to
  * respond to move and dismiss events from a
- * {@link androidx.recyclerview.widget.ItemTouchHelper}.
+ * {@link android.support.v7.widget.helper.ItemTouchHelper}.
  *
  * @author Paul Burke (ipaulpro)
  */

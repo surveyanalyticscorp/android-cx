@@ -2,7 +2,7 @@ package com.qpcx.retailapp.view.adapter;
 
 import android.content.Context;
 import android.os.Parcelable;
-import androidx.viewpager.widget.PagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

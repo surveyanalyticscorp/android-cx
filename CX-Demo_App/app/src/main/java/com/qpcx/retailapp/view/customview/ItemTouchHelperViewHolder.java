@@ -16,11 +16,11 @@
 
 package com.qpcx.retailapp.view.customview;
 
-import androidx.recyclerview.widget.ItemTouchHelper;
+import android.support.v7.widget.helper.ItemTouchHelper;
 
 /**
  * Interface to notify an item ViewHolder of relevant callbacks from {@link
- * androidx.recyclerview.widget.ItemTouchHelper.Callback}.
+ * android.support.v7.widget.helper.ItemTouchHelper.Callback}.
  *
  * @author Paul Burke (ipaulpro)
  */

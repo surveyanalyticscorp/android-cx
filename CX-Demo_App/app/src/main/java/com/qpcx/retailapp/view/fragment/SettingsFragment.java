@@ -18,9 +18,9 @@ package com.qpcx.retailapp.view.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.core.view.GravityCompat;
-import androidx.appcompat.widget.Toolbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
