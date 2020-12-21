@@ -2,7 +2,7 @@ package com.qpcx.retailapp.domain.api;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import com.qpcx.retailapp.R;

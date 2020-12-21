@@ -3,9 +3,9 @@ package com.qpcx.retailapp.view.adapter;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 public class ProductOverViewPagerAdapter extends FragmentStatePagerAdapter {
 	private final List<Fragment> mFragmentList = new ArrayList<>();
