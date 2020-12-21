@@ -41,7 +41,7 @@
             android:textSize="20sp" />
     </RelativeLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
@@ -53,7 +53,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/slide_down" >
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/product_list_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -134,6 +134,6 @@
                 </LinearLayout>
             </FrameLayout>
         </FrameLayout>
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
