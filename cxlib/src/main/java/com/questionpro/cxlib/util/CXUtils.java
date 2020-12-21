@@ -95,7 +95,7 @@ public class CXUtils {
                 else
                     orientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
         }
-        activity.setRequestedOrientation(orientation);
+        //activity.setRequestedOrientation(orientation);
     }
 
     public static void unlockOrientation(Activity activity)
