@@ -1,6 +1,6 @@
 # android-cx
 	Minimum SDK Version: 14
-	Compile SDK Version: 23 (But you should generally compile with the latest version)
+	Compile SDK Version: 29 (But you should generally compile with the latest version)
 
 ### Including CX Lib into your project
 #### Include “cxlib” as a module in your project.
@@ -16,7 +16,7 @@
 	Example
 	dependencies {
 	 	// The QuestionPro CX SDK
-  		compile 'com.questionpro.cx:cxlib:0.2.1'
+		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.4'
 	}
 
 
