@@ -35,7 +35,6 @@
 
 	
 ### Following is required:
-
 	Add the api key obtained from CX portal:
 		<meta-data android:name="cx_manifest_api_key"
    			android:value="<your api key here>"/>
@@ -50,9 +49,8 @@
 ### Adding TouchPoint hook in app codebase:
 	You can add touchpoint hook wherever you want to show the feedback screen:
 	e.g.
-		TouchPoint touchPoint = new TouchPoint(110);
-		QuestionProCX.engageTouchPoint(this,touchPoint);
-		(Here the number “110” is the touchpoint ID that is obtained from QuestionPro Cx Portal.)
+		QuestionProCX.engageTouchPoint(this,new TouchPoint(110));
+		# (Here the number “110” is the touchpoint ID that is obtained from QuestionPro Cx Portal.)
 
 
 
