@@ -3,9 +3,6 @@
 	Compile SDK Version: 29 (But you should generally compile with the latest version)
 
 ### Including CX Lib into your project
-#### Include “cxlib” as a module in your project.
-
-	OR
 
 #### Integration From Maven Repository
 	Our SDK is available from the central Maven repo.
@@ -16,7 +13,7 @@
 	Example
 	dependencies {
 	 	// The QuestionPro CX SDK
-		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.4'
+		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.5'
 	}
 
 
