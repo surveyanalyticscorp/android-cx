@@ -50,7 +50,7 @@
 	You can add touchpoint hook wherever you want to show the feedback screen:
 	e.g.
 		QuestionProCX.engageTouchPoint(this,new TouchPoint(110));
-		# (Here the number “110” is the touchpoint ID that is obtained from QuestionPro Cx Portal.)
+		##### (Here the number “110” is the touchpoint ID that is obtained from QuestionPro Cx Portal.)
 
 
 
