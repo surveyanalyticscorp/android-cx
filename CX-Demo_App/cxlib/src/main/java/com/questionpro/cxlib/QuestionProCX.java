@@ -34,7 +34,7 @@ public class QuestionProCX {
         final Context appContext = activity.getApplicationContext();
 
         progressDialog = new ProgressDialog(activity);
-        progressDialog.setMessage("loading");
+        progressDialog.setMessage("loading...");
         progressDialog.setCancelable(false);
         progressDialog.show();
 
