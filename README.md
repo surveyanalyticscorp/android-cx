@@ -48,9 +48,9 @@
 
 ### Adding TouchPoint hook in app codebase:
 	You can add touchpoint hook wherever you want to show the feedback screen:
-	e.g.
+	for example:
 		QuestionProCX.engageTouchPoint(this,new TouchPoint(110));
-		##### (Here the number “110” is the touchpoint ID that is obtained from QuestionPro Cx Portal.)
+		(Here the number “110” is the touchpoint ID that is obtained from QuestionPro Cx Portal.)
 
 
 
