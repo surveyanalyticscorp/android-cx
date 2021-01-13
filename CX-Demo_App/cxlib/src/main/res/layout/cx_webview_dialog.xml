@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#AA000000">
+    android:background="@color/dialog_bg_color">
 
 
     <LinearLayout
@@ -20,18 +20,9 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="#4599dd"
+            android:background="@color/navigation_bar_bg"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-
-<!--            <ImageView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_centerInParent="true"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:padding="2dp"-->
-<!--                android:scaleType="fitCenter"-->
-<!--                android:src="@drawable/powered_by_white" />-->
 
             <ImageButton
                 android:id="@+id/closeButton"
@@ -47,7 +38,6 @@
 
         <ProgressBar
             android:id="@+id/progressBar"
-
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="fill_parent"
             android:layout_height="4dp"
@@ -58,18 +48,11 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-
             <WebView
                 android:id="@+id/surveyWebView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
-
             </WebView>
-
-
         </RelativeLayout>
     </LinearLayout>
-
-
 </RelativeLayout>

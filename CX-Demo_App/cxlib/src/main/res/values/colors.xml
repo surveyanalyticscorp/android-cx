@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="dialog_bg_color">#00000000</color>
+    <color name="navigation_bar_bg">#4599dd</color>
+    <color name="dialog_bg_color">#AA000000</color>
     <color name="progressbar_background">@android:color/white</color>
     <color name="progressbar_progress">@android:color/holo_green_dark</color>
 </resources>

@@ -8,7 +8,7 @@
         android:layout_height="40dp"
         android:id="@+id/topBar"
         android:layout_alignParentTop="true"
-        android:background="#4599dd"
+        android:background="@color/navigation_bar_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
