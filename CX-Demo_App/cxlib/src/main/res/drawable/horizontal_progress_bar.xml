@@ -3,15 +3,15 @@
 
     <item
         android:id="@android:id/background"
-        android:drawable="@android:color/transparent"/>
+        android:drawable="@color/progressbar_background"/>
     <item android:id="@android:id/secondaryProgress">
         <scale
-            android:drawable="@android:color/white"
+            android:drawable="@android:color/darker_gray"
             android:scaleWidth="100%" />
     </item>
     <item android:id="@android:id/progress">
         <scale
-            android:drawable="@android:color/holo_green_light"
+            android:drawable="@color/progressbar_progress"
             android:scaleWidth="100%" />
     </item>
 

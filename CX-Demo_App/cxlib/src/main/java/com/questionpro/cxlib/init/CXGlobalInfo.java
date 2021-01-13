@@ -71,7 +71,6 @@ public class CXGlobalInfo {
     }
     public static void setPayLoad(Activity activity, CXPayload cxPayload){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(CXConstants.PREF_KEY_PAYLOAD, cxPayload.getPayloadJSON().toString());
         ed.commit();

@@ -53,13 +53,11 @@ public class CXPayloadWorker {
 
         public CXPayloadSendThread(Context appContext) {
             contextRef = new WeakReference<Context>(appContext);
-
         }
 
         public void run() {
             try {
                 Log.v("Started %s", toString());
-
                 if (appInForeground.get()) {
                     if (contextRef.get() == null) {
                         threadRunning.set(false);
@@ -71,7 +69,6 @@ public class CXPayloadWorker {
                         Log.i(LOG_TAG, "something wrong");
                         return;
                     }
-
 
                     if (!CXUtils.isNetworkConnectionPresent(contextRef.get())) {
                         Log.d(LOG_TAG, "Can't send payloads. No network connection.");
@@ -94,8 +91,6 @@ public class CXPayloadWorker {
                                     if(!activity.isFinishing()){
                                         QuestionProCX.launchFeedbackScreen(activity, touchPointID);
                                     }
-
-
                                 }
                             }
                             Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
@@ -106,15 +101,10 @@ public class CXPayloadWorker {
 
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");
-
                         }
-
-
-
                     }
                 }
-            }
-            catch (Exception e){
+            } catch (Exception e){
                 e.printStackTrace();
             }
             finally{

@@ -30,7 +30,6 @@ public class QuestionProCX {
     private static ProgressDialog progressDialog;
 
     private static void init(Activity activity){
-
         final Context appContext = activity.getApplicationContext();
 
         progressDialog = new ProgressDialog(activity);
@@ -42,7 +41,6 @@ public class QuestionProCX {
             SharedPreferences prefs = appContext.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
 
             // First, Get the api key, and figure out if app is debuggable.
-
             String apiKey = prefs.getString(CXConstants.PREF_KEY_API_KEY, null);
 
             try {
@@ -56,9 +54,7 @@ public class QuestionProCX {
                     } else {
                         Log.d(LOG_TAG,"Using cached API Key: %s"+apiKey);
                     }
-
                 }
-
             } catch (Exception e) {
                 Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
             }
@@ -72,7 +68,6 @@ public class QuestionProCX {
             CXGlobalInfo.UUID = CXUtils.getUniqueDeviceId(activity);
             CXGlobalInfo.initialized = true;
         }
-
     }
 
 
@@ -84,19 +79,16 @@ public class QuestionProCX {
 
         }
         runningActivities++;
-
     }
 
     public static synchronized void engageTouchPoint(Activity activity, TouchPoint touchPoint){
         init(activity);
         if(!CXGlobalInfo.isInteractionPending(activity,touchPoint)){
-            CXGlobalInfo.setPayLoad(activity,new CXPayload(touchPoint.getTouchPointID()));
+            CXGlobalInfo.setPayLoad(activity, new CXPayload(touchPoint.getTouchPointID()));
             CXPayloadWorker.appWentToForeground(activity);
-        }
-        else{
+        } else{
             launchFeedbackScreen(activity,touchPoint.getTouchPointID());
         }
-
     }
 
     public static void onStop(Activity activity){
