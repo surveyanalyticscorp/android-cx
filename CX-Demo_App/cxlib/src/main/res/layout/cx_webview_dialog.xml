@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:weightSum="10"
     android:background="@color/dialog_bg_color">
-
 
     <LinearLayout
         android:id="@+id/dialogContent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:layout_marginBottom="@dimen/dialog_vertical_margin"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="@dimen/dialog_vertical_margin"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:layout_marginHorizontal="20dp"
         android:background="@android:color/white"
         android:orientation="vertical">
 
@@ -55,4 +54,4 @@
             </WebView>
         </RelativeLayout>
     </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

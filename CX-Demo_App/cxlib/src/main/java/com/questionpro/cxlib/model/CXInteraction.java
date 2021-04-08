@@ -6,9 +6,6 @@ import org.json.JSONObject;
 
 import java.io.Serializable;
 
-/**
- * Created by sachinsable on 14/04/16.
- */
 public class CXInteraction implements Serializable{
 
     public String url="";

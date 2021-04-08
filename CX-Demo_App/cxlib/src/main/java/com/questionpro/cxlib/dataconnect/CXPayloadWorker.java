@@ -16,9 +16,7 @@ import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Created by sachinsable on 14/04/16.
- */
+
 public class CXPayloadWorker {
 
     private static final String LOG_TAG="CXPayloadWorker";
