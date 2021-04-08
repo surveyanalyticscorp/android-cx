@@ -34,12 +34,11 @@ dependencies {
     implementation 'com.mcxiaoke.volley:library:1.0.19'
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.flaviofaria:kenburnsview:1.0.7'
+
     //Material design
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.palette:palette:1.0.0'
+
     //RecyclerView animations
     implementation 'com.twotoasters.jazzylistview:library:1.2.1'
     implementation 'com.twotoasters.jazzylistview:library-recyclerview:1.2.1'
