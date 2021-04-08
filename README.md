@@ -13,7 +13,7 @@
 	Example
 	dependencies {
 	 	// The QuestionPro CX SDK
-		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.5'
+		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.6'
 	}
 
 
