@@ -1,8 +1,6 @@
 package com.questionpro.cxlib.constants;
 
-/**
- * Created by sachinsable on 29/03/16.
- */
+
 public class CXConstants {
     public static final String CX_URL = "https://api.questionpro.com/a/api/questionpro.cx.getSurveyURL?apiKey=";
     public static final String PREF_NAME="questionpro_cx";
