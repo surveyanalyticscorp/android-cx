@@ -23,9 +23,6 @@ import com.questionpro.cxlib.util.CXUtils;
  */
 public class QuestionProCX {
     private static final String LOG_TAG="QuestionProCX";
-    private QuestionProCX(){
-
-    }
     private static int runningActivities;
     private static ProgressDialog progressDialog;
 
