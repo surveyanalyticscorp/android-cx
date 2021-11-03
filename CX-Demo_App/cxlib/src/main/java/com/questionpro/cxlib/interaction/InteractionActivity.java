@@ -1,5 +1,6 @@
 package com.questionpro.cxlib.interaction;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,15 +22,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by sachinsable on 12/04/16.
- */
 public class InteractionActivity extends FragmentActivity implements MyWebChromeClient.ProgressListener {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
     private WebView webView;
     private String url = "";
     private CXInteraction cxInteraction;
+
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,14 +68,11 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         }
 
-
         if(url==null || CXUtils.isEmpty(url)){
             finish();
-        }
-        else{
+        } else{
             webView.loadUrl(url);
         }
-
     }
 
     @Override
@@ -88,26 +85,16 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         }
     }
 
-
-
-
-
-    private static final ScheduledExecutorService worker =
-            Executors.newSingleThreadScheduledExecutor();
-
+    private static final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
     private void runTimer() {
-
         Runnable task = new Runnable() {
             public void run() {
                 finish();
             }
         };
         worker.schedule(task, 5, TimeUnit.SECONDS);
-
     }
     private class CXWebViewClient extends WebViewClient {
-
-
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
             progressBar.setVisibility(View.VISIBLE);
@@ -124,14 +111,10 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
                            finish();
                         }
                         return false;
-
                 }
-
-
             }
             return super.shouldOverrideKeyEvent(view, event);
         }
-
 
         @Override
         public void onPageFinished(WebView view, String url) {

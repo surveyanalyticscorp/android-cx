@@ -12,9 +12,6 @@ import com.questionpro.cxlib.model.TouchPoint;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * Created by sachinsable on 12/04/16.
- */
 public class CXGlobalInfo {
     public static boolean initialized = false;
     public static String UUID;

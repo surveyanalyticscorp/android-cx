@@ -1,5 +1,6 @@
 package com.questionpro.cxlib.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -29,10 +30,9 @@ public class CXUtils {
     public static final String PSEUDO_ISO8601_DATE_FORMAT_MILLIS = "yyyy-MM-dd HH:mm:ss.SSSZ"; // 2011-01-01 11:59:59.123-0800 or 2011-01-01 11:59:59.23-0800
 
     public static String getUniqueDeviceId(Activity activity) {
-        String device_id = Settings.Secure.getString(
-                activity.getContentResolver(), Settings.Secure.ANDROID_ID);
-        if ((device_id == null) || (device_id.equals("9774d56d682e549c"))
-                || (device_id.length() < 15)) {
+        @SuppressLint("HardwareIds")
+        String device_id = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+        if ((device_id == null) || (device_id.equals("9774d56d682e549c")) || (device_id.length() < 15)) {
             device_id = new BigInteger(64, new SecureRandom()).toString(16);
         }
         Log.d("device_id", device_id);
@@ -68,11 +68,12 @@ public class CXUtils {
         return cm != null && cm.getActiveNetworkInfo() != null;
     }
 
+    @SuppressLint("SimpleDateFormat")
     public static String dateToIso8601String(long millis) {
         return dateToString(new SimpleDateFormat(PSEUDO_ISO8601_DATE_FORMAT_MILLIS), new Date(millis));
     }
-    public static String dateToString(DateFormat format, Date date) {
 
+    public static String dateToString(DateFormat format, Date date) {
         return format.format(date);
     }
 

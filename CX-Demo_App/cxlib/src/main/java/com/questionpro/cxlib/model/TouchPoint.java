@@ -2,11 +2,7 @@ package com.questionpro.cxlib.model;
 
 import java.io.Serializable;
 
-/**
- * Created by sachinsable on 12/04/16.
- */
 public class TouchPoint implements Serializable{
-
     private long touchPointID;
     private boolean showPrompt = false;
 
@@ -77,7 +73,4 @@ public class TouchPoint implements Serializable{
     public void setDialogPromptNegativeButtonText(String dialogPromptNegativeButtonText) {
         this.dialogPromptNegativeButtonText = dialogPromptNegativeButtonText;
     }
-
-
-
 }

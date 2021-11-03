@@ -27,6 +27,7 @@ public class CXUploadClient {
     public static final int DEFAULT_HTTP_CONNECT_TIMEOUT = 30000;
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 30000;
     private static final String LOG_TAG = "CXUploadClient";
+
     public static CXHttpResponse uploadforCX(Context context,String payload) {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
@@ -72,9 +73,9 @@ public class CXUploadClient {
                 Log.w("Response: %s", cxHttpResponse.getContent());
             }
         } catch (IllegalArgumentException e) {
-            Log.w("Error communicating with server.", e);
+            Log.w("IllegalArgument: ", e);
         } catch (SocketTimeoutException e) {
-            Log.w("Timeout communicating with server.", e);
+            Log.w("SocketTimeoutException:", e);
         } catch (final MalformedURLException e) {
             Log.w("MalformedUrlException", e);
         } catch (final IOException e) {
@@ -84,7 +85,7 @@ public class CXUploadClient {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w(LOG_TAG,"Response: " + cxHttpResponse.getContent());
             } catch (IOException ex) {
-                Log.w("Can't read error stream.", ex);
+                Log.w("IOException:", ex);
             }
         }
         return cxHttpResponse;
