@@ -13,7 +13,6 @@ public class CXConstants {
     public static final String CX_INTERACTION_CONTENT="cx_interaction_content";
     public static final String EXTRA_TOUCH_POINT="touch_point";
 
-
     public static String globalDialogPromptTitleText="CX Feeback";
     public static  String globalDialogPromptMessageText="Would you like to give us some feedback?";
     public static String globalDialogPromptPositiveText="Yes";
@@ -22,12 +21,10 @@ public class CXConstants {
         return CX_URL + apiKey;
     }
 
-
     public static class JSONUploadFields{
         public static final String UDID = "udid";
         public static final String TOUCH_POINT_ID = "touchPointID";
     }
-
 
     public static class JSONResponseFields{
         public static final String STATUS = "status";
@@ -37,8 +34,5 @@ public class CXConstants {
         public static final String ID = "id";
         public static final String MESSAGE="message";
         public static final String EMPTY="empty";
-
-
-
     }
 }

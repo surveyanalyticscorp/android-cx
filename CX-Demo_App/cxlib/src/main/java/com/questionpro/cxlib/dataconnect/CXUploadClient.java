@@ -93,15 +93,11 @@ public class CXUploadClient {
     public static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
         if (connection != null) {
             InputStream is = null;
-
                 is = new BufferedInputStream(connection.getInputStream());
-                if (is != null) {
-                    if (isZipped) {
-                        is = new GZIPInputStream(is);
-                    }
-                    return CXUtils.convertStreamToString(is);
-                }
-
+            if (isZipped) {
+                is = new GZIPInputStream(is);
+            }
+            return CXUtils.convertStreamToString(is);
         }
         return null;
     }

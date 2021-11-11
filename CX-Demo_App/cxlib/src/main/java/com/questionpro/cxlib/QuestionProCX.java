@@ -10,9 +10,12 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.dataconnect.CXPayloadWorker;
+import com.questionpro.cxlib.interaction.InteractionFragment;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interaction.InteractionActivity;
@@ -78,7 +81,7 @@ public class QuestionProCX {
         runningActivities++;
     }
 
-    public static synchronized void engageTouchPoint(Activity activity, TouchPoint touchPoint){
+    public static synchronized void engageTouchPoint(AppCompatActivity activity, TouchPoint touchPoint){
         init(activity);
         if(!CXGlobalInfo.isInteractionPending(activity,touchPoint)){
             CXGlobalInfo.setPayLoad(activity, new CXPayload(touchPoint.getTouchPointID()));
@@ -107,13 +110,23 @@ public class QuestionProCX {
 
         }
     }
-    public static synchronized  void launchFeedbackScreen(Activity activity, long touchPointID){
+    public static synchronized  void launchFeedbackScreen(AppCompatActivity activity, long touchPointID){
         try {
             progressDialog.cancel();
-
-            Intent intent = new Intent(activity, InteractionActivity.class);
+            /*Intent intent = new Intent(activity, InteractionActivity.class);
             intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
-            activity.startActivity(intent);
+            activity.startActivity(intent);*/
+
+            Log.d("Datta",""+CXGlobalInfo.getInteraction(activity, touchPointID));
+
+            Bundle args=new Bundle();
+            args.putSerializable(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
+            activity.getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(android.R.id.content, InteractionFragment.class, args)
+                    .addToBackStack(null)
+                    .commit();
+
             CXGlobalInfo.clearInteraction(activity, touchPointID);
         } catch (Exception e) {
             e.printStackTrace();

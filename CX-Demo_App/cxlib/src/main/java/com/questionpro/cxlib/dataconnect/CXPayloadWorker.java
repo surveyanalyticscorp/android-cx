@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
@@ -40,7 +42,6 @@ public class CXPayloadWorker {
 
     private static CXPayloadSendThread createPayloadSendThread(final Context appContext) {
         CXPayloadSendThread newThread = new CXPayloadSendThread(appContext);
-
         newThread.setName("Apptentive-PayloadSendWorker");
         newThread.start();
         return newThread;
@@ -82,8 +83,7 @@ public class CXPayloadWorker {
                                 JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
                                 CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
                                 if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
-
-                                    Activity activity = (Activity)contextRef.get();
+                                    AppCompatActivity activity = (AppCompatActivity) contextRef.get();
                                     long touchPointID = CXGlobalInfo.getTouchPointIDFromPayload(payload);
                                     CXGlobalInfo.storeInteraction(activity, touchPointID, cxInteraction);
                                     if(!activity.isFinishing()){
