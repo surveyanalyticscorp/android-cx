@@ -91,6 +91,16 @@ public class QuestionProCX {
         }
     }
 
+    public static synchronized void launchFeedbackSurvey(AppCompatActivity activity, TouchPoint touchPoint){
+        init(activity);
+        if(!CXGlobalInfo.isInteractionPending(activity,touchPoint)){
+            CXGlobalInfo.setPayLoad(activity, new CXPayload(touchPoint.getTouchPointID()));
+            CXPayloadWorker.appWentToForeground(activity);
+        } else{
+            launchFeedbackScreen(activity,touchPoint.getTouchPointID());
+        }
+    }
+
     public static void onStop(Activity activity){
         try {
             ActivityLifecycleManager.activityStopped(activity);
@@ -116,8 +126,6 @@ public class QuestionProCX {
             /*Intent intent = new Intent(activity, InteractionActivity.class);
             intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
             activity.startActivity(intent);*/
-
-            Log.d("Datta",""+CXGlobalInfo.getInteraction(activity, touchPointID));
 
             Bundle args=new Bundle();
             args.putSerializable(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));

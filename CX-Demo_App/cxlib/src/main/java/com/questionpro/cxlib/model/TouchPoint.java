@@ -3,74 +3,79 @@ package com.questionpro.cxlib.model;
 import java.io.Serializable;
 
 public class TouchPoint implements Serializable{
-    private long touchPointID;
-    private boolean showPrompt = false;
+    private final long touchPointID;
+    private final boolean showPrompt;
+    private final String firstName = "";
+    private final String lastName = "";
+    private final String email = "";
 
-    public boolean isDialog() {
-        return isDialog;
-    }
-
-    public void setIsDialog(boolean isDialog) {
-        this.isDialog = isDialog;
-    }
-
-    private boolean isDialog = false;
-    private String dialogPromptTitleText=null;
-    private String dialogPromptMessageText=null;
-    private String dialogPromptPositiveButtonText =null;
-    private String dialogPromptNegativeButtonText =null;
-
-    public TouchPoint(long touchPointID) {
-        this.touchPointID = touchPointID;
-        this.showPrompt = false;
+    public TouchPoint(TouchPointBuilder touchPointBuilder) {
+        this.touchPointID = touchPointBuilder.touchPointID;
+        this.showPrompt = touchPointBuilder.showPrompt;
     }
 
     public long getTouchPointID() {
         return touchPointID;
     }
 
-    public void setTouchPointID(long touchPointID) {
-        this.touchPointID = touchPointID;
-    }
-
-
     public boolean isShowPrompt() {
         return showPrompt;
     }
 
-    public void setShowPrompt(boolean showPrompt) {
-        this.showPrompt = showPrompt;
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public String getDialogPromptTitleText() {
-        return dialogPromptTitleText;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setDialogPromptTitleText(String dialogPromptTitleText) {
-        this.dialogPromptTitleText = dialogPromptTitleText;
+    public String getEmail(){
+        return email;
     }
 
-    public String getDialogPromptMessageText() {
-        return dialogPromptMessageText;
+    @Override
+    public String toString() {
+        return "User: "+this.touchPointID+", "+this.showPrompt+",  "+this.firstName+", "+this.lastName+", "+this.email;
     }
 
-    public void setDialogPromptMessageText(String dialogPromptMessageText) {
-        this.dialogPromptMessageText = dialogPromptMessageText;
-    }
+    public static class TouchPointBuilder{
+        private final long touchPointID;
+        private final boolean showPrompt;
+        private String firstName;
+        private String lastName;
+        private String email;
 
-    public String getDialogPromptPositiveButtonText() {
-        return dialogPromptPositiveButtonText;
-    }
+        public TouchPointBuilder(long touchPointId, boolean showPrompt){
+            this.touchPointID = touchPointId;
+            this.showPrompt = showPrompt;
+        }
 
-    public void setDialogPromptPositiveButtonText(String dialogPromptPositiveButtonText) {
-        this.dialogPromptPositiveButtonText = dialogPromptPositiveButtonText;
-    }
+        public TouchPointBuilder firstName(String fName){
+            this.firstName = fName;
+            return this;
+        }
 
-    public String getDialogPromptNegativeButtonText() {
-        return dialogPromptNegativeButtonText;
-    }
+        public TouchPointBuilder lastName(String lName){
+            this.lastName = lName;
+            return this;
+        }
 
-    public void setDialogPromptNegativeButtonText(String dialogPromptNegativeButtonText) {
-        this.dialogPromptNegativeButtonText = dialogPromptNegativeButtonText;
+        public TouchPointBuilder email(String email){
+            this.email = email;
+            return  this;
+        }
+
+        //Return the finally constructed object
+        public TouchPoint build(){
+            TouchPoint touchPoint = new TouchPoint(this);
+            validateTouchPoint(touchPoint);
+            return touchPoint;
+        }
+
+        private void validateTouchPoint(TouchPoint touchPoint){
+
+        }
     }
 }

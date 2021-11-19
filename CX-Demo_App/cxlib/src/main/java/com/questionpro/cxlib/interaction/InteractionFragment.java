@@ -1,16 +1,21 @@
 package com.questionpro.cxlib.interaction;
 
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -35,11 +40,32 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // This callback will only be called when MyFragment is at least Started.
+        OnBackPressedCallback callback = new OnBackPressedCallback(true ) {
+            @Override
+            public void handleOnBackPressed() {
+                getParentFragmentManager().popBackStack();
+            }
+        };
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //int someInt = requireArguments().getInt("some_int");
         //cxInteraction =(CXInteraction) requireArguments().getSerializableExtra(CXConstants.CX_INTERACTION_CONTENT);
         cxInteraction = (CXInteraction) requireArguments().getSerializable(CXConstants.CX_INTERACTION_CONTENT);
         url = cxInteraction.url;
+
+        try {
+            RelativeLayout container = (RelativeLayout) view.findViewById(R.id.topBar);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                    convertDpToPixel(40));
+            params.setMargins(0, convertDpToPixel(30), 0, 0);
+            container.setLayoutParams(params);
+        }catch (Exception e){e.printStackTrace();}
 
         progressBar =(ProgressBar) view.findViewById(R.id.progressBar);
 
@@ -56,7 +82,7 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
 
         if(url==null || CXUtils.isEmpty(url)){
             //getActivity().finish();
-            getFragmentManager().popBackStack();
+            getParentFragmentManager().popBackStack();
         } else{
             webView.loadUrl(url);
         }
@@ -66,9 +92,19 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
             @Override
             public void onClick(View v) {
                 //getActivity().finish();
-                getFragmentManager().popBackStack();
+                getParentFragmentManager().popBackStack();
             }
         });
+    }
+
+    private int convertDpToPixel(int dp){
+        Resources r = getActivity().getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                r.getDisplayMetrics()
+        );
+        return px;
     }
 
     @Override
@@ -80,6 +116,7 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
             }
         }
     }
+
 
 
     private class CXWebViewClient extends WebViewClient {
@@ -97,7 +134,7 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
                             view.goBack();
                         } else {
                             //getActivity().finish();
-                            getFragmentManager().popBackStack();
+                            getParentFragmentManager().popBackStack();
                         }
                         return false;
                 }
@@ -120,7 +157,7 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
         Runnable task = new Runnable() {
             public void run() {
                 //getActivity().finish();
-                getFragmentManager().popBackStack();
+                getParentFragmentManager().popBackStack();
             }
         };
         worker.schedule(task, 5, TimeUnit.SECONDS);

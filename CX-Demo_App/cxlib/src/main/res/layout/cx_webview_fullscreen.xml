@@ -2,13 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="30dp">
+    android:layout_marginTop="0dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:id="@+id/topBar"
-        android:layout_alignParentTop="true"
         android:background="@color/navigation_bar_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal">
