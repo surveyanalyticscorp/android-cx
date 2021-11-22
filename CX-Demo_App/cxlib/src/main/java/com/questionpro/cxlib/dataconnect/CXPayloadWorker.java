@@ -75,13 +75,15 @@ public class CXPayloadWorker {
                     }
                     Log.v(LOG_TAG, "Checking for payloads to send.");
                     String payload = CXGlobalInfo.getCXPayload((Activity)contextRef.get());
+                    JSONObject payloadObj = new JSONObject(payload);
                     CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
                     if (response != null) {
                         if (response.isSuccessful()) {
                             JSONObject jsonObject = new JSONObject(response.getContent());
                             if(jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)){
                                 JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
-                                responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,new JSONObject(payload).getString("showAsDialog"));
+                                responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,payloadObj.getString("showAsDialog"));
+                                responseJson.put(CXConstants.JSONResponseFields.THEME_COLOR,payloadObj.getString("themeColor"));
                                 CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
                                 if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
                                     AppCompatActivity activity = (AppCompatActivity) contextRef.get();

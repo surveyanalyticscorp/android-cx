@@ -31,6 +31,7 @@ public class CXConstants {
         public static final String RESPONSE = "response";
         public static final String SURVEY_URL = "SurveyURL";
         public static final String IS_DIALOG="isDialog";
+        public static final String THEME_COLOR="themeColor";
         public static final String ID = "id";
         public static final String MESSAGE="message";
         public static final String EMPTY="empty";

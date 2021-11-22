@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class CXInteraction implements Serializable{
     public String url="";
     public boolean isDialog;
+    public String themeColor;
 
     public static CXInteraction fromJSON(JSONObject jsonObject) {
         CXInteraction cxInteraction = new CXInteraction();
@@ -18,6 +19,10 @@ public class CXInteraction implements Serializable{
             }
             if (jsonObject.has(CXConstants.JSONResponseFields.IS_DIALOG)) {
                 cxInteraction.isDialog = jsonObject.getBoolean(CXConstants.JSONResponseFields.IS_DIALOG);
+            }
+
+            if(jsonObject.has(CXConstants.JSONResponseFields.THEME_COLOR)){
+                cxInteraction.themeColor = jsonObject.getString(CXConstants.JSONResponseFields.THEME_COLOR);
             }
         }
         catch (Exception e){
@@ -31,6 +36,7 @@ public class CXInteraction implements Serializable{
         try {
             jsonObject.put(CXConstants.JSONResponseFields.SURVEY_URL, cxInteraction.url);
             jsonObject.put(CXConstants.JSONResponseFields.IS_DIALOG, cxInteraction.isDialog);
+            jsonObject.put(CXConstants.JSONResponseFields.THEME_COLOR, cxInteraction.themeColor);
         }
         catch (Exception e){
             e.printStackTrace();

@@ -1,5 +1,7 @@
 package com.questionpro.cxlib.model;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class TouchPoint implements Serializable{
@@ -12,17 +14,19 @@ public class TouchPoint implements Serializable{
     private final String mobile;
     private final String segmentCode;
     private final String transactionDate;
+    private final String themeColor;
 
-    public TouchPoint(TouchPointInit touchPointBuilder) {
-        this.touchPointID = touchPointBuilder.touchPointID;
-        this.showAsDialog = touchPointBuilder.showAsDialog;
-        this.firstName = touchPointBuilder.firstName;
-        this.lastName = touchPointBuilder.lastName;
-        this.email = touchPointBuilder.email;
-        this.transactionLanguage = touchPointBuilder.transactionLanguage;
-        this.mobile = touchPointBuilder.mobile;
-        this.segmentCode = touchPointBuilder.segmentCode;
-        this.transactionDate = touchPointBuilder.transactionDate;
+    public TouchPoint(Builder builder) {
+        this.touchPointID = builder.touchPointID;
+        this.showAsDialog = builder.showAsDialog;
+        this.firstName = builder.firstName;
+        this.lastName = builder.lastName;
+        this.email = builder.email;
+        this.transactionLanguage = builder.transactionLanguage;
+        this.mobile = builder.mobile;
+        this.segmentCode = builder.segmentCode;
+        this.transactionDate = builder.transactionDate;
+        this.themeColor = builder.themeColor;
     }
 
     public long getTouchPointID() {
@@ -61,6 +65,11 @@ public class TouchPoint implements Serializable{
         return transactionDate;
     }
 
+    public String getThemeColor(){
+        return themeColor;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return "User: "+this.touchPointID+", "+this.showAsDialog+",  "+this.firstName+", "+this.lastName+", "
@@ -71,7 +80,7 @@ public class TouchPoint implements Serializable{
     /**
      * TouchPoint Builder class
      */
-    public static class TouchPointInit{
+    public static class Builder{
         private final long touchPointID;
         private final String email;
         private  boolean showAsDialog;
@@ -81,43 +90,49 @@ public class TouchPoint implements Serializable{
         private String transactionDate;
         private String mobile;
         private String segmentCode;
+        private String themeColor = "";
 
-        public TouchPointInit(long surveyId, String emailId){
+        public Builder(long surveyId, String emailId){
             this.touchPointID = surveyId;
             this.email = emailId;
         }
 
-        public TouchPointInit firstName(String fName){
+        public Builder firstName(String fName){
             this.firstName = fName;
             return this;
         }
 
-        public TouchPointInit lastName(String lName){
+        public Builder lastName(String lName){
             this.lastName = lName;
             return this;
         }
 
-        public TouchPointInit showAsDialog(boolean showAsDialog){
+        public Builder showAsDialog(boolean showAsDialog){
             this.showAsDialog = showAsDialog;
             return  this;
         }
 
-        public TouchPointInit transactionLanguage(String transactionLanguage){
+        public Builder transactionLanguage(String transactionLanguage){
             this.transactionLanguage = transactionLanguage;
             return this;
         }
-         public TouchPointInit transactionDate(String transactionDate){
+         public Builder transactionDate(String transactionDate){
             this.transactionDate = transactionDate;
             return this;
          }
 
-         public TouchPointInit mobile(String mobile){
+         public Builder mobile(String mobile){
             this.mobile = mobile;
             return this;
          }
 
-         public TouchPointInit segmentCode(String segmentCode){
+         public Builder segmentCode(String segmentCode){
             this.segmentCode = segmentCode;
+            return this;
+         }
+
+         public Builder themeColor (String themeColor){
+            this.themeColor = themeColor;
             return this;
          }
 

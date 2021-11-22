@@ -2,6 +2,7 @@ package com.questionpro.cxlib.interaction;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -38,10 +39,17 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         url = cxInteraction.url;
         if(cxInteraction.isDialog) {
             setContentView(R.layout.cx_webview_dialog);
+            RelativeLayout container = (RelativeLayout) findViewById(R.id.topBar);
+            if(!cxInteraction.themeColor.isEmpty()) {
+                container.setBackgroundColor(Color.parseColor(cxInteraction.themeColor));
+            }
         } else {
             setContentView(R.layout.cx_webview_fullscreen);
             try {
                 RelativeLayout container = (RelativeLayout) findViewById(R.id.topBar);
+                if(!cxInteraction.themeColor.isEmpty()) {
+                    container.setBackgroundColor(Color.parseColor(cxInteraction.themeColor));
+                }
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                         CXUtils.convertDpToPixel(this, 40));
                 container.setLayoutParams(params);

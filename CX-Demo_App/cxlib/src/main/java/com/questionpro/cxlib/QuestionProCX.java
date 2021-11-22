@@ -123,11 +123,11 @@ public class QuestionProCX {
     public static synchronized  void launchFeedbackScreen(AppCompatActivity activity, long touchPointID){
         try {
             progressDialog.cancel();
-            /*Intent intent = new Intent(activity, InteractionActivity.class);
+            Intent intent = new Intent(activity, InteractionActivity.class);
             intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
-            activity.startActivity(intent);*/
+            activity.startActivity(intent);
 
-            Bundle args=new Bundle();
+           /* Bundle args=new Bundle();
             args.putSerializable(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
             activity.getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
@@ -135,7 +135,7 @@ public class QuestionProCX {
                     .addToBackStack(null)
                     .commit();
 
-            CXGlobalInfo.clearInteraction(activity, touchPointID);
+            CXGlobalInfo.clearInteraction(activity, touchPointID);*/
         } catch (Exception e) {
             e.printStackTrace();
         }
