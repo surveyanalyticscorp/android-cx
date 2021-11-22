@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
@@ -102,5 +104,16 @@ public class CXUtils {
     public static void unlockOrientation(Activity activity)
     {
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
+
+    public static int convertDpToPixel(Activity activity, int dp){
+        Resources r = activity.getResources();
+        int px = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp,
+                r.getDisplayMetrics()
+        );
+        return px;
     }
 }

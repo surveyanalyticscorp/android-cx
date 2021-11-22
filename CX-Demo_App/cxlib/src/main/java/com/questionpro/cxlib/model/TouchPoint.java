@@ -4,18 +4,18 @@ import java.io.Serializable;
 
 public class TouchPoint implements Serializable{
     private final long touchPointID;
-    private final boolean showPrompt;
+    private final String transactionLanguage;
+    private final boolean showAsDialog;
     private final String firstName;
     private final String lastName;
     private final String email;
-    private final String transactionLanguage;
     private final String mobile;
     private final String segmentCode;
     private final String transactionDate;
 
-    public TouchPoint(TouchPointBuilder touchPointBuilder) {
+    public TouchPoint(TouchPointInit touchPointBuilder) {
         this.touchPointID = touchPointBuilder.touchPointID;
-        this.showPrompt = touchPointBuilder.showPrompt;
+        this.showAsDialog = touchPointBuilder.showAsDialog;
         this.firstName = touchPointBuilder.firstName;
         this.lastName = touchPointBuilder.lastName;
         this.email = touchPointBuilder.email;
@@ -29,8 +29,8 @@ public class TouchPoint implements Serializable{
         return touchPointID;
     }
 
-    public boolean isShowPrompt() {
-        return showPrompt;
+    public boolean showAsDialog() {
+        return showAsDialog;
     }
 
     public String getFirstName() {
@@ -63,15 +63,18 @@ public class TouchPoint implements Serializable{
 
     @Override
     public String toString() {
-        return "User: "+this.touchPointID+", "+this.showPrompt+",  "+this.firstName+", "+this.lastName+", "
+        return "User: "+this.touchPointID+", "+this.showAsDialog+",  "+this.firstName+", "+this.lastName+", "
                 +this.email+", "+this.transactionLanguage+", "+this.transactionDate
                 +", "+this.mobile+", "+this.segmentCode;
     }
 
-    public static class TouchPointBuilder{
+    /**
+     * TouchPoint Builder class
+     */
+    public static class TouchPointInit{
         private final long touchPointID;
         private final String email;
-        private  boolean showPrompt;
+        private  boolean showAsDialog;
         private String firstName;
         private String lastName;
         private String transactionLanguage;
@@ -79,41 +82,41 @@ public class TouchPoint implements Serializable{
         private String mobile;
         private String segmentCode;
 
-        public TouchPointBuilder(long surveyId, String emailId){
+        public TouchPointInit(long surveyId, String emailId){
             this.touchPointID = surveyId;
             this.email = emailId;
         }
 
-        public TouchPointBuilder firstName(String fName){
+        public TouchPointInit firstName(String fName){
             this.firstName = fName;
             return this;
         }
 
-        public TouchPointBuilder lastName(String lName){
+        public TouchPointInit lastName(String lName){
             this.lastName = lName;
             return this;
         }
 
-        public TouchPointBuilder showPrompt(boolean email){
-            this.showPrompt = showPrompt;
+        public TouchPointInit showAsDialog(boolean showAsDialog){
+            this.showAsDialog = showAsDialog;
             return  this;
         }
 
-        public TouchPointBuilder transactionLanguage(String transactionLanguage){
+        public TouchPointInit transactionLanguage(String transactionLanguage){
             this.transactionLanguage = transactionLanguage;
             return this;
         }
-         public TouchPointBuilder transactionDate(String transactionDate){
+         public TouchPointInit transactionDate(String transactionDate){
             this.transactionDate = transactionDate;
             return this;
          }
 
-         public TouchPointBuilder mobile(String mobile){
+         public TouchPointInit mobile(String mobile){
             this.mobile = mobile;
             return this;
          }
 
-         public TouchPointBuilder segmentCode(String segmentCode){
+         public TouchPointInit segmentCode(String segmentCode){
             this.segmentCode = segmentCode;
             return this;
          }

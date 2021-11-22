@@ -81,6 +81,7 @@ public class CXPayloadWorker {
                             JSONObject jsonObject = new JSONObject(response.getContent());
                             if(jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)){
                                 JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
+                                responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,new JSONObject(payload).getString("showAsDialog"));
                                 CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
                                 if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
                                     AppCompatActivity activity = (AppCompatActivity) contextRef.get();

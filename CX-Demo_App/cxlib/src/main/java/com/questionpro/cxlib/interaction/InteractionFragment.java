@@ -62,8 +62,8 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
         try {
             RelativeLayout container = (RelativeLayout) view.findViewById(R.id.topBar);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    convertDpToPixel(40));
-            params.setMargins(0, convertDpToPixel(30), 0, 0);
+                    CXUtils.convertDpToPixel(getActivity(), 40));
+            params.setMargins(0, CXUtils.convertDpToPixel(getActivity(), 30), 0, 0);
             container.setLayoutParams(params);
         }catch (Exception e){e.printStackTrace();}
 
@@ -95,16 +95,6 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
                 getParentFragmentManager().popBackStack();
             }
         });
-    }
-
-    private int convertDpToPixel(int dp){
-        Resources r = getActivity().getResources();
-        int px = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                dp,
-                r.getDisplayMetrics()
-        );
-        return px;
     }
 
     @Override

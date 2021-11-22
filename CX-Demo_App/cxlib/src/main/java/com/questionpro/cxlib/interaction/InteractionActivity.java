@@ -10,6 +10,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -39,6 +40,12 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             setContentView(R.layout.cx_webview_dialog);
         } else {
             setContentView(R.layout.cx_webview_fullscreen);
+            try {
+                RelativeLayout container = (RelativeLayout) findViewById(R.id.topBar);
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                        CXUtils.convertDpToPixel(this, 40));
+                container.setLayoutParams(params);
+            }catch (Exception e){e.printStackTrace();}
         }
         ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
         closeButton.setOnClickListener(new View.OnClickListener() {

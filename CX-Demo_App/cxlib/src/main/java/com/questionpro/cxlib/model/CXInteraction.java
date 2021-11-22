@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class CXInteraction implements Serializable{
     public String url="";
-    public boolean isDialog = true;
+    public boolean isDialog;
 
     public static CXInteraction fromJSON(JSONObject jsonObject) {
         CXInteraction cxInteraction = new CXInteraction();
@@ -17,7 +17,7 @@ public class CXInteraction implements Serializable{
                 cxInteraction.url = jsonObject.getString(CXConstants.JSONResponseFields.SURVEY_URL);
             }
             if (jsonObject.has(CXConstants.JSONResponseFields.IS_DIALOG)) {
-                cxInteraction.isDialog = true;//jsonObject.getBoolean(CXConstants.JSONResponseFields.IS_DIALOG);
+                cxInteraction.isDialog = jsonObject.getBoolean(CXConstants.JSONResponseFields.IS_DIALOG);
             }
         }
         catch (Exception e){

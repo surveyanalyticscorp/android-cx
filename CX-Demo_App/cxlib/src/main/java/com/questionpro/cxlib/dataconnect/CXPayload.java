@@ -32,6 +32,7 @@ public class CXPayload {
             jsonObject.put("transactionDate", date);
             jsonObject.put("email", touchPoint.getEmail());
             jsonObject.put("surveyID", touchPoint.getTouchPointID());
+            jsonObject.put("showAsDialog",touchPoint.showAsDialog());
             Log.d("Datta", "Payload json: "+jsonObject.toString());
 
             return jsonObject;
