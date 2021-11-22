@@ -84,7 +84,7 @@ public class QuestionProCX {
     public static synchronized void engageTouchPoint(AppCompatActivity activity, TouchPoint touchPoint){
         init(activity);
         if(!CXGlobalInfo.isInteractionPending(activity,touchPoint)){
-            CXGlobalInfo.setPayLoad(activity, new CXPayload(touchPoint.getTouchPointID()));
+            CXGlobalInfo.setPayLoad(activity, touchPoint);
             CXPayloadWorker.appWentToForeground(activity);
         } else{
             launchFeedbackScreen(activity,touchPoint.getTouchPointID());
@@ -94,7 +94,7 @@ public class QuestionProCX {
     public static synchronized void launchFeedbackSurvey(AppCompatActivity activity, TouchPoint touchPoint){
         init(activity);
         if(!CXGlobalInfo.isInteractionPending(activity,touchPoint)){
-            CXGlobalInfo.setPayLoad(activity, new CXPayload(touchPoint.getTouchPointID()));
+            CXGlobalInfo.setPayLoad(activity, touchPoint);
             CXPayloadWorker.appWentToForeground(activity);
         } else{
             launchFeedbackScreen(activity,touchPoint.getTouchPointID());

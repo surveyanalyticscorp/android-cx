@@ -3,6 +3,7 @@ package com.questionpro.cxlib.init;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
@@ -33,7 +34,6 @@ public class CXGlobalInfo {
     }
 
 
-
     public static boolean isInteractionPending(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return  prefs.contains(activity.getLocalClassName());
@@ -43,13 +43,10 @@ public class CXGlobalInfo {
     public static boolean isInteractionPending(Activity activity,TouchPoint touchPoint){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return  prefs.contains(touchPoint.getTouchPointID()+"");
-
-
     }
 
     public static void clearInteraction(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
         SharedPreferences.Editor ed = prefs.edit();
         ed.remove(activity.getLocalClassName()).commit();
     }
@@ -66,10 +63,10 @@ public class CXGlobalInfo {
         SharedPreferences.Editor ed = prefs.edit();
         ed.remove(CXConstants.PREF_KEY_PAYLOAD).commit();
     }
-    public static void setPayLoad(Activity activity, CXPayload cxPayload){
+    public static void setPayLoad(Activity activity, TouchPoint touchPoint){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(CXConstants.PREF_KEY_PAYLOAD, cxPayload.getPayloadJSON().toString());
+        ed.putString(CXConstants.PREF_KEY_PAYLOAD, CXPayload.getPayloadJSON(touchPoint).toString());
         ed.commit();
     }
 
