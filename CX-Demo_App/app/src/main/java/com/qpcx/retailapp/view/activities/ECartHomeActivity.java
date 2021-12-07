@@ -1,6 +1,7 @@
 package com.qpcx.retailapp.view.activities;
 
 import android.app.Dialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -23,6 +24,8 @@ import com.qpcx.retailapp.util.TinyDB;
 import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
+import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.model.TouchPoint;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.math.BigDecimal;
@@ -185,6 +188,19 @@ public class ECartHomeActivity extends AppCompatActivity {
 					}
 				});
 
+		initialiseQpSdk();
+	}
+
+	private void initialiseQpSdk(){
+		TouchPoint touchPoint = new TouchPoint.Builder("datta.kunde@questionpro.com")
+				.firstName("Datta")
+				.lastName("Kunde")
+				.segmentCode("S1")
+				.showAsDialog(true)
+				.themeColor("#0000FF")
+				.transactionLanguage("English")
+				.build();
+		QuestionProCX.init(ECartHomeActivity.this, touchPoint);
 	}
 
 	public AVLoadingIndicatorView getProgressBar() {

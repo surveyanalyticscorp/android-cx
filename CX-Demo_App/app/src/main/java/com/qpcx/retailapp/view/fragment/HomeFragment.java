@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.core.view.GravityCompat;
 import androidx.palette.graphics.Palette;
@@ -51,25 +53,30 @@ public class HomeFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+
+		/*TouchPoint touchPoint = new TouchPoint.Builder(8092755,"datta.kunde@questionpro.com")
+				.firstName("QuestionPro")
+				.lastName("Qp")
+				.segmentCode("S1")
+				.showAsDialog(true)
+				.build();
+		QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);*/
+
 		View view = inflater.inflate(R.layout.frag_product_category, container, false);
-
-		view.findViewById(R.id.search_item).setOnClickListener(
+		view.findViewById(R.id.launch_survey).setOnClickListener(
 				new OnClickListener() {
-
 					@Override
 					public void onClick(View v) {
-
-						/*Utils.switchFragmentWithAnimation(R.id.frag_container,
-								new SearchProductFragment(),
-								((ECartHomeActivity) getActivity()), null,
-								AnimationType.SLIDE_UP);*/
-						/** TODO Touch point ID is from Nehal's account, Need to change */
-						QuestionProCX.engageTouchPoint(getActivity(), new TouchPoint(7657393));
-
+						QuestionProCX.launchFeedbackSurvey(8092755);
 					}
 				});
 
-
+		view.findViewById(R.id.launch_survey).setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				QuestionProCX.launchFeedbackSurvey(9320127);
+			}
+		});
 
 		final Toolbar toolbar = (Toolbar) view.findViewById(R.id.anim_toolbar);
 		((ECartHomeActivity) getActivity()).setSupportActionBar(toolbar);

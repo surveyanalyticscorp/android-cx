@@ -59,4 +59,14 @@
         app:layout_anchor="@+id/scrollableview"
         app:layout_anchorGravity="bottom|right|end" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/launch_survey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:clickable="true"
+        android:src="@drawable/ic_action_feedback"
+        app:layout_anchor="@+id/scrollableview"
+        app:layout_anchorGravity="bottom|left|start" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
