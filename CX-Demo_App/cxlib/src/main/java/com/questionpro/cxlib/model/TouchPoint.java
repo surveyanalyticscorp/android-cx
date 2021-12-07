@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class TouchPoint implements Serializable{
-    private final long touchPointID;
+    //private final long touchPointID;
     private final String transactionLanguage;
     private final boolean showAsDialog;
     private final String firstName;
@@ -17,7 +17,7 @@ public class TouchPoint implements Serializable{
     private final String themeColor;
 
     public TouchPoint(Builder builder) {
-        this.touchPointID = builder.touchPointID;
+        //this.touchPointID = builder.touchPointID;
         this.showAsDialog = builder.showAsDialog;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
@@ -29,9 +29,9 @@ public class TouchPoint implements Serializable{
         this.themeColor = builder.themeColor;
     }
 
-    public long getTouchPointID() {
+    /*public long getTouchPointID() {
         return touchPointID;
-    }
+    }*/
 
     public boolean showAsDialog() {
         return showAsDialog;
@@ -72,7 +72,7 @@ public class TouchPoint implements Serializable{
     @NonNull
     @Override
     public String toString() {
-        return "User: "+this.touchPointID+", "+this.showAsDialog+",  "+this.firstName+", "+this.lastName+", "
+        return "User: "/*+this.touchPointID+",*/ +this.showAsDialog+",  "+this.firstName+", "+this.lastName+", "
                 +this.email+", "+this.transactionLanguage+", "+this.transactionDate
                 +", "+this.mobile+", "+this.segmentCode;
     }
@@ -81,7 +81,7 @@ public class TouchPoint implements Serializable{
      * TouchPoint Builder class
      */
     public static class Builder{
-        private final long touchPointID;
+        //private final long touchPointID;
         private final String email;
         private  boolean showAsDialog;
         private String firstName;
@@ -92,8 +92,8 @@ public class TouchPoint implements Serializable{
         private String segmentCode;
         private String themeColor = "";
 
-        public Builder(long surveyId, String emailId){
-            this.touchPointID = surveyId;
+        public Builder(/*long surveyId,*/ String emailId){
+            //this.touchPointID = surveyId;
             this.email = emailId;
         }
 

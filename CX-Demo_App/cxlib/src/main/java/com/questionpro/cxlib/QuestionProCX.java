@@ -21,6 +21,8 @@ import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interaction.InteractionActivity;
 import com.questionpro.cxlib.util.CXUtils;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by sachinsable on 14/04/16.
  */
@@ -28,6 +30,8 @@ public class QuestionProCX {
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
     private static ProgressDialog progressDialog;
+
+    private static WeakReference<AppCompatActivity> mActivity;
 
     private static void init(Activity activity){
         final Context appContext = activity.getApplicationContext();
@@ -72,33 +76,38 @@ public class QuestionProCX {
 
 
     public static void onStart(Activity activity){
-        init(activity);
+        //init(activity);
         ActivityLifecycleManager.activityStarted(activity);
         if (runningActivities == 0) {
             CXPayloadWorker.appWentToForeground(activity);
-
         }
         runningActivities++;
     }
 
-    public static synchronized void engageTouchPoint(AppCompatActivity activity, TouchPoint touchPoint){
+    /*public static synchronized void engageTouchPoint(AppCompatActivity activity, TouchPoint touchPoint){
         init(activity);
-        if(!CXGlobalInfo.isInteractionPending(activity,touchPoint)){
+        if(!CXGlobalInfo.isInteractionPending(activity,touchPoint.getTouchPointID())){
             CXGlobalInfo.setPayLoad(activity, touchPoint);
             CXPayloadWorker.appWentToForeground(activity);
         } else{
             launchFeedbackScreen(activity,touchPoint.getTouchPointID());
+        }
+    }*/
+
+    public static synchronized void launchFeedbackSurvey(long surveyId){
+        init(mActivity.get());
+        if(!CXGlobalInfo.isInteractionPending(mActivity.get(),surveyId)){
+            //CXGlobalInfo.setPayLoad(activity, touchPoint);
+            CXGlobalInfo.updateCXPayloadWithSurveyId(mActivity.get(), surveyId);
+            CXPayloadWorker.appWentToForeground(mActivity.get());
+        } else{
+            launchFeedbackScreen(mActivity.get(),surveyId);
         }
     }
 
-    public static synchronized void launchFeedbackSurvey(AppCompatActivity activity, TouchPoint touchPoint){
-        init(activity);
-        if(!CXGlobalInfo.isInteractionPending(activity,touchPoint)){
-            CXGlobalInfo.setPayLoad(activity, touchPoint);
-            CXPayloadWorker.appWentToForeground(activity);
-        } else{
-            launchFeedbackScreen(activity,touchPoint.getTouchPointID());
-        }
+    public static synchronized void init(AppCompatActivity activity, TouchPoint touchPoint){
+        mActivity = new WeakReference<>(activity);
+        CXGlobalInfo.setPayLoad(activity, touchPoint);
     }
 
     public static void onStop(Activity activity){

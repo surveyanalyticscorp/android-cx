@@ -40,36 +40,59 @@ public class CXGlobalInfo {
 
 
     }
-    public static boolean isInteractionPending(Activity activity,TouchPoint touchPoint){
+    public static boolean isInteractionPending(Activity activity,long touchPointID){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return  prefs.contains(touchPoint.getTouchPointID()+"");
+        return  prefs.contains(touchPointID+"");
     }
 
     public static void clearInteraction(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(activity.getLocalClassName()).commit();
+        ed.remove(activity.getLocalClassName()).apply();
     }
 
     public static void clearInteraction(Activity activity, long touchPointID){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(touchPointID+"").commit();
+        ed.remove(touchPointID+"").apply();
     }
     public static void clearPayload(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
 
         SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(CXConstants.PREF_KEY_PAYLOAD).commit();
+        ed.remove(CXConstants.PREF_KEY_PAYLOAD).apply();
     }
+
+    /**
+     * This function is used to save the payload in preferences at the time of initialization.
+     */
     public static void setPayLoad(Activity activity, TouchPoint touchPoint){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(CXConstants.PREF_KEY_PAYLOAD, CXPayload.getPayloadJSON(touchPoint).toString());
-        ed.commit();
+        ed.apply();
     }
 
+    /**
+     * At the time of initialization we don't have surveyId in payload. add the surveyId
+     * in payload and update preferences.
+     */
+    public static void updateCXPayloadWithSurveyId(Activity activity, long surveyId){
+        try {
+            JSONObject payloadObj = new JSONObject(getCXPayload(activity));
+            payloadObj.put("surveyID", surveyId);
+
+            SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor ed = prefs.edit();
+            ed.putString(CXConstants.PREF_KEY_PAYLOAD, payloadObj.toString());
+            ed.apply();
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    /**
+     * Get the payload in the form string at the time of fetching survey url.
+     */
     public static String getCXPayload(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return prefs.getString(CXConstants.PREF_KEY_PAYLOAD,"");
@@ -79,13 +102,13 @@ public class CXGlobalInfo {
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(activity.getLocalClassName(), url);
-        ed.commit();
+        ed.apply();
     }
     public static void storeInteraction(Activity activity, long touchPointID, CXInteraction cxInteraction){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(touchPointID+"", CXInteraction.toJSON(cxInteraction).toString());
-        ed.commit();
+        ed.apply();
     }
     public static String getInteraction(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
