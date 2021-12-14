@@ -82,7 +82,7 @@ public class TouchPoint implements Serializable{
      */
     public static class Builder{
         //private final long touchPointID;
-        private final String email;
+        private String email;
         private  boolean showAsDialog;
         private String firstName;
         private String lastName;
@@ -92,11 +92,15 @@ public class TouchPoint implements Serializable{
         private String segmentCode;
         private String themeColor = "";
 
-        public Builder(/*long surveyId,*/ String emailId){
+        public Builder(/*long surveyId, String emailId*/){
             //this.touchPointID = surveyId;
-            this.email = emailId;
+            //this.email = emailId;
         }
 
+        public Builder email(String email){
+            this.email = email;
+            return this;
+        }
         public Builder firstName(String fName){
             this.firstName = fName;
             return this;

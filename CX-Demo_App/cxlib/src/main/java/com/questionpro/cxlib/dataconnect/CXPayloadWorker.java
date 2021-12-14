@@ -85,6 +85,7 @@ public class CXPayloadWorker {
                                 responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,payloadObj.getString("showAsDialog"));
                                 responseJson.put(CXConstants.JSONResponseFields.THEME_COLOR,payloadObj.getString("themeColor"));
                                 CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
+
                                 if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
                                     AppCompatActivity activity = (AppCompatActivity) contextRef.get();
                                     long touchPointID = CXGlobalInfo.getTouchPointIDFromPayload(payload);

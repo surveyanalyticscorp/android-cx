@@ -30,7 +30,10 @@ public class CXPayload {
             jsonObject.put("segmentCode", touchPoint.getSegmentCode());
             String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
             jsonObject.put("transactionDate", date);
-            jsonObject.put("email", touchPoint.getEmail());
+            if(null == touchPoint.getEmail()){
+                jsonObject.put("email", CXGlobalInfo.UUID+"@questionpro.com");
+            }else
+                jsonObject.put("email", touchPoint.getEmail());
             //jsonObject.put("surveyID", touchPoint.getTouchPointID());
             jsonObject.put("showAsDialog",touchPoint.showAsDialog());
             jsonObject.put("themeColor", touchPoint.getThemeColor());

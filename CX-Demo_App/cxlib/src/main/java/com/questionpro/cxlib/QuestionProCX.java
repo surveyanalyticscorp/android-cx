@@ -24,26 +24,20 @@ import com.questionpro.cxlib.util.CXUtils;
 import java.lang.ref.WeakReference;
 
 /**
- * Created by sachinsable on 14/04/16.
+ * Created by Dattakunde on 14/04/16.
  */
 public class QuestionProCX {
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
     private static ProgressDialog progressDialog;
 
-    private static WeakReference<AppCompatActivity> mActivity;
+    private static WeakReference<Activity> mActivity;
 
     private static void init(Activity activity){
+        mActivity = new WeakReference<>(activity);
         final Context appContext = activity.getApplicationContext();
-
-        progressDialog = new ProgressDialog(activity);
-        progressDialog.setMessage("loading...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
         if (!CXGlobalInfo.initialized) {
             SharedPreferences prefs = appContext.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
             // First, Get the api key, and figure out if app is debuggable.
             String apiKey = prefs.getString(CXConstants.PREF_KEY_API_KEY, null);
 
@@ -74,6 +68,13 @@ public class QuestionProCX {
         }
     }
 
+    private static void showProgress(){
+        progressDialog = new ProgressDialog(mActivity.get());
+        progressDialog.setMessage("loading...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+    }
 
     public static void onStart(Activity activity){
         //init(activity);
@@ -94,8 +95,13 @@ public class QuestionProCX {
         }
     }*/
 
+    public static synchronized void init(Activity activity, TouchPoint touchPoint){
+        init(activity);
+        CXGlobalInfo.setPayLoad(activity, touchPoint);
+    }
+
     public static synchronized void launchFeedbackSurvey(long surveyId){
-        init(mActivity.get());
+        showProgress();
         if(!CXGlobalInfo.isInteractionPending(mActivity.get(),surveyId)){
             //CXGlobalInfo.setPayLoad(activity, touchPoint);
             CXGlobalInfo.updateCXPayloadWithSurveyId(mActivity.get(), surveyId);
@@ -103,11 +109,6 @@ public class QuestionProCX {
         } else{
             launchFeedbackScreen(mActivity.get(),surveyId);
         }
-    }
-
-    public static synchronized void init(AppCompatActivity activity, TouchPoint touchPoint){
-        mActivity = new WeakReference<>(activity);
-        CXGlobalInfo.setPayLoad(activity, touchPoint);
     }
 
     public static void onStop(Activity activity){
@@ -129,7 +130,7 @@ public class QuestionProCX {
 
         }
     }
-    public static synchronized  void launchFeedbackScreen(AppCompatActivity activity, long touchPointID){
+    public static synchronized  void launchFeedbackScreen(Activity activity, long touchPointID){
         try {
             progressDialog.cancel();
             Intent intent = new Intent(activity, InteractionActivity.class);

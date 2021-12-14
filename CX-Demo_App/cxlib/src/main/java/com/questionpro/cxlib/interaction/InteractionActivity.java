@@ -95,7 +95,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         if(progressBar != null){
             progressBar.setProgress(progressValue);
             if(progressValue == 100){
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
         }
     }
