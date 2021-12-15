@@ -63,7 +63,7 @@ public class HomeFragment extends Fragment {
 		QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);*/
 
 		View view = inflater.inflate(R.layout.frag_product_category, container, false);
-		view.findViewById(R.id.launch_survey).setOnClickListener(
+		view.findViewById(R.id.search_item).setOnClickListener(
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {

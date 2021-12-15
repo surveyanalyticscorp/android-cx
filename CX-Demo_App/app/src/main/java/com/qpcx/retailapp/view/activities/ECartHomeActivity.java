@@ -1,5 +1,6 @@
 package com.qpcx.retailapp.view.activities;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -192,13 +193,14 @@ public class ECartHomeActivity extends AppCompatActivity {
 	}
 
 	private void initialiseQpSdk(){
-		TouchPoint touchPoint = new TouchPoint.Builder("datta.kunde@questionpro.com")
-				.firstName("Datta")
-				.lastName("Kunde")
+		TouchPoint touchPoint = new TouchPoint.Builder()
+				.email("datta.kunde@questionpro.com")
+				//.firstName("Datta")
+				/*.lastName("Kunde")
 				.segmentCode("S1")
-				.showAsDialog(true)
+				.showAsDialog(false)
 				.themeColor("#0000FF")
-				.transactionLanguage("English")
+				.transactionLanguage("English")*/
 				.build();
 		QuestionProCX.init(ECartHomeActivity.this, touchPoint);
 	}
