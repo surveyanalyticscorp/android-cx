@@ -5,7 +5,7 @@
 ### Including CX Lib into your project
 
 #### Integration From Maven Repository
-**Our SDK is available from the central Maven repo. Add it in your root build.gradle.**
+**Our SDK is available from the central Maven repo. Add it in your root build.gradle.** 
 	allprojects {
 		repositories {
 			...
@@ -13,7 +13,7 @@
 		}
 	}
 
-**Add the dependancy of the latest version of QuestionPro CX in your app's build.gradle.**
+**Add the dependancy of the latest version of QuestionPro CX in your app's build.gradle.** 
 	dependencies {
 		...
 		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.7'
