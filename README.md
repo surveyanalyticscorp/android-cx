@@ -1,19 +1,23 @@
 # android-cx
-	Minimum SDK Version: 14
-	Compile SDK Version: 29 (But you should generally compile with the latest version)
+	Minimum SDK Version: 16
+	Compile SDK Version: 30 (But you should generally compile with the latest version)
 
 ### Including CX Lib into your project
 
 #### Integration From Maven Repository
-	Our SDK is available from the central Maven repo.
+	Our SDK is available from the central Maven repo. Add it in your root build.gradle.
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
 
 	Using Gradle
-	Add a reference to the latest version of QuestionPro CX in your app's build.gradle. 
-
-	Example
+	Add the dependancy of the latest version of QuestionPro CX in your app's build.gradle. 
 	dependencies {
-	 	// The QuestionPro CX SDK
-		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.6'
+		...
+		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.7'
 	}
 
 
