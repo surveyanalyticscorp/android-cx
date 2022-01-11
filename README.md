@@ -5,7 +5,7 @@
 ### Including CX Lib into your project
 
 #### Integration From Maven Repository
-	Our SDK is available from the central Maven repo. Add it in your root build.gradle.
+**Our SDK is available from the central Maven repo. Add it in your root build.gradle.**
 	allprojects {
 		repositories {
 			...
@@ -13,8 +13,7 @@
 		}
 	}
 
-	Using Gradle
-	Add the dependancy of the latest version of QuestionPro CX in your app's build.gradle. 
+**Add the dependancy of the latest version of QuestionPro CX in your app's build.gradle.**
 	dependencies {
 		...
 		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.7'
@@ -24,10 +23,8 @@
 #### Modify your manifest: 
 
 	Add following permissions:
-	```JavaScript
   	<uses-permission android:name="android.permission.INTERNET"/>
   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-	```
 
 	Make sure to support high resolution screens so In App feedback UI looks great. 
   	<supports-screens android:largeScreens="true" 
