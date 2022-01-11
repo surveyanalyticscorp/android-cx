@@ -33,7 +33,7 @@
   		android:smallScreens="true"
 		android:anyDensity="true"/>
 
-	### Following is required:
+### Following is required:
 	Add the api key obtained from CX portal:
 		<meta-data android:name="cx_manifest_api_key"
    			android:value="<your api key here>"/>
