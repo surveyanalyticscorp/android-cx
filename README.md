@@ -24,8 +24,10 @@
 #### Modify your manifest: 
 
 	Add following permissions:
+	```JavaScript
   	<uses-permission android:name="android.permission.INTERNET"/>
   	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+	```
 
 	Make sure to support high resolution screens so In App feedback UI looks great. 
   	<supports-screens android:largeScreens="true" 
