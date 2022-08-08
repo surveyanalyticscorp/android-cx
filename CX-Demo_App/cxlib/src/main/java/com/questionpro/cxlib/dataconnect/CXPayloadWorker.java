@@ -93,6 +93,9 @@ public class CXPayloadWorker {
                                     if(!activity.isFinishing()){
                                         QuestionProCX.launchFeedbackScreen(activity, touchPointID);
                                     }
+                                }else{
+                                    QuestionProCX questionProCX = new QuestionProCX();
+                                    questionProCX.onError(responseJson);
                                 }
                             }
                             Log.d(LOG_TAG,"Payload submission successful" + response.getContent());

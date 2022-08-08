@@ -9,6 +9,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +21,9 @@ import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interaction.InteractionActivity;
 import com.questionpro.cxlib.util.CXUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
@@ -33,6 +37,9 @@ public class QuestionProCX {
 
     private static WeakReference<Activity> mActivity;
 
+    public QuestionProCX(){
+    }
+
     private static void init(Activity activity){
         mActivity = new WeakReference<>(activity);
         final Context appContext = activity.getApplicationContext();
@@ -45,13 +52,16 @@ public class QuestionProCX {
                 ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
                 Bundle metaData = ai.metaData;
                 if (metaData != null) {
-                    if (apiKey == null) {
+                    /*if (apiKey == null) {
                         apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-                        Log.d(LOG_TAG,"Saving API key for the first time: %s"+apiKey);
+                        Log.d(LOG_TAG,"Saving API key for the first time: "+apiKey);
                         prefs.edit().putString(CXConstants.PREF_KEY_API_KEY, apiKey).apply();
                     } else {
-                        Log.d(LOG_TAG,"Using cached API Key: %s"+apiKey);
-                    }
+                        Log.d(LOG_TAG,"Using cached API Key: "+apiKey);
+                    }*/
+                    apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
+                    Log.d(LOG_TAG,"API key: "+apiKey);
+                    prefs.edit().putString(CXConstants.PREF_KEY_API_KEY, apiKey).apply();
                 }
             } catch (Exception e) {
                 Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
@@ -73,7 +83,21 @@ public class QuestionProCX {
         progressDialog.setMessage("loading...");
         progressDialog.setCancelable(false);
         progressDialog.show();
+    }
 
+    public void onError(JSONObject response) throws JSONException {
+        if(null != progressDialog && progressDialog.isShowing()){
+            progressDialog.cancel();
+        }
+        /*final String errorMessage = "Error: "+response.getJSONObject("error").getString("message");
+        final Activity activity = mActivity.get();
+        if(activity != null){
+            activity.runOnUiThread(new Runnable() {
+                public void run() {
+                    Toast.makeText(activity, "QuestionPro: "+errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }*/
     }
 
     public static void onStart(Activity activity){
