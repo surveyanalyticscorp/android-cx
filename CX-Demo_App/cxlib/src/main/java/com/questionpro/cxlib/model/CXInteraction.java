@@ -1,5 +1,7 @@
 package com.questionpro.cxlib.model;
 
+import android.util.Log;
+
 import com.questionpro.cxlib.constants.CXConstants;
 
 import org.json.JSONObject;
@@ -14,8 +16,11 @@ public class CXInteraction implements Serializable{
     public static CXInteraction fromJSON(JSONObject jsonObject) {
         CXInteraction cxInteraction = new CXInteraction();
         try {
-            if (jsonObject.has(CXConstants.JSONResponseFields.SURVEY_URL)) {
-                cxInteraction.url = jsonObject.getString(CXConstants.JSONResponseFields.SURVEY_URL);
+            if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
+                cxInteraction.url = jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL);
+            }
+            if(jsonObject.has(CXConstants.JSONResponseFields.CORE_SURVEY_URL)){
+                cxInteraction.url = jsonObject.getString(CXConstants.JSONResponseFields.CORE_SURVEY_URL);
             }
             if (jsonObject.has(CXConstants.JSONResponseFields.IS_DIALOG)) {
                 cxInteraction.isDialog = jsonObject.getBoolean(CXConstants.JSONResponseFields.IS_DIALOG);
@@ -34,7 +39,7 @@ public class CXInteraction implements Serializable{
     public static JSONObject toJSON(CXInteraction cxInteraction){
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put(CXConstants.JSONResponseFields.SURVEY_URL, cxInteraction.url);
+            jsonObject.put(CXConstants.JSONResponseFields.CX_SURVEY_URL, cxInteraction.url);
             jsonObject.put(CXConstants.JSONResponseFields.IS_DIALOG, cxInteraction.isDialog);
             jsonObject.put(CXConstants.JSONResponseFields.THEME_COLOR, cxInteraction.themeColor);
         }

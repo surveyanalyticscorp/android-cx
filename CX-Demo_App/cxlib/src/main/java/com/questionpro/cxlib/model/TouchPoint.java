@@ -15,6 +15,7 @@ public class TouchPoint implements Serializable{
     private final String segmentCode;
     private final String transactionDate;
     private final String themeColor;
+    private final Type mType;
 
     public TouchPoint(Builder builder) {
         //this.touchPointID = builder.touchPointID;
@@ -27,6 +28,7 @@ public class TouchPoint implements Serializable{
         this.segmentCode = builder.segmentCode;
         this.transactionDate = builder.transactionDate;
         this.themeColor = builder.themeColor;
+        this.mType = builder.mType;
     }
 
     /*public long getTouchPointID() {
@@ -69,6 +71,10 @@ public class TouchPoint implements Serializable{
         return themeColor;
     }
 
+    public Type getType() {
+        return mType;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -91,10 +97,10 @@ public class TouchPoint implements Serializable{
         private String mobile;
         private String segmentCode;
         private String themeColor = "";
+        private Type mType = null;
 
-        public Builder(/*long surveyId, String emailId*/){
-            //this.touchPointID = surveyId;
-            //this.email = emailId;
+        public Builder(Type type){
+            this.mType = type;
         }
 
         public Builder email(String email){

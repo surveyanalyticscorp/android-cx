@@ -5,16 +5,22 @@ import android.util.Log;
 
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.model.Type;
 import com.questionpro.cxlib.util.CXUtils;
 
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +34,13 @@ public class CXUploadClient {
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 30000;
     private static final String LOG_TAG = "CXUploadClient";
 
-    public static CXHttpResponse uploadforCX(Context context,String payload) {
+    public static CXHttpResponse uploadforCX(Context context, String payload) {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
-            java.net.URL uRL = new URL(CXConstants.getCXUploadURL(CXGlobalInfo.apiKey));
+            //java.net.URL uRL = new URL(CXConstants.getCXUploadURL(CXGlobalInfo.apiKey));
+            java.net.URL uRL = new URL(CXConstants.getUrl(CXGlobalInfo.apiKey, payload));
+            Log.d("Datta", CXConstants.getUrl(CXGlobalInfo.apiKey, payload));
 
             if (!CXUtils.isNetworkConnectionPresent(context)) {
                 Log.d(LOG_TAG,"Network unavailable.");
@@ -42,13 +50,18 @@ public class CXUploadClient {
             urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
-            urlConnection.setDoOutput(true);
+            urlConnection.setDoOutput(false);
             urlConnection.setDoInput(true);
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setFixedLengthStreamingMode(payload.length());
-            OutputStream os = urlConnection.getOutputStream();
-            os.write(payload.getBytes("UTF-8"));
-            os.close();
+            urlConnection.setUseCaches(false);
+
+            JSONObject payloadObj = new JSONObject(payload);
+            if (Type.CUSTOMER_EXPERIENCE.toString().equals(payloadObj.getString("type"))) {
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setFixedLengthStreamingMode(payload.length());
+                OutputStream os = urlConnection.getOutputStream();
+                os.write(payload.getBytes("UTF-8"));
+                os.close();
+            }
 
             int responseCode = urlConnection.getResponseCode();
             cxHttpResponse.setCode(responseCode);
@@ -64,7 +77,6 @@ public class CXUploadClient {
             cxHttpResponse.setHeaders(headers);
 
             // Read the response, if available
-
             if (responseCode >= 200 && responseCode < 300) {
                 cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.v("Response: %s", cxHttpResponse.getContent());
@@ -78,8 +90,8 @@ public class CXUploadClient {
             Log.w("SocketTimeoutException:", e);
         } catch (final MalformedURLException e) {
             Log.w("MalformedUrlException", e);
-        } catch (final IOException e) {
-            Log.w("IOException", e);
+        } catch (final Exception e) {
+            Log.w("Exception", e);
             // Read the error response.
             try {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
@@ -90,6 +102,7 @@ public class CXUploadClient {
         }
         return cxHttpResponse;
     }
+
     public static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
         if (connection != null) {
             InputStream is = null;

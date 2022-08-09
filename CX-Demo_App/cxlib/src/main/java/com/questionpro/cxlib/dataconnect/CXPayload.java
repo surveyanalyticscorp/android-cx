@@ -37,6 +37,7 @@ public class CXPayload {
             //jsonObject.put("surveyID", touchPoint.getTouchPointID());
             jsonObject.put("showAsDialog",touchPoint.showAsDialog());
             jsonObject.put("themeColor", touchPoint.getThemeColor());
+            jsonObject.put("type", touchPoint.getType());
             Log.d("Datta", "Payload json: "+jsonObject.toString());
 
             return jsonObject;
