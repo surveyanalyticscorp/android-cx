@@ -38,9 +38,10 @@ public class CXUploadClient {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
+            JSONObject payloadObj = new JSONObject(payload);
             //java.net.URL uRL = new URL(CXConstants.getCXUploadURL(CXGlobalInfo.apiKey));
-            java.net.URL uRL = new URL(CXConstants.getUrl(CXGlobalInfo.apiKey, payload));
-            Log.d("Datta", CXConstants.getUrl(CXGlobalInfo.apiKey, payload));
+            java.net.URL uRL = new URL(CXConstants.getUrl(CXGlobalInfo.apiKey, payloadObj.getString("surveyID"), CXGlobalInfo.getType(context)));
+            Log.d("Datta", CXConstants.getUrl(CXGlobalInfo.apiKey, payloadObj.getString("surveyID"), CXGlobalInfo.getType(context)));
 
             if (!CXUtils.isNetworkConnectionPresent(context)) {
                 Log.d(LOG_TAG,"Network unavailable.");
@@ -54,8 +55,7 @@ public class CXUploadClient {
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
 
-            JSONObject payloadObj = new JSONObject(payload);
-            if (Type.CUSTOMER_EXPERIENCE.toString().equals(payloadObj.getString("type"))) {
+            if (Type.CUSTOMER_EXPERIENCE.toString().equals(CXGlobalInfo.getType(context))) {
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setFixedLengthStreamingMode(payload.length());
                 OutputStream os = urlConnection.getOutputStream();
