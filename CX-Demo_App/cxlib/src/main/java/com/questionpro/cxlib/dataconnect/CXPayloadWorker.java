@@ -101,9 +101,7 @@ public class CXPayloadWorker {
                             Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
 
                         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                            Log.d(LOG_TAG,"Payload rejected");
                             Log.v("Rejected json:", payload.toString());
-
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");
                         }

@@ -79,10 +79,10 @@ public class CXUploadClient {
             // Read the response, if available
             if (responseCode >= 200 && responseCode < 300) {
                 cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
-                Log.v("Response: %s", cxHttpResponse.getContent());
+                Log.v("Response: ", cxHttpResponse.getContent());
             } else {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
-                Log.w("Response: %s", cxHttpResponse.getContent());
+                Log.w("Response: ", cxHttpResponse.getContent());
             }
         } catch (IllegalArgumentException e) {
             Log.w("IllegalArgument: ", e);

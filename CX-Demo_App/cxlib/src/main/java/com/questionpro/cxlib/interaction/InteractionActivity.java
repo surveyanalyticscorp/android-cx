@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -75,13 +76,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         webView.getSettings().setUseWideViewPort(true);
         webView.clearCache(true);
         webView.getSettings().setUserAgentString("AndroidWebView");
-        if (Build.VERSION.SDK_INT >= 19) {
-            // chromium, enable hardware acceleration
-            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else {
-            // older android version, disable hardware acceleration
-            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
         if(url==null || CXUtils.isEmpty(url)){
             finish();
