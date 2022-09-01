@@ -1,22 +1,22 @@
 # android-cx
-	Minimum SDK Version: 16
-	Compile SDK Version: 30 (But you should generally compile with the latest version)
+	Minimum SDK Version: 21
+	Compile SDK Version: 31 (But you should generally compile with the latest version)
 
 ### Including CX Lib into your project
 
 #### Integration From Maven Repository
-	Our SDK is available from the central Maven repo. Add it in your root build.gradle.
-	allprojects {
+	Our SDK is available from the central Maven repo. Add it in your root settings.gradle:
+	dependencyResolutionManagement {
 		repositories {
 			...
 			maven { url 'https://jitpack.io' }
 		}
 	}
 
-	Add the dependancy of the latest version of QuestionPro CX in your app's build.gradle.
+	Add the dependancy of the latest version of QuestionPro CX in your app's build.gradle:
 	dependencies {
 		...
-		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.7'
+		implementation 'com.github.surveyanalyticscorp:android-cx:1.2.8'
 	}
 
 
@@ -41,11 +41,11 @@
 
 ### Initializing and Adding TouchPoint hook in app codebase
 	Initialization and configuration:
-		TouchPoint touchPoint = new TouchPoint.Builder().build()
+		TouchPoint touchPoint = new TouchPoint.Builder(Type.SURVEY).build()
 		QuestionProCX.init(this, touchPoint);
 	
 	You can add touchpoint hook wherever you want to show the feedback screen.
-		QuestionProCX.launchFeedbackSurvey(110);
+		QuestionProCX.launchFeedbackSurvey(survey_id);
 >here, the number “110” is the touchpoint ID(Feedback Survey ID) that is obtained from QuestionPro Cx Portal.
 
 
