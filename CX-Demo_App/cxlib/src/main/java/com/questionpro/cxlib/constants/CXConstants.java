@@ -7,7 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CXConstants {
-    //private static final String CX_URL = "https://api.questionpro.com/a/api/questionpro.cx.getSurveyURL?apiKey=";
+    private static final String CX_URL = "https://api.questionpro.com/a/api/questionpro.cx.getSurveyURL?apiKey=";
     private static final String CX_TRANSACTION_SURVEY_URL = "https://api.questionpro.com/a/api/v2/cx/transactions/survey-url?apiKey=";
     private static final String SURVEYS_URL = "https://api.questionpro.com/a/api/v2/surveys/";
     public static final String PREF_NAME="questionpro_cx";
@@ -28,7 +28,7 @@ public class CXConstants {
     public static String getUrl(String apiKey, String surveyId, String type) {
         try {
             if (Type.CUSTOMER_EXPERIENCE.toString().equals(type)) {
-                return CX_TRANSACTION_SURVEY_URL + apiKey;
+                return CX_URL + apiKey;
             } else {
                 return SURVEYS_URL + surveyId + "?apiKey=" + apiKey;
             }
@@ -46,7 +46,7 @@ public class CXConstants {
     public static class JSONResponseFields{
         public static final String STATUS = "status";
         public static final String RESPONSE = "response";
-        public static final String CX_SURVEY_URL = "surveyURL";
+        public static final String CX_SURVEY_URL = "SurveyURL";
         public static final String CORE_SURVEY_URL = "url";
         public static final String IS_DIALOG="isDialog";
         public static final String THEME_COLOR="themeColor";

@@ -38,11 +38,6 @@ public class CXPayload {
             jsonObject.put("showAsDialog",touchPoint.showAsDialog());
             jsonObject.put("themeColor", touchPoint.getThemeColor());
             jsonObject.put("type", touchPoint.getType());
-            jsonObject.put("custom1", touchPoint.getCustomVariable1());
-            jsonObject.put("custom2", touchPoint.getCustomVariable2());
-            jsonObject.put("custom3", touchPoint.getCustomVariable3());
-            jsonObject.put("custom4", touchPoint.getCustomVariable4());
-            jsonObject.put("custom5", touchPoint.getCustomVariable5());
             Log.d("Datta", "Payload json: "+jsonObject.toString());
 
             return jsonObject;
