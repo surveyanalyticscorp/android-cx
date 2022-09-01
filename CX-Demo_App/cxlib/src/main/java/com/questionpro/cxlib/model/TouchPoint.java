@@ -5,19 +5,20 @@ import androidx.annotation.NonNull;
 import java.io.Serializable;
 
 public class TouchPoint implements Serializable{
-    //private final long touchPointID;
     private final String transactionLanguage;
-    private final boolean showAsDialog;
     private final String firstName;
     private final String lastName;
     private final String email;
     private final String mobile;
     private final String segmentCode;
     private final String transactionDate;
+
+    /** Setting related variables */
+    private final boolean showAsDialog;
     private final String themeColor;
+    private final Type mType;
 
     public TouchPoint(Builder builder) {
-        //this.touchPointID = builder.touchPointID;
         this.showAsDialog = builder.showAsDialog;
         this.firstName = builder.firstName;
         this.lastName = builder.lastName;
@@ -27,11 +28,8 @@ public class TouchPoint implements Serializable{
         this.segmentCode = builder.segmentCode;
         this.transactionDate = builder.transactionDate;
         this.themeColor = builder.themeColor;
+        this.mType = builder.mType;
     }
-
-    /*public long getTouchPointID() {
-        return touchPointID;
-    }*/
 
     public boolean showAsDialog() {
         return showAsDialog;
@@ -69,6 +67,10 @@ public class TouchPoint implements Serializable{
         return themeColor;
     }
 
+    public Type getType() {
+        return mType;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -83,18 +85,19 @@ public class TouchPoint implements Serializable{
     public static class Builder{
         //private final long touchPointID;
         private String email;
-        private  boolean showAsDialog;
         private String firstName;
         private String lastName;
         private String transactionLanguage;
         private String transactionDate;
         private String mobile;
         private String segmentCode;
-        private String themeColor = "";
 
-        public Builder(/*long surveyId, String emailId*/){
-            //this.touchPointID = surveyId;
-            //this.email = emailId;
+        private  boolean showAsDialog;
+        private String themeColor = "";
+        private Type mType = null;
+
+        public Builder(Type type){
+            this.mType = type;
         }
 
         public Builder email(String email){

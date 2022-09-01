@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.CXInteraction;
@@ -67,7 +69,7 @@ public class CXGlobalInfo {
     /**
      * This function is used to save the payload in preferences at the time of initialization.
      */
-    public static void setPayLoad(Activity activity, TouchPoint touchPoint){
+    public static void savePayLoad(Activity activity, TouchPoint touchPoint){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(CXConstants.PREF_KEY_PAYLOAD, CXPayload.getPayloadJSON(touchPoint).toString());
@@ -80,7 +82,7 @@ public class CXGlobalInfo {
      */
     public static void updateCXPayloadWithSurveyId(Activity activity, long surveyId){
         try {
-            JSONObject payloadObj = new JSONObject(getCXPayload(activity));
+            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
             payloadObj.put("surveyID", surveyId);
 
             SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
@@ -91,11 +93,59 @@ public class CXGlobalInfo {
     }
 
     /**
+     * This function is used to get the type of Survey
+     * @param context
+     * @return
+     */
+    public static String getType(Context context){
+        try{
+            AppCompatActivity activity = (AppCompatActivity) context;
+            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            return payloadObj.getString("type");
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    public static String isShowDialog(Context context){
+        try{
+            AppCompatActivity activity = (AppCompatActivity) context;
+            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            return payloadObj.getString("showAsDialog");
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    public static String getThemeColour(Context context){
+        try{
+            AppCompatActivity activity = (AppCompatActivity) context;
+            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            return payloadObj.getString("themeColor");
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    /**
      * Get the payload in the form string at the time of fetching survey url.
      */
-    public static String getCXPayload(Activity activity){
+    private static String getStoredPayload(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return prefs.getString(CXConstants.PREF_KEY_PAYLOAD,"");
+    }
+
+    /**
+     * Get the payload in the form string at the time of fetching survey url.
+     * Have to remove unwanted key from the stored object.
+     */
+    public static String getApiPayload(Activity activity){
+        try {
+            SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+            JSONObject payloadObj = new JSONObject(prefs.getString(CXConstants.PREF_KEY_PAYLOAD, ""));
+            payloadObj.remove("showAsDialog");
+            payloadObj.remove("themeColor");
+            payloadObj.remove("type");
+            return payloadObj.toString();
+        }catch (Exception e){e.printStackTrace();}
+        return "";
     }
 
     public static void storeInteraction(Activity activity, String url){

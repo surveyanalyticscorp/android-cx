@@ -56,7 +56,6 @@ public class CXPayloadWorker {
 
         public void run() {
             try {
-                Log.v("Started %s", toString());
                 if (appInForeground.get()) {
                     if (contextRef.get() == null) {
                         threadRunning.set(false);
@@ -74,16 +73,17 @@ public class CXPayloadWorker {
                         return;
                     }
                     Log.v(LOG_TAG, "Checking for payloads to send.");
-                    String payload = CXGlobalInfo.getCXPayload((Activity)contextRef.get());
+                    String payload = CXGlobalInfo.getApiPayload((Activity)contextRef.get());
                     JSONObject payloadObj = new JSONObject(payload);
                     CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
                     if (response != null) {
+                        QuestionProCX questionProCX = new QuestionProCX();
                         if (response.isSuccessful()) {
                             JSONObject jsonObject = new JSONObject(response.getContent());
                             if(jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)){
                                 JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
-                                responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,payloadObj.getString("showAsDialog"));
-                                responseJson.put(CXConstants.JSONResponseFields.THEME_COLOR,payloadObj.getString("themeColor"));
+                                responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,CXGlobalInfo.isShowDialog(contextRef.get()));
+                                responseJson.put(CXConstants.JSONResponseFields.THEME_COLOR,CXGlobalInfo.getThemeColour(contextRef.get()));
                                 CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
 
                                 if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
@@ -94,16 +94,14 @@ public class CXPayloadWorker {
                                         QuestionProCX.launchFeedbackScreen(activity, touchPointID);
                                     }
                                 }else{
-                                    QuestionProCX questionProCX = new QuestionProCX();
                                     questionProCX.onError(responseJson);
                                 }
                             }
                             Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
 
                         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                            Log.d(LOG_TAG,"Payload rejected");
                             Log.v("Rejected json:", payload.toString());
-
+                            questionProCX.onError(null);
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");
                         }

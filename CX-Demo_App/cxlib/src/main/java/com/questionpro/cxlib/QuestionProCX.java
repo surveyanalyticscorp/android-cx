@@ -121,7 +121,7 @@ public class QuestionProCX {
 
     public static synchronized void init(Activity activity, TouchPoint touchPoint){
         init(activity);
-        CXGlobalInfo.setPayLoad(activity, touchPoint);
+        CXGlobalInfo.savePayLoad(activity, touchPoint);
     }
 
     public static synchronized void launchFeedbackSurvey(long surveyId){
