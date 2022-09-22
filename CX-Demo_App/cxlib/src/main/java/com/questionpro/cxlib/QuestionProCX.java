@@ -89,15 +89,17 @@ public class QuestionProCX {
         if(null != progressDialog && progressDialog.isShowing()){
             progressDialog.cancel();
         }
-        /*final String errorMessage = "Error: "+response.getJSONObject("error").getString("message");
-        final Activity activity = mActivity.get();
-        if(activity != null){
-            activity.runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(activity, "QuestionPro: "+errorMessage, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }*/
+        if(response.has("error") && response.getJSONObject("error").has("message")) {
+            final String errorMessage = "Error: " + response.getJSONObject("error").getString("message");
+            final Activity activity = mActivity.get();
+            if (activity != null) {
+                activity.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
     }
 
     public static void onStart(Activity activity){
