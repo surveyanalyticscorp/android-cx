@@ -27,6 +27,7 @@ import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.model.TouchPoint;
+import com.questionpro.cxlib.model.Type;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import java.math.BigDecimal;
@@ -193,7 +194,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 	}
 
 	private void initialiseQpSdk(){
-		TouchPoint touchPoint = new TouchPoint.Builder()
+		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE)
 				.email("datta.kunde@questionpro.com")
 				//.firstName("Datta")
 				/*.lastName("Kunde")
