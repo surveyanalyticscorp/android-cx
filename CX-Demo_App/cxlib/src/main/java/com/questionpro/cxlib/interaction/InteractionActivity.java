@@ -102,7 +102,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
                 finish();
             }
         };
-        worker.schedule(task, 2, TimeUnit.SECONDS);
+        worker.schedule(task, 5, TimeUnit.SECONDS);
     }
     private class CXWebViewClient extends WebViewClient {
         @Override
