@@ -197,11 +197,11 @@ public class ECartHomeActivity extends AppCompatActivity {
 		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE)
 				.email("datta.kunde@questionpro.com")
 				//.firstName("Datta")
-				/*.lastName("Kunde")
+				//.lastName("Kunde")
 				.segmentCode("S1")
 				.showAsDialog(false)
-				.themeColor("#0000FF")
-				.transactionLanguage("English")*/
+				//.themeColor("#0000FF")
+				.transactionLanguage("English")
 				.build();
 		QuestionProCX.init(ECartHomeActivity.this, touchPoint);
 	}
