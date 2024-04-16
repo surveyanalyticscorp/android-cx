@@ -8,8 +8,8 @@
         applicationId "com.questionpro.retailshop"
         minSdkVersion 19
         targetSdkVersion 33
-        versionName "1.4"
-        versionCode 6
+        versionName "1.5"
+        versionCode 7
     }
 
     buildTypes {

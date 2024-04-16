@@ -36,7 +36,7 @@
             android:name="com.qpcx.retailapp.view.activities.SplashActivity"
             android:noHistory="true"
             android:theme="@android:style/Theme.NoTitleBar"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
