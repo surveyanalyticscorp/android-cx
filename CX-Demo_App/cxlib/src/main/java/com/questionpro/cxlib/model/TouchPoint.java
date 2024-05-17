@@ -12,6 +12,9 @@ public class TouchPoint implements Serializable{
     private final String mobile;
     private final String segmentCode;
     private final String transactionDate;
+    private final String customVariable1;
+    private final String customVariable2;
+    private final String customVariable3;
 
     /** Setting related variables */
     private final boolean showAsDialog;
@@ -27,6 +30,9 @@ public class TouchPoint implements Serializable{
         this.mobile = builder.mobile;
         this.segmentCode = builder.segmentCode;
         this.transactionDate = builder.transactionDate;
+        this.customVariable1 = builder.customVariable1;
+        this.customVariable2 = builder.customVariable2;
+        this.customVariable3 = builder.customVariable3;
         this.themeColor = builder.themeColor;
         this.mType = builder.mType;
     }
@@ -63,6 +69,16 @@ public class TouchPoint implements Serializable{
         return transactionDate;
     }
 
+    public String getCustomVariable1(){
+        return customVariable1;
+    }
+    public String getCustomVariable2(){
+        return customVariable2;
+    }
+    public String getCustomVariable3(){
+        return customVariable3;
+    }
+
     public String getThemeColor(){
         return themeColor;
     }
@@ -89,6 +105,10 @@ public class TouchPoint implements Serializable{
         private String lastName;
         private String transactionLanguage;
         private String transactionDate;
+
+        private String customVariable1;
+        private String customVariable2;
+        private String customVariable3;
         private String mobile;
         private String segmentCode;
 
@@ -127,6 +147,21 @@ public class TouchPoint implements Serializable{
             this.transactionDate = transactionDate;
             return this;
          }
+
+         public Builder customVariable1(String customVariable1){
+            this.customVariable1 = customVariable1;
+            return this;
+         }
+
+        public Builder customVariable2(String customVariable2){
+            this.customVariable2 = customVariable2;
+            return this;
+        }
+
+        public Builder customVariable3(String customVariable3){
+            this.customVariable3 = customVariable3;
+            return this;
+        }
 
          public Builder mobile(String mobile){
             this.mobile = mobile;
