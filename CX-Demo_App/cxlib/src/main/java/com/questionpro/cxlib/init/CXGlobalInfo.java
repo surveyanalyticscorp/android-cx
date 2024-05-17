@@ -140,6 +140,7 @@ public class CXGlobalInfo {
         try {
             SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
             JSONObject payloadObj = new JSONObject(prefs.getString(CXConstants.PREF_KEY_PAYLOAD, ""));
+            payloadObj.put("isManualSurvey", true);
             payloadObj.remove("showAsDialog");
             payloadObj.remove("themeColor");
             payloadObj.remove("type");

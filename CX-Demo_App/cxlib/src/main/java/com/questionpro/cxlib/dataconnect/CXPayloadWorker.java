@@ -97,7 +97,7 @@ public class CXPayloadWorker {
                                     questionProCX.onError(responseJson);
                                 }
                             }
-                            Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
+                            //Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
 
                         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
                             Log.v("Rejected json:", payload.toString());
