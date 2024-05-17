@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +40,7 @@ public class CXUploadClient {
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
             JSONObject payloadObj = new JSONObject(payload);
-            //java.net.URL uRL = new URL(CXConstants.getCXUploadURL(CXGlobalInfo.apiKey));
-            java.net.URL uRL = new URL(CXConstants.getUrl(CXGlobalInfo.apiKey, payloadObj.getString("surveyID"), CXGlobalInfo.getType(context)));
-            //Log.d("Datta", CXConstants.getUrl(CXGlobalInfo.apiKey, payloadObj.getString("surveyID"), CXGlobalInfo.getType(context)));
+            java.net.URL uRL = new URL(CXConstants.getUrl(payloadObj.getString("surveyID"), CXGlobalInfo.getType(context)));
 
             if (!CXUtils.isNetworkConnectionPresent(context)) {
                 Log.d(LOG_TAG,"Network unavailable.");
@@ -49,6 +48,7 @@ public class CXUploadClient {
             }
             urlConnection = (HttpURLConnection) uRL.openConnection();
             urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
+            urlConnection.setRequestProperty("api-key", CXGlobalInfo.apiKey);
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);
@@ -59,7 +59,7 @@ public class CXUploadClient {
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setFixedLengthStreamingMode(payload.length());
                 OutputStream os = urlConnection.getOutputStream();
-                os.write(payload.getBytes("UTF-8"));
+                os.write(payload.getBytes(StandardCharsets.UTF_8));
                 os.close();
             }
 
@@ -79,7 +79,7 @@ public class CXUploadClient {
             // Read the response, if available
             if (responseCode >= 200 && responseCode < 300) {
                 cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
-                Log.v("Response: ", cxHttpResponse.getContent());
+                //Log.v("Response: ", cxHttpResponse.getContent());
             } else {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w("Response: ", cxHttpResponse.getContent());
