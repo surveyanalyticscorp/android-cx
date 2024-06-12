@@ -41,7 +41,7 @@
 
 ### Initializing and Adding TouchPoint hook in app codebase
 	Initialization and configuration:
-		TouchPoint touchPoint = new TouchPoint.Builder(Type.SURVEY).build()
+		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US).build()
 		QuestionProCX.init(this, touchPoint);
 	
 	You can add touchpoint hook wherever you want to show the feedback screen.
