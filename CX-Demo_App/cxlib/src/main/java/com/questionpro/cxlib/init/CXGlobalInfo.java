@@ -106,6 +106,15 @@ public class CXGlobalInfo {
         return "";
     }
 
+    public static String getDataCenter(Context context){
+        try{
+            AppCompatActivity activity = (AppCompatActivity) context;
+            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            return payloadObj.getString("dataCenter");
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
     public static String isShowDialog(Context context){
         try{
             AppCompatActivity activity = (AppCompatActivity) context;
@@ -144,6 +153,7 @@ public class CXGlobalInfo {
             payloadObj.remove("showAsDialog");
             payloadObj.remove("themeColor");
             payloadObj.remove("type");
+            payloadObj.remove("dataCenter");
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";

@@ -20,6 +20,7 @@ public class TouchPoint implements Serializable{
     private final boolean showAsDialog;
     private final String themeColor;
     private final Type mType;
+    private final DataCenter dataCenter;
 
     public TouchPoint(Builder builder) {
         this.showAsDialog = builder.showAsDialog;
@@ -35,6 +36,7 @@ public class TouchPoint implements Serializable{
         this.customVariable3 = builder.customVariable3;
         this.themeColor = builder.themeColor;
         this.mType = builder.mType;
+        this.dataCenter = builder.dataCenter;
     }
 
     public boolean showAsDialog() {
@@ -87,6 +89,10 @@ public class TouchPoint implements Serializable{
         return mType;
     }
 
+    public DataCenter getDataCenter(){
+        return dataCenter;
+    }
+
     @NonNull
     @Override
     public String toString() {
@@ -115,9 +121,11 @@ public class TouchPoint implements Serializable{
         private  boolean showAsDialog;
         private String themeColor = "";
         private Type mType = null;
+        private DataCenter dataCenter = null;
 
-        public Builder(Type type){
+        public Builder(Type type, DataCenter dataCenter){
             this.mType = type;
+            this.dataCenter = dataCenter;
         }
 
         public Builder email(String email){

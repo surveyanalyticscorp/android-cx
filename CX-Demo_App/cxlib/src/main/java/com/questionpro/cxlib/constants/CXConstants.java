@@ -1,15 +1,20 @@
 package com.questionpro.cxlib.constants;
 
 
+import android.content.Context;
+
+import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.model.DataCenter;
 import com.questionpro.cxlib.model.Type;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CXConstants {
+
     private static final String CX_URL = "https://api.questionpro.com/a/api/questionpro.cx.getSurveyURL?apiKey=";
-    private static final String CX_TRANSACTION_SURVEY_URL = "https://api.questionpro.com/a/api/v2/cx/transactions/survey-url";
-    private static final String SURVEYS_URL = "https://api.questionpro.com/a/api/v2/surveys/";
+    private static final String CX_TRANSACTION_SURVEY_URL = "/a/api/v2/cx/transactions/survey-url";
+    private static final String SURVEYS_URL = "/a/api/v2/surveys/";
     public static final String PREF_NAME="questionpro_cx";
     public static final String PREF_KEY_API_KEY="cx_pref_api_key";
     public static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
@@ -25,17 +30,38 @@ public class CXConstants {
     public static String globalDialogPromptPositiveText="Yes";
     public static String globalDialogPromptNegativeText="No";
 
-    public static String getUrl(String surveyId, String type) {
+    public static String getUrl(Context context, String surveyId) {
         try {
+            String type = CXGlobalInfo.getType(context);
+            String dataCenter = CXGlobalInfo.getDataCenter(context);
             if (Type.CUSTOMER_EXPERIENCE.toString().equals(type)) {
-                return CX_TRANSACTION_SURVEY_URL;
+                return getBaseUrl(dataCenter) + CX_TRANSACTION_SURVEY_URL;
             } else {
-                return SURVEYS_URL + surveyId;
+                return getBaseUrl(dataCenter) + SURVEYS_URL + surveyId;
             }
         }catch (Exception e){
             e.printStackTrace();
         }
         return "";
+    }
+
+    private static String getBaseUrl(String dataCenter){
+        if(DataCenter.EU.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.eu";
+        if(DataCenter.CA.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.ca";
+        if(DataCenter.SG.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.sg";
+        if(DataCenter.AU.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.au";
+        if(DataCenter.AE.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.ae";
+        if(DataCenter.SA.name().equalsIgnoreCase(dataCenter))
+            return "https://api.surveyanalytics.com";
+        if(DataCenter.KSA.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionprosa.com";
+
+        return "https://api.questionpro.com";
     }
 
     public static class JSONUploadFields{

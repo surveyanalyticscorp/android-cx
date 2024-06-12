@@ -40,8 +40,7 @@ public class CXUploadClient {
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
             JSONObject payloadObj = new JSONObject(payload);
-            java.net.URL uRL = new URL(CXConstants.getUrl(payloadObj.getString("surveyID"), CXGlobalInfo.getType(context)));
-
+            java.net.URL uRL = new URL(CXConstants.getUrl(context, payloadObj.getString("surveyID")));
             if (!CXUtils.isNetworkConnectionPresent(context)) {
                 Log.d(LOG_TAG,"Network unavailable.");
                 return cxHttpResponse;

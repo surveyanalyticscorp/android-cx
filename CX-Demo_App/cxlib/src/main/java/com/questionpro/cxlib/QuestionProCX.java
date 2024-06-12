@@ -95,7 +95,7 @@ public class QuestionProCX {
             if (activity != null) {
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(activity, errorMessage, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, errorMessage, Toast.LENGTH_LONG).show();
                     }
                 });
             }

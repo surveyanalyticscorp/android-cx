@@ -74,7 +74,7 @@ public class CXPayloadWorker {
                     }
                     Log.v(LOG_TAG, "Checking for payloads to send.");
                     String payload = CXGlobalInfo.getApiPayload((Activity)contextRef.get());
-                    JSONObject payloadObj = new JSONObject(payload);
+                    //JSONObject payloadObj = new JSONObject(payload);
                     CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
                     if (response != null) {
                         QuestionProCX questionProCX = new QuestionProCX();
@@ -100,8 +100,11 @@ public class CXPayloadWorker {
                             //Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
 
                         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                            Log.v("Rejected json:", payload.toString());
-                            questionProCX.onError(null);
+                            Log.v("Rejected json:", response.getContent());
+                            JSONObject jsonObject = new JSONObject(response.getContent());
+                            if(jsonObject.has("response")) {
+                                questionProCX.onError(jsonObject.getJSONObject("response"));
+                            }
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");
                         }
