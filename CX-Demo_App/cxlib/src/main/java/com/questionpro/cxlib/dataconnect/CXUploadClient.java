@@ -47,7 +47,7 @@ public class CXUploadClient {
             }
             urlConnection = (HttpURLConnection) uRL.openConnection();
             urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
-            urlConnection.setRequestProperty("api-key", CXGlobalInfo.apiKey);
+            urlConnection.setRequestProperty("api-key", CXGlobalInfo.getInstance().getApiKey());
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);

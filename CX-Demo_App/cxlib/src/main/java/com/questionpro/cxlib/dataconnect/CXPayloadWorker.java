@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
@@ -87,11 +85,11 @@ public class CXPayloadWorker {
                                 CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
 
                                 if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
-                                    AppCompatActivity activity = (AppCompatActivity) contextRef.get();
-                                    long touchPointID = CXGlobalInfo.getTouchPointIDFromPayload(payload);
-                                    CXGlobalInfo.storeInteraction(activity, touchPointID, cxInteraction);
+                                    Activity activity = (Activity) contextRef.get();
+                                    //long surveyID = CXGlobalInfo.getSurveyIDFromPayload(payload);
+                                    //CXGlobalInfo.storeInteraction(activity, surveyID, cxInteraction);
                                     if(!activity.isFinishing()){
-                                        QuestionProCX.launchFeedbackScreen(activity, touchPointID);
+                                        QuestionProCX.launchFeedbackScreen(activity, cxInteraction);
                                     }
                                 }else{
                                     questionProCX.onError(responseJson);

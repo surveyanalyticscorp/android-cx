@@ -37,7 +37,6 @@ public class CXUtils {
         if ((device_id == null) || (device_id.equals("9774d56d682e549c")) || (device_id.length() < 15)) {
             device_id = new BigInteger(64, new SecureRandom()).toString(16);
         }
-        Log.d("device_id", device_id);
         return device_id;
     }
 

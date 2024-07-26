@@ -129,7 +129,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         @Override
         public void onPageFinished(WebView view, String url) {
             progressBar.setVisibility(View.GONE);
-            if(url.contains("#autoClose")){
+            if(url.contains("#autoClose") || !url.contains("questionpro")){
                 runTimer();
             }
         }

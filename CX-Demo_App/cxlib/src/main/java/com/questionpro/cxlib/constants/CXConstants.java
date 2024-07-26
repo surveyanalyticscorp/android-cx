@@ -16,19 +16,12 @@ public class CXConstants {
     private static final String CX_TRANSACTION_SURVEY_URL = "/a/api/v2/cx/transactions/survey-url";
     private static final String SURVEYS_URL = "/a/api/v2/surveys/";
     public static final String PREF_NAME="questionpro_cx";
-    public static final String PREF_KEY_API_KEY="cx_pref_api_key";
+    //public static final String PREF_KEY_API_KEY="cx_pref_api_key";
     public static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
     public static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
-    public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
-    public static final String PREF_KEY_URL="cx_pref_key_url";
-    public static final String SURVEY_URL="survey_url";
+    //public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
     public static final String CX_INTERACTION_CONTENT="cx_interaction_content";
-    public static final String EXTRA_TOUCH_POINT="touch_point";
 
-    public static String globalDialogPromptTitleText="CX Feeback";
-    public static  String globalDialogPromptMessageText="Would you like to give us some feedback?";
-    public static String globalDialogPromptPositiveText="Yes";
-    public static String globalDialogPromptNegativeText="No";
 
     public static String getUrl(Context context, String surveyId) {
         try {
@@ -66,7 +59,7 @@ public class CXConstants {
 
     public static class JSONUploadFields{
         public static final String UDID = "udid";
-        public static final String TOUCH_POINT_ID = "touchPointID";
+        public static final String SURVEY_ID = "surveyID";
     }
 
     public static class JSONResponseFields{

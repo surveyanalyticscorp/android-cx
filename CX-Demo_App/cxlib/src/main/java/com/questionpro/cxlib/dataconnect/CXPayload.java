@@ -31,7 +31,7 @@ public class CXPayload {
             String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
             jsonObject.put("transactionDate", date);
             if(null == touchPoint.getEmail()){
-                jsonObject.put("email", CXGlobalInfo.UUID+"@questionpro.com");
+                jsonObject.put("email", CXGlobalInfo.getInstance().getUUID()+"@questionpro.com");
             }else
                 jsonObject.put("email", touchPoint.getEmail());
             //jsonObject.put("surveyID", touchPoint.getTouchPointID());

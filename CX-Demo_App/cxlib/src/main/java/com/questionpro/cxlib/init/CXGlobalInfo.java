@@ -1,32 +1,30 @@
 package com.questionpro.cxlib.init;
 
+import static com.questionpro.cxlib.constants.CXConstants.JSONUploadFields.SURVEY_ID;
+
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
+//import android.content.SharedPreferences;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
-import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.model.TouchPoint;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
-public class CXGlobalInfo {
-    public static boolean initialized = false;
-    public static String UUID;
-    public static String appDisplayName;
-    public static String appPackage;
-    public static String apiKey = null;
 
+public class CXGlobalInfo {
+    private static boolean initialized = false;
+    private static String UUID;
+    private static String appPackage;
+    private static String apiKey = null;
+    private static String payload;
 
     private static CXGlobalInfo ourInstance;
 
     public static CXGlobalInfo getInstance() {
-        if(ourInstance==null){
+        if(ourInstance == null){
             ourInstance = new CXGlobalInfo();
         }
         return ourInstance;
@@ -36,59 +34,47 @@ public class CXGlobalInfo {
     }
 
 
-    public static boolean isInteractionPending(Activity activity){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return  prefs.contains(activity.getLocalClassName());
-
-
-    }
-    public static boolean isInteractionPending(Activity activity,long touchPointID){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return  prefs.contains(touchPointID+"");
-    }
-
-    public static void clearInteraction(Activity activity){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(activity.getLocalClassName()).apply();
-    }
-
-    public static void clearInteraction(Activity activity, long touchPointID){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(touchPointID+"").apply();
-    }
-    public static void clearPayload(Activity activity){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(CXConstants.PREF_KEY_PAYLOAD).apply();
-    }
-
     /**
      * This function is used to save the payload in preferences at the time of initialization.
      */
-    public static void savePayLoad(Activity activity, TouchPoint touchPoint){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(CXConstants.PREF_KEY_PAYLOAD, CXPayload.getPayloadJSON(touchPoint).toString());
-        ed.apply();
+    public void savePayLoad(TouchPoint touchPoint){
+        CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint).toString();
+    }
+
+    public void setApiKey(String apiKey){
+        CXGlobalInfo.apiKey = apiKey;
+    }
+
+    public String getApiKey(){
+        return CXGlobalInfo.apiKey;
+    }
+
+    public void setAppPackage(String appPackage){
+        CXGlobalInfo.appPackage = appPackage;
+    }
+
+    public void setUUID(String uuid){
+        CXGlobalInfo.UUID = uuid;
+    }
+
+    public String getUUID(){
+        return CXGlobalInfo.UUID;
+    }
+
+    public void setInitialized(boolean initialized){
+        CXGlobalInfo.initialized = initialized;
     }
 
     /**
      * At the time of initialization we don't have surveyId in payload. add the surveyId
      * in payload and update preferences.
      */
-    public static void updateCXPayloadWithSurveyId(Activity activity, long surveyId){
+    public static void updateCXPayloadWithSurveyId(long surveyId){
         try {
-            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
-            payloadObj.put("surveyID", surveyId);
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
+            payloadObj.put(SURVEY_ID, surveyId);
 
-            SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-            SharedPreferences.Editor ed = prefs.edit();
-            ed.putString(CXConstants.PREF_KEY_PAYLOAD, payloadObj.toString());
-            ed.apply();
+            CXGlobalInfo.payload = payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
     }
 
@@ -97,37 +83,38 @@ public class CXGlobalInfo {
      * @param context
      * @return
      */
+    @NonNull
     public static String getType(Context context){
         try{
-            AppCompatActivity activity = (AppCompatActivity) context;
-            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("type");
         }catch (Exception e){e.printStackTrace();}
         return "";
     }
 
+    @NonNull
     public static String getDataCenter(Context context){
         try{
-            AppCompatActivity activity = (AppCompatActivity) context;
-            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("dataCenter");
         }catch (Exception e){e.printStackTrace();}
         return "";
     }
 
+    @NonNull
     public static String isShowDialog(Context context){
         try{
-            AppCompatActivity activity = (AppCompatActivity) context;
-            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("showAsDialog");
         }catch (Exception e){e.printStackTrace();}
         return "";
     }
 
+    @NonNull
     public static String getThemeColour(Context context){
         try{
-            AppCompatActivity activity = (AppCompatActivity) context;
-            JSONObject payloadObj = new JSONObject(getStoredPayload(activity));
+            //AppCompatActivity activity = (AppCompatActivity) context;
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("themeColor");
         }catch (Exception e){e.printStackTrace();}
         return "";
@@ -136,9 +123,8 @@ public class CXGlobalInfo {
     /**
      * Get the payload in the form string at the time of fetching survey url.
      */
-    private static String getStoredPayload(Activity activity){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return prefs.getString(CXConstants.PREF_KEY_PAYLOAD,"");
+    private static String getStoredPayload(){
+        return CXGlobalInfo.payload;
     }
 
     /**
@@ -147,8 +133,9 @@ public class CXGlobalInfo {
      */
     public static String getApiPayload(Activity activity){
         try {
-            SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-            JSONObject payloadObj = new JSONObject(prefs.getString(CXConstants.PREF_KEY_PAYLOAD, ""));
+            //SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+            //JSONObject payloadObj = new JSONObject(prefs.getString(CXConstants.PREF_KEY_PAYLOAD, ""));
+            JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
             payloadObj.put("isManualSurvey", true);
             payloadObj.remove("showAsDialog");
             payloadObj.remove("themeColor");
@@ -159,38 +146,69 @@ public class CXGlobalInfo {
         return "";
     }
 
-    public static void storeInteraction(Activity activity, String url){
+    /*public static boolean isInteractionPending(Activity activity){
+        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+        return  prefs.contains(activity.getLocalClassName());
+    }*/
+
+    /*public static boolean isInteractionPending(Activity activity,long touchPointID){
+        //SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+        //return  prefs.contains(touchPointID+"");
+        //return interactions.containsKey(touchPointID);
+    }*/
+
+    /*public static void clearInteraction(Activity activity){
+        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.remove(activity.getLocalClassName()).apply();
+    }*/
+
+    /*public static void clearInteraction(Activity activity, long touchPointID){
+        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.remove(touchPointID+"").apply();
+    }*/
+    /*public static void clearPayload(Activity activity){
+     *//*SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.remove(CXConstants.PREF_KEY_PAYLOAD).apply();*//*
+    }*/
+
+    /*public static void storeInteraction(Activity activity, String url){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(activity.getLocalClassName(), url);
         ed.apply();
-    }
-    public static void storeInteraction(Activity activity, long touchPointID, CXInteraction cxInteraction){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+    }*/
+    /*public static void storeInteraction(Activity activity, long surveyID, CXInteraction cxInteraction){
+        *//*SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor ed = prefs.edit();
         ed.putString(touchPointID+"", CXInteraction.toJSON(cxInteraction).toString());
-        ed.apply();
-    }
-    public static String getInteraction(Activity activity){
+        ed.apply();*//*
+        interactions.put(surveyID, CXInteraction.toJSON(cxInteraction).toString());
+    }*/
+    /*public static String getInteraction(Activity activity){
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
         return prefs.getString(activity.getLocalClassName(),"");
-    }
-    public static CXInteraction getInteraction(Activity activity, long touchPointId) throws JSONException{
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        JSONObject jsonObject  = new JSONObject(prefs.getString(touchPointId+"",""));
+    }*/
+    /*public static CXInteraction getInteraction(Activity activity, long surveyID) throws JSONException{
+        *//*SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+        JSONObject jsonObject  = new JSONObject(prefs.getString(touchPointId+"",""));*//*
+        JSONObject jsonObject  = new JSONObject(interactions.get(surveyID));
         return CXInteraction.fromJSON(jsonObject);
-    }
+    }*/
 
-    public static long getTouchPointIDFromPayload(String payload){
+    /*public static long getSurveyIDFromPayload(String payload){
         try {
             JSONObject jsonObject = new JSONObject(payload);
-            if(jsonObject.has(CXConstants.JSONUploadFields.TOUCH_POINT_ID)){
-                return jsonObject.getLong(CXConstants.JSONUploadFields.TOUCH_POINT_ID);
+            if(jsonObject.has(CXConstants.JSONUploadFields.SURVEY_ID)){
+                return jsonObject.getLong(CXConstants.JSONUploadFields.SURVEY_ID);
             }
         }
         catch (Exception e){
             //eat it
         }
         return -1;
-    }
+    }*/
 }
