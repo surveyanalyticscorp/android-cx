@@ -41,7 +41,18 @@
 
 ### Initializing and Adding TouchPoint hook in app codebase
 	Initialization and configuration:
-		TouchPoint touchPoint = new TouchPoint.Builder(Type.SURVEY).build()
+		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
+  			.email("emailId") //Optional
+    		.firstName("first name") //Optional
+      		.lastName("last name") //Optional
+			.segmentCode("SegmentCode") //Optional
+  			.showAsDialog(false) //Optional - default is false
+    		.themeColor("#0000FF") //Optional
+      		.transactionLanguage("English") //Optional - default is English
+			.customVariable1("Custom 1 value") //Optional
+  			.customVariable2("Custom 2 value") //Optional
+    		.customVariable3("Custom 3 value") //Optional
+  			.build()
 		QuestionProCX.init(this, touchPoint);
 	
 	You can add touchpoint hook wherever you want to show the feedback screen.
