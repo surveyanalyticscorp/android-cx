@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">CXLib</string>
+    <string name="powered_by">Powered by</string>
+    <string name="question_pro">QuestionPro</string>
 </resources>
