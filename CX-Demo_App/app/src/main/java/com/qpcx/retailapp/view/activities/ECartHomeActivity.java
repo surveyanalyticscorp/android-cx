@@ -26,9 +26,10 @@ import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
 import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.model.DataCenter;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.model.Type;
-import com.wang.avi.AVLoadingIndicatorView;
+//import com.wang.avi.AVLoadingIndicatorView;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -43,7 +44,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 	private TextView checkOutAmount, itemCountTextView;
 	private TextView offerBanner;
-	private AVLoadingIndicatorView progressBar;
+	//private AVLoadingIndicatorView progressBar;
 
 	private NavigationView mNavigationView;
 
@@ -75,7 +76,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 		mDrawerLayout = (DrawerLayout) findViewById(R.id.nav_drawer);
 		mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
-		progressBar = (AVLoadingIndicatorView) findViewById(R.id.loading_bar);
+		//progressBar = (AVLoadingIndicatorView) findViewById(R.id.loading_bar);
 
 		checkOutAmount.setOnClickListener(new OnClickListener() {
 
@@ -122,6 +123,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 					@Override
 					public void onClick(View v) {
 
+						QuestionProCX.launchFeedbackSurvey(1602850877);//Device audit: 8282698
 						Utils.vibrate(getApplicationContext());
 
 						Utils.switchContent(R.id.frag_container,
@@ -194,21 +196,25 @@ public class ECartHomeActivity extends AppCompatActivity {
 	}
 
 	private void initialiseQpSdk(){
-		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE)
-				.email("datta.kunde@questionpro.com")
-				//.firstName("Datta")
-				//.lastName("Kunde")
-				.segmentCode("S1")
-				.showAsDialog(false)
-				//.themeColor("#0000FF")
-				.transactionLanguage("English")
+		Activity activity =  ECartHomeActivity.this;
+		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.EU)
+				.email("mobile.android@questionpro.com")
+				/*.firstName("Datta")
+				.lastName("Kunde")
+				.segmentCode("S1")*/
+				.showAsDialog(true)
+				/*.themeColor("#0000FF")
+				.transactionLanguage("French")
+				.customVariable1("123")
+				.customVariable2("Custom 2 value")
+				.customVariable3("900")*/
 				.build();
-		QuestionProCX.init(ECartHomeActivity.this, touchPoint);
+		QuestionProCX.init(activity, touchPoint);
 	}
 
-	public AVLoadingIndicatorView getProgressBar() {
+	/*public AVLoadingIndicatorView getProgressBar() {
 		return progressBar;
-	}
+	}*/
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

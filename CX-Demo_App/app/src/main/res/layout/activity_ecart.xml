@@ -20,7 +20,7 @@
             android:layout_above="@+id/control_overview" >
         </FrameLayout>
 
-        <com.wang.avi.AVLoadingIndicatorView
+        <!--<com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/loading_bar"
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -28,7 +28,7 @@
             android:layout_gravity="center"
             android:visibility="visible"
             app:indicator="LineScaleParty"
-            app:indicator_color="#F53700" />
+            app:indicator_color="#F53700" />-->
 
         <include layout="@layout/view_bottom_anchor" />
     </RelativeLayout>
