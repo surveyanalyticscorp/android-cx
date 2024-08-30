@@ -16,25 +16,9 @@
         android:background="@android:color/white"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <include
             android:id="@+id/topBar"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/navigation_bar_bg"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/closeButton"
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:layout_alignParentRight="true"
-                android:layout_margin="10dp"
-                android:background="@null"
-                android:scaleType="centerInside"
-                android:src="@drawable/close_white" />
-        </RelativeLayout>
-
+            layout="@layout/screen_header"/>
 
         <ProgressBar
             android:id="@+id/progressBar"

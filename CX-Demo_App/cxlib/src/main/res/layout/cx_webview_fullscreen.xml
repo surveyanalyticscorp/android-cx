@@ -1,38 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="0dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <include
         android:id="@+id/topBar"
-        android:background="@color/navigation_bar_bg"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center"
-            android:padding="2dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/powered_by_white" />
-
-        <ImageButton
-            android:id="@+id/closeButton"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="10dp"
-            android:background="@null"
-            android:scaleType="centerInside"
-            android:src="@drawable/close_white" />
-    </RelativeLayout>
-
+        layout="@layout/screen_header"/>
 
     <ProgressBar
         android:id="@+id/progressBar"
