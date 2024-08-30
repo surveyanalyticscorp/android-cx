@@ -43,7 +43,7 @@ dependencies {
     implementation 'com.twotoasters.jazzylistview:library:1.2.1'
     implementation 'com.twotoasters.jazzylistview:library-recyclerview:1.2.1'
     //Loading animations
-    implementation 'com.wang.avi:library:1.0.5'
+    //implementation 'com.wang.avi:library:1.0.5'
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation project(':cxlib')
     //implementation 'com.github.surveyanalyticscorp:android-cx:1.2.8'
