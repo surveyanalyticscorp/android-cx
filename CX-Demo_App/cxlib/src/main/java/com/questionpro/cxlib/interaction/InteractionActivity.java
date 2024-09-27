@@ -78,6 +78,10 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         webView.getSettings().setUserAgentString("AndroidWebView");
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
+        /*int density = (int)getResources().getDisplayMetrics().density;
+        webView.getSettings().setTextZoom(100 * density);*/
+        webView.getSettings().setTextZoom(90);
+
         if(url==null || CXUtils.isEmpty(url)){
             finish();
         } else{
