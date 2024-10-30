@@ -7,9 +7,9 @@
     defaultConfig {
         applicationId "com.questionpro.retailshop"
         minSdkVersion 19
-        targetSdkVersion 33
-        versionName "1.5"
-        versionCode 7
+        targetSdkVersion 34
+        versionName "1.6"
+        versionCode 8
     }
 
     buildTypes {
@@ -46,5 +46,5 @@ dependencies {
     //implementation 'com.wang.avi:library:1.0.5'
     implementation 'com.nineoldandroids:library:2.4.0'
     implementation project(':cxlib')
-    //implementation 'com.github.surveyanalyticscorp:android-cx:1.2.8'
+    //implementation 'com.github.surveyanalyticscorp:android-cx:1.3.5'
 }

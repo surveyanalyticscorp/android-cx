@@ -48,7 +48,7 @@
         <activity android:name="com.questionpro.cxlib.interaction.InteractionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustResize" >
         </activity>
 
     </application>
