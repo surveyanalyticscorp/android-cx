@@ -1,7 +1,9 @@
 package com.questionpro.cxlib.interaction;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +35,9 @@ import java.util.concurrent.TimeUnit;
 public class InteractionActivity extends FragmentActivity implements MyWebChromeClient.ProgressListener, QuestionProApiCall {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
-    private ProgressDialog progressDialog;
+    //private ProgressDialog progressDialog;
+    private ProgressDialog customProgressDialog;
+
     private WebView webView;
     private String url = "";
     private CXInteraction cxInteraction;
@@ -41,14 +46,11 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //cxInteraction =(CXInteraction) getIntent().getSerializableExtra(CXConstants.CX_INTERACTION_CONTENT);
-        //url = cxInteraction.url;
 
         init();
 
         getSurveyDetails();
 
-        //launchSurvey();
     }
 
     private void init(){
@@ -82,10 +84,9 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setBackgroundColor(Color.WHITE);
 
-                     /*int density = (int)getResources().getDisplayMetrics().density;
-                    webView.getSettings().setTextZoom(100 * density);*/
+        /*int density = (int)getResources().getDisplayMetrics().density;
+        webView.getSettings().setTextZoom(100 * density);*/
         webView.getSettings().setTextZoom(90);
-
 
     }
     
@@ -95,18 +96,20 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     private void getSurveyDetails(){
         try {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("QuestionPro");
-            progressDialog.setMessage("Loading survey...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+            customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
+            customProgressDialog.setMessage("Please wait.");
+            customProgressDialog.show();
 
-            long surveyId = (Long) getIntent().getSerializableExtra("SURVEY_ID");
-
-            CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-            new CXApiHandler(this).execute();
+            Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
+            if (surveyIdSerializable != null) {
+                long surveyId = (Long) surveyIdSerializable;
+                CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
+                new CXApiHandler(this).execute();
+            }else{
+                showErrorDialog("Survey Id is null");
+            }
         }catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 
@@ -127,19 +130,34 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     @Override
     public void onError(JSONObject response) {
-        if(null != progressDialog && progressDialog.isShowing()){
-            progressDialog.cancel();
+        if(null != customProgressDialog && customProgressDialog.isShowing()){
+            customProgressDialog.dismiss();
         }
         try {
             if (response.has("error") && response.getJSONObject("error").has("message")) {
                 final String errorMessage = "Error: " + response.getJSONObject("error").getString("message");
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        Toast.makeText(InteractionActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                        showErrorDialog(errorMessage);
                     }
                 });
             }
         }catch (Exception e){}
+    }
+
+    private void showErrorDialog(String errorMsg){
+        AlertDialog.Builder builder = new AlertDialog.Builder(InteractionActivity.this, AlertDialog.THEME_HOLO_LIGHT);
+        builder.setMessage(errorMsg);
+        builder.setCancelable(false);
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                InteractionActivity.this.finish();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
     }
 
     @Override
@@ -147,8 +165,8 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         if(progressBar != null){
             progressBar.setProgress(progressValue);
             if(progressValue >= 20){
-                if(null != progressDialog && progressDialog.isShowing()){
-                    progressDialog.cancel();
+                if(null != customProgressDialog && customProgressDialog.isShowing()){
+                    customProgressDialog.dismiss();
                 }
             }
             if(progressValue == 100){
@@ -191,12 +209,10 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         @Override
         public void onPageFinished(WebView view, String url) {
             progressBar.setVisibility(View.GONE);
-            Log.d("Datta","onPageFinished url:"+url);
             if(url.contains("#autoClose") || !url.contains("questionpro") || url.contains("exitsurvey")){
                 runTimer();
             }
         }
-
     }
 
     @Override
