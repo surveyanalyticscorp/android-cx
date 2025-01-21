@@ -140,15 +140,13 @@ public class QuestionProCX {
     }
 
     public static synchronized void launchFeedbackSurvey(long surveyId){
-        showProgress();
-        /*if(!CXGlobalInfo.isInteractionPending(mActivity.get(),surveyId)){
-            CXGlobalInfo.updateCXPayloadWithSurveyId(mActivity.get(), surveyId);
-            CXPayloadWorker.appWentToForeground(mActivity.get());
-        } else{
-            launchFeedbackScreen(mActivity.get(),surveyId);
-        }*/
+        /*showProgress();
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-        CXPayloadWorker.appWentToForeground(mActivity.get());
+        CXPayloadWorker.appWentToForeground(mActivity.get());*/
+
+        Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
+        intent.putExtra("SURVEY_ID", surveyId);
+        mActivity.get().startActivity(intent);
     }
 
     public static void onStop(Activity activity){
