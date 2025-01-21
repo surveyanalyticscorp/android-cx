@@ -102,12 +102,12 @@ public class CXGlobalInfo {
     }
 
     @NonNull
-    public static String isShowDialog(Context context){
+    public static boolean isShowDialog(Context context){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("showAsDialog");
+            return payloadObj.getBoolean("showAsDialog");
         }catch (Exception e){e.printStackTrace();}
-        return "";
+        return false;
     }
 
     @NonNull
