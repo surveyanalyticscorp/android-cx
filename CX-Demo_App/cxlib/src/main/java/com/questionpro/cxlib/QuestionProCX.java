@@ -124,15 +124,6 @@ public class QuestionProCX {
         runningActivities++;
     }
 
-    /*public static synchronized void engageTouchPoint(AppCompatActivity activity, TouchPoint touchPoint){
-        init(activity);
-        if(!CXGlobalInfo.isInteractionPending(activity,touchPoint.getTouchPointID())){
-            CXGlobalInfo.setPayLoad(activity, touchPoint);
-            CXPayloadWorker.appWentToForeground(activity);
-        } else{
-            launchFeedbackScreen(activity,touchPoint.getTouchPointID());
-        }
-    }*/
 
     public static synchronized void init(Activity activity, TouchPoint touchPoint){
         init(activity);
