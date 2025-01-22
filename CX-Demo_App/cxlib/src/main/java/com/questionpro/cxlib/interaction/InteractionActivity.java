@@ -149,7 +149,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         AlertDialog.Builder builder = new AlertDialog.Builder(InteractionActivity.this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setMessage(errorMsg);
         builder.setCancelable(false);
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 InteractionActivity.this.finish();
