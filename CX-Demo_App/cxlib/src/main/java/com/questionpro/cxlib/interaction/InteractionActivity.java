@@ -115,7 +115,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     @Override
     public void onSuccess(final String surveyUrl) {
-        Log.d("Datta","Urllll: "+surveyUrl);
+        Log.d("Datta","Url: "+surveyUrl);
         if(surveyUrl==null || CXUtils.isEmpty(surveyUrl)){
             finish();
         } else{
@@ -134,14 +134,16 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             customProgressDialog.dismiss();
         }
         try {
+            String errorMessage = "Something went wrong. Unable to load the survey.";
             if (response.has("error") && response.getJSONObject("error").has("message")) {
-                final String errorMessage = "Error: " + response.getJSONObject("error").getString("message");
-                runOnUiThread(new Runnable() {
-                    public void run() {
-                        showErrorDialog(errorMessage);
-                    }
-                });
+                errorMessage = "Error: " + response.getJSONObject("error").getString("message");
             }
+            final String finalErrorMessage = errorMessage;
+            runOnUiThread(new Runnable() {
+                public void run() {
+                    showErrorDialog(finalErrorMessage);
+                }
+            });
         }catch (Exception e){}
     }
 
