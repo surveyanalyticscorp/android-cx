@@ -3,6 +3,8 @@ package com.questionpro.cxlib.model;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TouchPoint implements Serializable{
     private final String transactionLanguage;
@@ -12,9 +14,8 @@ public class TouchPoint implements Serializable{
     private final String mobile;
     private final String segmentCode;
     private final String transactionDate;
-    private final String customVariable1;
-    private final String customVariable2;
-    private final String customVariable3;
+
+    private final Map<Integer, String> customVariables;
 
     /** Setting related variables */
     private final boolean showAsDialog;
@@ -31,9 +32,7 @@ public class TouchPoint implements Serializable{
         this.mobile = builder.mobile;
         this.segmentCode = builder.segmentCode;
         this.transactionDate = builder.transactionDate;
-        this.customVariable1 = builder.customVariable1;
-        this.customVariable2 = builder.customVariable2;
-        this.customVariable3 = builder.customVariable3;
+        this.customVariables = builder.customVariables;
         this.themeColor = builder.themeColor;
         this.mType = builder.mType;
         this.dataCenter = builder.dataCenter;
@@ -71,16 +70,9 @@ public class TouchPoint implements Serializable{
         return transactionDate;
     }
 
-    public String getCustomVariable1(){
-        return customVariable1;
+    public Map<Integer, String> getCustomVariables(){
+        return customVariables;
     }
-    public String getCustomVariable2(){
-        return customVariable2;
-    }
-    public String getCustomVariable3(){
-        return customVariable3;
-    }
-
     public String getThemeColor(){
         return themeColor;
     }
@@ -112,9 +104,7 @@ public class TouchPoint implements Serializable{
         private String transactionLanguage;
         private String transactionDate;
 
-        private String customVariable1;
-        private String customVariable2;
-        private String customVariable3;
+        private Map<Integer, String> customVariables;
         private String mobile;
         private String segmentCode;
 
@@ -156,18 +146,8 @@ public class TouchPoint implements Serializable{
             return this;
          }
 
-         public Builder customVariable1(String customVariable1){
-            this.customVariable1 = customVariable1;
-            return this;
-         }
-
-        public Builder customVariable2(String customVariable2){
-            this.customVariable2 = customVariable2;
-            return this;
-        }
-
-        public Builder customVariable3(String customVariable3){
-            this.customVariable3 = customVariable3;
+        public Builder customVariables(HashMap<Integer, String> customVars){
+            this.customVariables = customVars;
             return this;
         }
 

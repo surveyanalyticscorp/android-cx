@@ -4,6 +4,7 @@ import static com.questionpro.cxlib.constants.CXConstants.JSONUploadFields.SURVE
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 //import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,9 @@ import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.TouchPoint;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CXGlobalInfo {
@@ -137,6 +141,7 @@ public class CXGlobalInfo {
             //JSONObject payloadObj = new JSONObject(prefs.getString(CXConstants.PREF_KEY_PAYLOAD, ""));
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
             payloadObj.put("isManualSurvey", true);
+            CXGlobalInfo.setCustomVariable(payloadObj);
             payloadObj.remove("showAsDialog");
             payloadObj.remove("themeColor");
             payloadObj.remove("type");
@@ -144,6 +149,29 @@ public class CXGlobalInfo {
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";
+    }
+
+    private static void setCustomVariable(JSONObject payloadObj){
+        try {
+            if (payloadObj.has("customVariables")) {
+                //String inputString = "key1=value1,key2=value2,key3=value3";
+                String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
+
+                Map<String, String> myMap = new HashMap<>();
+                String[] pairs = inputString.split(",");
+                for (String pair : pairs) {
+                    String[] keyValue = pair.split("=");
+                    if (keyValue.length == 2) {
+                        String key = "custom"+keyValue[0].trim();
+                        String value = keyValue[1].trim();
+                        //myMap.put(key, value);
+                        payloadObj.put(key,value);
+                    }
+                }
+                payloadObj.remove("customVariables");
+                Log.d("Datta","playload: "+payloadObj);
+            }
+        }catch (Exception e){}
     }
 
     /*public static boolean isInteractionPending(Activity activity){
