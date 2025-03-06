@@ -85,9 +85,13 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
                     }
                 } else if (response.isRejectedTemporarily()) {
                     Log.d("Datta", "Unable to send JSON");
+                    mQuestionProApiCall.onError(new JSONObject());
                 }
             }
-        }catch (Exception e){e.printStackTrace();}
+        }catch (Exception e){
+            mQuestionProApiCall.onError(new JSONObject());
+            e.printStackTrace();
+        }
         return  "";
     }
 }
