@@ -40,7 +40,6 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     private WebView webView;
     private String url = "";
-    private CXInteraction cxInteraction;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -219,7 +218,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     @Override
     public void onBackPressed() {
-        if(!cxInteraction.isDialog){
+        if(!CXGlobalInfo.isShowDialog(this)){
             super.onBackPressed();
         }
     }
