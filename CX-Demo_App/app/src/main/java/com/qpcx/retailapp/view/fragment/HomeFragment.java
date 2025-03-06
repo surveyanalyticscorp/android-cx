@@ -26,8 +26,14 @@ import com.qpcx.retailapp.R;
 import com.qpcx.retailapp.domain.api.ProductCategoryLoaderTask;
 import com.qpcx.retailapp.view.activities.ECartHomeActivity;
 import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.model.DataCenter;
 import com.questionpro.cxlib.model.TouchPoint;
+import com.questionpro.cxlib.model.Type;
 import com.twotoasters.jazzylistview.recyclerview.JazzyRecyclerViewScrollListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressLint("ResourceAsColor")
 public class HomeFragment extends Fragment {
@@ -67,14 +73,37 @@ public class HomeFragment extends Fragment {
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						QuestionProCX.launchFeedbackSurvey(11543908);
+
+						HashMap<Integer, String> customVars = new HashMap<>();
+						customVars.put(2, "Datta");
+						customVars.put(3, "Kunde");
+						customVars.put(4, "Pune");
+						customVars.put(5, "Maharashtra");
+						customVars.put(100, "India");
+
+						TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
+								.email("mobile.android@questionpro.com")
+								.transactionLanguage("English")
+								.customVariables(customVars)
+								.build();
+						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);
+
+
+						QuestionProCX.launchFeedbackSurvey(12174640);
 					}
 				});
 
+		view.findViewById(R.id.launch_survey).setVisibility(View.VISIBLE);
 		view.findViewById(R.id.launch_survey).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				QuestionProCX.launchFeedbackSurvey(11543913);
+				TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
+						.showAsDialog(true)
+						.email("mobile.android@questionpro.com")
+						.transactionLanguage("English")
+						.build();
+				QuestionProCX.init(getActivity(), touchPoint);
+				QuestionProCX.launchFeedbackSurvey(12174640);//Device audit: 8282698
 			}
 		});
 

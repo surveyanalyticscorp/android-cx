@@ -33,6 +33,7 @@ import com.questionpro.cxlib.model.Type;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 
 public class ECartHomeActivity extends AppCompatActivity {
 
@@ -196,13 +197,15 @@ public class ECartHomeActivity extends AppCompatActivity {
 	}
 
 	private void initialiseQpSdk(){
+
 		Activity activity =  ECartHomeActivity.this;
-		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.EU)
+		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
 				.email("mobile.android@questionpro.com")
+				.transactionLanguage("German")
 				/*.firstName("Datta")
 				.lastName("Kunde")
 				.segmentCode("S1")*/
-				.showAsDialog(true)
+				//.showAsDialog(true)
 				/*.themeColor("#0000FF")
 				.transactionLanguage("French")
 				.customVariable1("123")
