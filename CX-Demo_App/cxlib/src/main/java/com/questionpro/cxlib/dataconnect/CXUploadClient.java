@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.model.Type;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -53,14 +52,12 @@ public class CXUploadClient {
             urlConnection.setDoOutput(false);
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setFixedLengthStreamingMode(payload.length());
 
-            if (Type.CUSTOMER_EXPERIENCE.toString().equals(CXGlobalInfo.getType(context))) {
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setFixedLengthStreamingMode(payload.length());
-                OutputStream os = urlConnection.getOutputStream();
-                os.write(payload.getBytes(StandardCharsets.UTF_8));
-                os.close();
-            }
+            OutputStream os = urlConnection.getOutputStream();
+            os.write(payload.getBytes(StandardCharsets.UTF_8));
+            os.close();
 
             int responseCode = urlConnection.getResponseCode();
             cxHttpResponse.setCode(responseCode);

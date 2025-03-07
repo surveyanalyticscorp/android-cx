@@ -1,6 +1,6 @@
 package com.questionpro.cxlib.model;
 
-public enum Type {
+enum Type {
     SURVEY,
     CUSTOMER_EXPERIENCE
 }

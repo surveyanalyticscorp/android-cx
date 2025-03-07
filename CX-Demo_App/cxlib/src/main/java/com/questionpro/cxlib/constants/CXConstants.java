@@ -5,14 +5,12 @@ import android.content.Context;
 
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.model.DataCenter;
-import com.questionpro.cxlib.model.Type;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CXConstants {
 
-    private static final String CX_URL = "https://api.questionpro.com/a/api/questionpro.cx.getSurveyURL?apiKey=";
     private static final String CX_TRANSACTION_SURVEY_URL = "/a/api/v2/cx/transactions/survey-url";
     private static final String SURVEYS_URL = "/a/api/v2/surveys/";
     public static final String PREF_NAME="questionpro_cx";
@@ -25,13 +23,9 @@ public class CXConstants {
 
     public static String getUrl(Context context, String surveyId) {
         try {
-            String type = CXGlobalInfo.getType(context);
+            //String type = CXGlobalInfo.getType(context);
             String dataCenter = CXGlobalInfo.getDataCenter(context);
-            if (Type.CUSTOMER_EXPERIENCE.toString().equals(type)) {
-                return getBaseUrl(dataCenter) + CX_TRANSACTION_SURVEY_URL;
-            } else {
-                return getBaseUrl(dataCenter) + SURVEYS_URL + surveyId;
-            }
+            return getBaseUrl(dataCenter) + CX_TRANSACTION_SURVEY_URL;
         }catch (Exception e){
             e.printStackTrace();
         }

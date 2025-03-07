@@ -19,7 +19,6 @@ public class TouchPoint implements Serializable{
     /** Setting related variables */
     private final boolean showAsDialog;
     private final String themeColor;
-    private final Type mType;
     private final DataCenter dataCenter;
 
     public TouchPoint(Builder builder) {
@@ -35,7 +34,6 @@ public class TouchPoint implements Serializable{
         this.customVariable2 = builder.customVariable2;
         this.customVariable3 = builder.customVariable3;
         this.themeColor = builder.themeColor;
-        this.mType = builder.mType;
         this.dataCenter = builder.dataCenter;
     }
 
@@ -85,10 +83,6 @@ public class TouchPoint implements Serializable{
         return themeColor;
     }
 
-    public Type getType() {
-        return mType;
-    }
-
     public DataCenter getDataCenter(){
         return dataCenter;
     }
@@ -120,11 +114,9 @@ public class TouchPoint implements Serializable{
 
         private  boolean showAsDialog;
         private String themeColor = "";
-        private Type mType = null;
         private DataCenter dataCenter = null;
 
-        public Builder(Type type, DataCenter dataCenter){
-            this.mType = type;
+        public Builder( DataCenter dataCenter){
             this.dataCenter = dataCenter;
         }
 

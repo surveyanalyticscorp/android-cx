@@ -83,14 +83,14 @@ public class CXGlobalInfo {
      * @param context
      * @return
      */
-    @NonNull
+    /*@NonNull
     public static String getType(Context context){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("type");
         }catch (Exception e){e.printStackTrace();}
         return "";
-    }
+    }*/
 
     @NonNull
     public static String getDataCenter(Context context){
