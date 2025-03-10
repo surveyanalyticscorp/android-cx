@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.questionpro.cxlib.constants.CXConstants;
+import com.questionpro.cxlib.interfaces.PersistentSessionQueue;
 
 import java.util.ArrayList;
 import java.util.List;
