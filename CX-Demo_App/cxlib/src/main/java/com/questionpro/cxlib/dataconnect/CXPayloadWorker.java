@@ -89,7 +89,7 @@ public class CXPayloadWorker {
                                     //long surveyID = CXGlobalInfo.getSurveyIDFromPayload(payload);
                                     //CXGlobalInfo.storeInteraction(activity, surveyID, cxInteraction);
                                     if(!activity.isFinishing()){
-                                        QuestionProCX.launchFeedbackScreen(activity, cxInteraction);
+                                        QuestionProCX.getInstance().launchFeedbackScreen(activity, cxInteraction);
                                     }
                                 }else{
                                     questionProCX.onError(responseJson);

@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.TouchPoint;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 
 
@@ -37,7 +39,7 @@ public class CXGlobalInfo {
     /**
      * This function is used to save the payload in preferences at the time of initialization.
      */
-    public void savePayLoad(TouchPoint touchPoint){
+    public void savePayLoad(TouchPoint touchPoint) throws JSONException {
         CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint).toString();
     }
 

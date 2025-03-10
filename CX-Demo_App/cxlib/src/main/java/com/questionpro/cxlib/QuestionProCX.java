@@ -14,6 +14,7 @@ import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.dataconnect.CXPayloadWorker;
 import com.questionpro.cxlib.interaction.InteractionFragment;
+import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.init.CXGlobalInfo;
@@ -35,63 +36,57 @@ public class QuestionProCX {
 
     private static WeakReference<Activity> mActivity;
 
+    private static QuestionProCX mInstance = null;
+
     public QuestionProCX(){
     }
 
-    private static void init(Activity activity){
-        mActivity = new WeakReference<>(activity);
-        final Context appContext = activity.getApplicationContext();
-        try {
-            ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
-            Bundle metaData = ai.metaData;
-            if (metaData != null) {
-                String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-                Log.d(LOG_TAG,"API key: "+apiKey);
-                CXGlobalInfo.getInstance().setApiKey(apiKey);
-                CXGlobalInfo.getInstance().setAppPackage(appContext.getPackageName());
-                CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(activity));
-                CXGlobalInfo.getInstance().setInitialized(true);
-            }
-        }catch (Exception e){
-            Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
+    public static QuestionProCX getInstance(){
+        if(mInstance == null){
+            mInstance = new QuestionProCX();
         }
-
-        /*if (!CXGlobalInfo.initialized) {
-            SharedPreferences prefs = appContext.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-            // First, Get the api key, and figure out if app is debuggable.
-            String apiKey = prefs.getString(CXConstants.PREF_KEY_API_KEY, null);
-
-            try {
-                ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
-                Bundle metaData = ai.metaData;
-                if (metaData != null) {
-                    *//*if (apiKey == null) {
-                        apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-                        Log.d(LOG_TAG,"Saving API key for the first time: "+apiKey);
-                        prefs.edit().putString(CXConstants.PREF_KEY_API_KEY, apiKey).apply();
-                    } else {
-                        Log.d(LOG_TAG,"Using cached API Key: "+apiKey);
-                    }*//*
-                    apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-                    Log.d(LOG_TAG,"API key: "+apiKey);
-                    prefs.edit().putString(CXConstants.PREF_KEY_API_KEY, apiKey).apply();
-                }
-            } catch (Exception e) {
-                Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
-            }
-            String errorString = "No CX api key specified. Please make sure you have specified your api key in your AndroidManifest.xml";
-            if(CXUtils.isEmpty(apiKey)){
-                Log.e("QuestionProCX", errorString);
-            }
-            CXGlobalInfo.apiKey = apiKey;
-            // Grab app info we need to access later on.
-            CXGlobalInfo.appPackage = appContext.getPackageName();
-            CXGlobalInfo.UUID = CXUtils.getUniqueDeviceId(activity);
-            CXGlobalInfo.initialized = true;
-        }*/
+        return mInstance;
     }
 
-    private static void showProgress(){
+    public synchronized void init(Activity activity, TouchPoint touchPoint){
+        try {
+            initialize(activity);
+            CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+        }catch (Exception e){
+            Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
+        }
+    }
+
+    public synchronized void init(Activity activity, TouchPoint touchPoint, IQuestionProInitCallback callback){
+        try {
+            initialize(activity);
+            CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+
+            callback.onSuccess("QuestionPro SDK initialise successfully!");
+        }catch (Exception e){
+            callback.onFailed(e.getMessage());
+        }
+    }
+
+    private static void initialize(Activity activity) throws Exception{
+        mActivity = new WeakReference<>(activity);
+
+        final Context appContext = activity.getApplicationContext();
+        ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
+        Bundle metaData = ai.metaData;
+
+        if (metaData != null) {
+            String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
+            Log.d(LOG_TAG,"API key: "+apiKey);
+            CXGlobalInfo.getInstance().setApiKey(apiKey);
+            CXGlobalInfo.getInstance().setAppPackage(appContext.getPackageName());
+            CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(activity));
+            CXGlobalInfo.getInstance().setInitialized(true);
+        }
+
+    }
+
+    private void showProgress(){
         progressDialog = new ProgressDialog(mActivity.get());
         progressDialog.setMessage("loading...");
         progressDialog.setCancelable(false);
@@ -115,7 +110,7 @@ public class QuestionProCX {
         }
     }
 
-    public static void onStart(Activity activity){
+    public void onStart(Activity activity){
         //init(activity);
         ActivityLifecycleManager.activityStarted(activity);
         if (runningActivities == 0) {
@@ -125,12 +120,7 @@ public class QuestionProCX {
     }
 
 
-    public static synchronized void init(Activity activity, TouchPoint touchPoint){
-        init(activity);
-        CXGlobalInfo.getInstance().savePayLoad(touchPoint);
-    }
-
-    public static synchronized void launchFeedbackSurvey(long surveyId){
+    public synchronized void launchFeedbackSurvey(long surveyId){
         /*showProgress();
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
         CXPayloadWorker.appWentToForeground(mActivity.get());*/
@@ -140,7 +130,7 @@ public class QuestionProCX {
         mActivity.get().startActivity(intent);
     }
 
-    public static void onStop(Activity activity){
+    public void onStop(Activity activity){
         try {
             ActivityLifecycleManager.activityStopped(activity);
             runningActivities--;
@@ -159,7 +149,7 @@ public class QuestionProCX {
 
         }
     }
-    public static synchronized  void launchFeedbackScreen(Activity activity, CXInteraction cxInteraction){
+    public synchronized  void launchFeedbackScreen(Activity activity, CXInteraction cxInteraction){
         try {
             progressDialog.cancel();
             Intent intent = new Intent(activity, InteractionActivity.class);
