@@ -11,14 +11,15 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.dataconnect.CXPayload;
+import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.dataconnect.CXPayloadWorker;
-import com.questionpro.cxlib.interaction.InteractionFragment;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
+import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interaction.InteractionActivity;
+import com.questionpro.cxlib.util.ApiNameEnum;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONException;
@@ -29,7 +30,7 @@ import java.lang.ref.WeakReference;
 /**
  * Created by Dattakunde on 14/04/16.
  */
-public class QuestionProCX {
+public class QuestionProCX implements QuestionProApiCallback {
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
     private static ProgressDialog progressDialog;
@@ -37,6 +38,8 @@ public class QuestionProCX {
     private static WeakReference<Activity> mActivity;
 
     private static QuestionProCX mInstance = null;
+
+    private IQuestionProInitCallback questionProInitCallback;
 
     public QuestionProCX(){
     }
@@ -58,11 +61,14 @@ public class QuestionProCX {
     }
 
     public synchronized void init(Activity activity, TouchPoint touchPoint, IQuestionProInitCallback callback){
+        questionProInitCallback = callback;
         try {
+            Log.d("Datta","Initialising the SDK");
             initialize(activity);
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
 
-            callback.onSuccess("QuestionPro SDK initialise successfully!");
+            new  CXApiHandler(activity, this).makeApiCall(ApiNameEnum.GET_INTERCEPTS);
+            //callback.onSuccess("QuestionPro SDK initialise successfully!");
         }catch (Exception e){
             callback.onFailed(e.getMessage());
         }
@@ -83,7 +89,18 @@ public class QuestionProCX {
             CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(activity));
             CXGlobalInfo.getInstance().setInitialized(true);
         }
+    }
 
+    @Override
+    public void onSuccess(String message) {
+        //Log.d("Datta", "Initialization API response: "+message);
+        questionProInitCallback.onSuccess(message);
+    }
+
+    @Override
+    public void onError(JSONObject error) {
+        //Log.d("Datta", "Error in initialization: "+error.toString());
+        questionProInitCallback.onFailed(error.toString());
     }
 
     private void showProgress(){
@@ -93,7 +110,7 @@ public class QuestionProCX {
         progressDialog.show();
     }
 
-    public void onError(JSONObject response) throws JSONException {
+    public void handleError(JSONObject response) throws JSONException {
         if(null != progressDialog && progressDialog.isShowing()){
             progressDialog.cancel();
         }

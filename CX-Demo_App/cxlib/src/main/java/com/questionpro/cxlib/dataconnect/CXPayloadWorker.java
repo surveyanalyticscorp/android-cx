@@ -92,7 +92,7 @@ public class CXPayloadWorker {
                                         QuestionProCX.getInstance().launchFeedbackScreen(activity, cxInteraction);
                                     }
                                 }else{
-                                    questionProCX.onError(responseJson);
+                                    questionProCX.handleError(responseJson);
                                 }
                             }
                             //Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
@@ -101,7 +101,7 @@ public class CXPayloadWorker {
                             Log.v("Rejected json:", response.getContent());
                             JSONObject jsonObject = new JSONObject(response.getContent());
                             if(jsonObject.has("response")) {
-                                questionProCX.onError(jsonObject.getJSONObject("response"));
+                                questionProCX.handleError(jsonObject.getJSONObject("response"));
                             }
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");

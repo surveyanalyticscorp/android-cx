@@ -1,59 +1,78 @@
 package com.questionpro.cxlib.dataconnect;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
+import android.os.Looper;
 import android.util.Log;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import android.os.Handler;
+
 
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.interfaces.QuestionProApiCall;
+import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.util.ApiNameEnum;
 import com.questionpro.cxlib.util.CXUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
 
-public class CXApiHandler extends AsyncTask<String, String, String> {
+public class CXApiHandler {
 
-    private Activity mActivity;
-    private final QuestionProApiCall mQuestionProApiCall;
-    private ProgressDialog progressDialog;
-    public CXApiHandler(Activity activity){
+    private final Activity mActivity;
+    private final QuestionProApiCallback mQuestionProApiCall;
+
+    public CXApiHandler(Activity activity, QuestionProApiCallback call){
         this.mActivity = activity;
-        this.mQuestionProApiCall = (QuestionProApiCall)activity;
+        mQuestionProApiCall = call;
     }
 
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
-    }
+    public void makeApiCall(final ApiNameEnum apiName){
+        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
+        final Handler handler = new Handler(Looper.getMainLooper());
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                // Background Task (Simulating heavy work)
+                try {
+                    if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
+                        mQuestionProApiCall.onError(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        return;
+                    }
+                    if(apiName == ApiNameEnum.GET_SURVEY) {
+                        getSurveyUrl();
+                    } else if (apiName == ApiNameEnum.GET_INTERCEPTS) {
+                        getInterceptConfigurations();
+                    }
+                }catch (JSONException e){e.printStackTrace();}
 
-    @Override
-    protected String doInBackground(String... strings) {
-        /*try {
-            makeApiCall();
-        }catch (Exception e){
-            mQuestionProApiCall.onError("Error occurred.....");
-        }*/
-        return makeApiCall();
-
-    }
-
-    @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-    }
-
-    private String makeApiCall(){
-        try {
-            if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
-                Log.d("Datta", "Can't send payloads. No network connection.");
-                return "No network connection.";
+                // Switch to UI thread
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Toast.makeText(mActivity, result, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
+        });
+    }
 
+    private void getInterceptConfigurations(){
+        try {
+            Thread.sleep(5000);
+            //mQuestionProApiCall.onSuccess("SDK in Initialised");
+            mQuestionProApiCall.onError(new JSONObject().put("error","Error in fetching the intercept settings"));
+        }catch (Exception e){}
+    }
+
+
+    private void getSurveyUrl(){
+        try {
             String payload = CXGlobalInfo.getApiPayload(mActivity);
             //JSONObject payloadObj = new JSONObject(payload);
             CXHttpResponse response = CXUploadClient.uploadforCX(mActivity, payload);
@@ -70,7 +89,6 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
                         if (!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()) {
                             mQuestionProApiCall.onSuccess(cxInteraction.url);
                         } else {
-
                             mQuestionProApiCall.onError(responseJson);
                         }
                     }
@@ -92,6 +110,5 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
             mQuestionProApiCall.onError(new JSONObject());
             e.printStackTrace();
         }
-        return  "";
     }
 }

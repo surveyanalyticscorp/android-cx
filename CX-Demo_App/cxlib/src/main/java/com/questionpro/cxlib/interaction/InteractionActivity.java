@@ -14,15 +14,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
 import com.questionpro.cxlib.R;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.interfaces.QuestionProApiCall;
-import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
+import com.questionpro.cxlib.util.ApiNameEnum;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -32,7 +31,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class InteractionActivity extends FragmentActivity implements MyWebChromeClient.ProgressListener, QuestionProApiCall {
+public class InteractionActivity extends FragmentActivity implements
+        MyWebChromeClient.ProgressListener,
+        QuestionProApiCallback {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
     //private ProgressDialog progressDialog;
@@ -103,7 +104,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             if (surveyIdSerializable != null) {
                 long surveyId = (Long) surveyIdSerializable;
                 CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-                new CXApiHandler(this).execute();
+                new CXApiHandler(this, this).makeApiCall(ApiNameEnum.GET_SURVEY);
             }else{
                 showErrorDialog("Survey Id is null");
             }
