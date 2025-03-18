@@ -16,6 +16,7 @@ import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.util.ApiNameEnum;
 import com.questionpro.cxlib.util.CXUtils;
+import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,10 +65,20 @@ public class CXApiHandler {
 
     private void getInterceptConfigurations(){
         try {
-            Thread.sleep(5000);
-            //mQuestionProApiCall.onSuccess("SDK in Initialised");
-            mQuestionProApiCall.onError(new JSONObject().put("error","Error in fetching the intercept settings"));
-        }catch (Exception e){}
+            CXHttpResponse response = CXUploadClient.getCxApi(mActivity);
+            if (response != null && response.isSuccessful()) {
+                JSONObject jsonObject = new JSONObject(response.getContent());
+                if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
+                    JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
+                    SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mActivity);
+                    sharedPreferenceManager.saveIntercepts(responseJson.toString());
+                }
+            }
+            mQuestionProApiCall.onSuccess("SDK in Initialised");
+            //mQuestionProApiCall.onError(new JSONObject().put("error","Error in fetching the intercept settings"));
+        }catch (Exception e){
+            mQuestionProApiCall.onError(new JSONObject());
+        }
     }
 
 
