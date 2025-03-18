@@ -3,6 +3,7 @@ package com.questionpro.cxlib.dataconnect;
 import android.content.Context;
 import android.util.Log;
 
+import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.util.CXUtils;
@@ -99,7 +100,52 @@ public class CXUploadClient {
         return cxHttpResponse;
     }
 
-    public static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
+    public static CXHttpResponse getCxApi(Context context) {
+        HttpURLConnection urlConnection = null;
+        CXHttpResponse cxHttpResponse = new CXHttpResponse();
+        try{
+            if (!CXUtils.isNetworkConnectionPresent(context)) {
+                Log.d(LOG_TAG,"Network unavailable.");
+                return cxHttpResponse;
+            }
+            java.net.URL uRL = new URL(CXConstants.getInterceptsUrl());
+            urlConnection = (HttpURLConnection) uRL.openConnection();
+            urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
+            urlConnection.setRequestProperty("x-app-key", CXGlobalInfo.getInstance().getApiKey());
+            urlConnection.setRequestProperty("mobile-app-package", BuildConfig.LIBRARY_PACKAGE_NAME);
+            urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
+            urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
+            urlConnection.setDoOutput(false);
+            urlConnection.setDoInput(true);
+            urlConnection.setUseCaches(false);
+
+            int responseCode = urlConnection.getResponseCode();
+            cxHttpResponse.setCode(responseCode);
+            cxHttpResponse.setReason(urlConnection.getResponseMessage());
+            //Log.d(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
+
+            // Get the Http response header values
+            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, List<String>> map = urlConnection.getHeaderFields();
+            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                headers.put(entry.getKey(), entry.getValue().toString());
+            }
+            cxHttpResponse.setHeaders(headers);
+            if (responseCode >= 200 && responseCode < 300) {
+                cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
+                Log.v("Get Api Response: ", cxHttpResponse.getContent());
+            } else {
+                cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
+                Log.w("Get Api Response: ", cxHttpResponse.getContent());
+            }
+        }catch (Exception e){
+
+        }
+
+        return cxHttpResponse;
+    }
+
+    private static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
         if (connection != null) {
             InputStream is = null;
                 is = new BufferedInputStream(connection.getInputStream());
