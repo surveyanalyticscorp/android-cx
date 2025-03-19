@@ -29,6 +29,15 @@ public class SharedPreferenceManager {
     }
 
 
+    public Intercept getInterceptById(int interceptId) throws Exception{
+        JSONArray interceptArray = new JSONObject(interceptStr).getJSONArray("intercepts");
+        for(int i = 0; i < interceptArray.length(); i++){
+            Intercept intercept = Intercept.fromJSON(interceptArray.getJSONObject(i));
+            if(intercept.id == interceptId)
+                return intercept;
+        }
+        return null;
+    }
     public int getInterceptSurveyId(int interceptId) throws Exception{
         if(CXUtils.isEmpty(interceptStr)) {
             interceptStr = prefs.getString(INTERCEPT, "");
