@@ -32,6 +32,10 @@ public class CXConstants {
         return "";
     }
 
+    public static String getInterceptsUrl(){
+        return "https://cx-intercept-staging-api.questionpro.com/api/v1/visitor/mobile?";
+    }
+
     private static String getBaseUrl(String dataCenter){
         if(DataCenter.EU.name().equalsIgnoreCase(dataCenter))
             return "https://api.questionpro.eu";
@@ -59,6 +63,7 @@ public class CXConstants {
     public static class JSONResponseFields{
         public static final String STATUS = "status";
         public static final String RESPONSE = "response";
+        public static final String PROJECT = "project";
         public static final String CX_SURVEY_URL = "surveyURL";
         public static final String CORE_SURVEY_URL = "url";
         public static final String IS_DIALOG="isDialog";
@@ -67,4 +72,5 @@ public class CXConstants {
         public static final String MESSAGE="message";
         public static final String EMPTY="empty";
     }
+
 }
