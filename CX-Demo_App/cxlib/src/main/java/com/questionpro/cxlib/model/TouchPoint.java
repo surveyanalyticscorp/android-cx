@@ -2,6 +2,8 @@ package com.questionpro.cxlib.model;
 
 import androidx.annotation.NonNull;
 
+import com.questionpro.cxlib.enums.DataCenter;
+
 import java.io.Serializable;
 
 public class TouchPoint implements Serializable{

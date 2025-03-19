@@ -17,11 +17,12 @@ import android.widget.ProgressBar;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.R;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
-import com.questionpro.cxlib.util.ApiNameEnum;
+import com.questionpro.cxlib.enums.ApiName;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -50,7 +51,6 @@ public class InteractionActivity extends FragmentActivity implements
         init();
 
         getSurveyDetails();
-
     }
 
     private void init(){
@@ -104,7 +104,7 @@ public class InteractionActivity extends FragmentActivity implements
             if (surveyIdSerializable != null) {
                 long surveyId = (Long) surveyIdSerializable;
                 CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-                new CXApiHandler(this, this).makeApiCall(ApiNameEnum.GET_SURVEY);
+                new CXApiHandler(this, this).makeApiCall(ApiName.GET_SURVEY);
             }else{
                 showErrorDialog("Survey Id is null");
             }
@@ -175,6 +175,18 @@ public class InteractionActivity extends FragmentActivity implements
                 progressBar.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        QuestionProCX.getInstance().onStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        QuestionProCX.getInstance().onStop(this);
     }
 
     private static final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();

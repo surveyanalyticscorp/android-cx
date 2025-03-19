@@ -4,10 +4,7 @@ package com.questionpro.cxlib.constants;
 import android.content.Context;
 
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.model.DataCenter;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.questionpro.cxlib.enums.DataCenter;
 
 public class CXConstants {
 

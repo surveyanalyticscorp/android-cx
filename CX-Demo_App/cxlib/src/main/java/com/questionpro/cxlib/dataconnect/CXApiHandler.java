@@ -14,7 +14,7 @@ import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.model.CXInteraction;
-import com.questionpro.cxlib.util.ApiNameEnum;
+import com.questionpro.cxlib.enums.ApiName;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
 
@@ -33,7 +33,7 @@ public class CXApiHandler {
         mQuestionProApiCall = call;
     }
 
-    public void makeApiCall(final ApiNameEnum apiName){
+    public void makeApiCall(final ApiName apiName){
         ExecutorService myExecutor = Executors.newSingleThreadExecutor();
         final Handler handler = new Handler(Looper.getMainLooper());
         myExecutor.execute(new Runnable() {
@@ -45,9 +45,9 @@ public class CXApiHandler {
                         mQuestionProApiCall.onError(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
-                    if(apiName == ApiNameEnum.GET_SURVEY) {
+                    if(apiName == ApiName.GET_SURVEY) {
                         getSurveyUrl();
-                    } else if (apiName == ApiNameEnum.GET_INTERCEPTS) {
+                    } else if (apiName == ApiName.GET_INTERCEPTS) {
                         getInterceptConfigurations();
                     }
                 }catch (JSONException e){e.printStackTrace();}
