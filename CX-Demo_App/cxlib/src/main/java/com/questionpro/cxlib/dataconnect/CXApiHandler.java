@@ -15,6 +15,7 @@ import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.enums.ApiName;
+import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
 
@@ -33,7 +34,30 @@ public class CXApiHandler {
         mQuestionProApiCall = call;
     }
 
-    public void makeApiCall(final ApiName apiName){
+    public void getInterceptSurvey(final Intercept intercept){
+        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
+        final Handler handler = new Handler(Looper.getMainLooper());
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
+                        mQuestionProApiCall.onError(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        return;
+                    }
+                    getSurveyUrl(intercept);
+                }catch (Exception e){
+                    try {
+                        mQuestionProApiCall.onError(new JSONObject().put("error", e.getMessage()));
+                    } catch (JSONException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            }
+        });
+    }
+
+    public void getIntercept(){
         ExecutorService myExecutor = Executors.newSingleThreadExecutor();
         final Handler handler = new Handler(Looper.getMainLooper());
         myExecutor.execute(new Runnable() {
@@ -45,12 +69,14 @@ public class CXApiHandler {
                         mQuestionProApiCall.onError(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
-                    if(apiName == ApiName.GET_SURVEY) {
-                        getSurveyUrl();
-                    } else if (apiName == ApiName.GET_INTERCEPTS) {
-                        getInterceptConfigurations();
+                    getInterceptConfigurations();
+                }catch (JSONException e){
+                    try {
+                        mQuestionProApiCall.onError(new JSONObject().put("error", e.getMessage()));
+                    } catch (JSONException ex) {
+                        throw new RuntimeException(ex);
                     }
-                }catch (JSONException e){e.printStackTrace();}
+                }
 
                 // Switch to UI thread
                 handler.post(new Runnable() {
@@ -73,53 +99,48 @@ public class CXApiHandler {
                     SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mActivity);
                     sharedPreferenceManager.saveIntercepts(responseJson.toString());
                 }
-            }
-            mQuestionProApiCall.onSuccess("SDK in Initialised");
-            //mQuestionProApiCall.onError(new JSONObject().put("error","Error in fetching the intercept settings"));
+                mQuestionProApiCall.onSuccess("SDK is Initialised");
+            }else if(response != null && response.isRejectedPermanently()){
+                JSONObject jsonObject = new JSONObject(response.getContent());
+                mQuestionProApiCall.onError(jsonObject);
+            }else
+                mQuestionProApiCall.onError(new JSONObject().put("error","Error in fetching the intercept settings"));
         }catch (Exception e){
             mQuestionProApiCall.onError(new JSONObject());
         }
     }
 
 
-    private void getSurveyUrl(){
+    private void getSurveyUrl(Intercept intercept){
         try {
-            String payload = CXGlobalInfo.getApiPayload(mActivity);
+            String payload = CXGlobalInfo.getInterceptApiPayload(intercept);
             //JSONObject payloadObj = new JSONObject(payload);
             CXHttpResponse response = CXUploadClient.uploadforCX(mActivity, payload);
             if (response != null) {
                 QuestionProCX questionProCX = new QuestionProCX();
                 if (response.isSuccessful()) {
                     JSONObject jsonObject = new JSONObject(response.getContent());
-                    if (jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)) {
-                        JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
-                        //responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,CXGlobalInfo.isShowDialog(contextRef.get()));
-                        responseJson.put(CXConstants.JSONResponseFields.THEME_COLOR, CXGlobalInfo.getThemeColour(mActivity));
-                        CXInteraction cxInteraction = CXInteraction.fromJSON(responseJson);
-
-                        if (!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()) {
-                            mQuestionProApiCall.onSuccess(cxInteraction.url);
-                        } else {
-                            mQuestionProApiCall.onError(responseJson);
-                        }
+                    if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
+                        mQuestionProApiCall.onSuccess(jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
+                    }else{
+                        mQuestionProApiCall.onError(jsonObject);
                     }
-                    //Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
-
                 } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                    Log.v("Rejected json:", response.getContent());
+                    //Log.v("Rejected json:", response.getContent());
                     JSONObject jsonObject = new JSONObject(response.getContent());
                     if (jsonObject.has("response")) {
-                        //questionProCX.onError(jsonObject.getJSONObject("response"));
                         mQuestionProApiCall.onError(jsonObject.getJSONObject("response"));
+                    }else if(jsonObject.has("message")){
+                        mQuestionProApiCall.onError(jsonObject);
+                    }else{
+                        mQuestionProApiCall.onError(new JSONObject());
                     }
-                } else if (response.isRejectedTemporarily()) {
-                    Log.d("Datta", "Unable to send JSON");
+                } else {
                     mQuestionProApiCall.onError(new JSONObject());
                 }
             }
         }catch (Exception e){
             mQuestionProApiCall.onError(new JSONObject());
-            e.printStackTrace();
         }
     }
 }

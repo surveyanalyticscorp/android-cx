@@ -35,19 +35,20 @@ public class CXUploadClient {
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 30000;
     private static final String LOG_TAG = "CXUploadClient";
 
-    public static CXHttpResponse uploadforCX(Context context, String payload) {
+    public static CXHttpResponse  uploadforCX(Context context, String payload) {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
             JSONObject payloadObj = new JSONObject(payload);
-            java.net.URL uRL = new URL(CXConstants.getUrl(context, payloadObj.getString("surveyID")));
+            java.net.URL uRL = new URL(CXConstants.getUrl(context));//, payloadObj.getString("surveyID")
             if (!CXUtils.isNetworkConnectionPresent(context)) {
                 Log.d(LOG_TAG,"Network unavailable.");
                 return cxHttpResponse;
             }
             urlConnection = (HttpURLConnection) uRL.openConnection();
             urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
-            urlConnection.setRequestProperty("api-key", CXGlobalInfo.getInstance().getApiKey());
+            urlConnection.setRequestProperty("x-app-key", CXGlobalInfo.getInstance().getApiKey());
+            urlConnection.setRequestProperty("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);
@@ -76,7 +77,7 @@ public class CXUploadClient {
             // Read the response, if available
             if (responseCode >= 200 && responseCode < 300) {
                 cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
-                //Log.v("Response: ", cxHttpResponse.getContent());
+                Log.v("Response: ", cxHttpResponse.getContent());
             } else {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w("Response: ", cxHttpResponse.getContent());
@@ -112,7 +113,7 @@ public class CXUploadClient {
             urlConnection = (HttpURLConnection) uRL.openConnection();
             urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
             urlConnection.setRequestProperty("x-app-key", CXGlobalInfo.getInstance().getApiKey());
-            urlConnection.setRequestProperty("mobile-app-package", BuildConfig.LIBRARY_PACKAGE_NAME);
+            urlConnection.setRequestProperty("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);
