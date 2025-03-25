@@ -20,9 +20,9 @@ import androidx.fragment.app.FragmentActivity;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.R;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
+import com.questionpro.cxlib.enums.InterceptType;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
-import com.questionpro.cxlib.enums.ApiName;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 
@@ -42,20 +42,28 @@ public class InteractionActivity extends FragmentActivity implements
     private ProgressDialog customProgressDialog;
 
     private WebView webView;
-    private String url = "";
+    private Intercept intercept;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        init();
+        Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
+        if (surveyIdSerializable != null) {
+            intercept = (Intercept) surveyIdSerializable;
+            CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
 
-        getSurveyDetails();
+            init();
+
+            getSurveyDetails();
+        }else{
+            showErrorDialog("Survey Id is null");
+        }
     }
 
     private void init(){
-        if(CXGlobalInfo.isShowDialog(this)) {
+        if(intercept.type.equals(InterceptType.PROMPT.name())) {
             setContentView(R.layout.cx_webview_dialog);
            
         } else {
@@ -101,7 +109,8 @@ public class InteractionActivity extends FragmentActivity implements
             customProgressDialog.setMessage("Please wait.");
             customProgressDialog.show();
 
-            Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
+            new CXApiHandler(this, this).getInterceptSurvey(intercept);
+            /*Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
             if (surveyIdSerializable != null) {
                 Intercept intercept = (Intercept) surveyIdSerializable;
                 CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
@@ -110,7 +119,7 @@ public class InteractionActivity extends FragmentActivity implements
 
             }else{
                 showErrorDialog("Survey Id is null");
-            }
+            }*/
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -236,7 +245,7 @@ public class InteractionActivity extends FragmentActivity implements
 
     @Override
     public void onBackPressed() {
-        if(!CXGlobalInfo.isShowDialog(this)){
+        if(intercept.type.equals(InterceptType.EMBED.name())){
             super.onBackPressed();
         }
     }
