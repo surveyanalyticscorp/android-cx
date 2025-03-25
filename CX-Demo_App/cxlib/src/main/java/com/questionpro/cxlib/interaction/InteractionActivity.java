@@ -23,6 +23,7 @@ import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.enums.ApiName;
+import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -100,11 +101,13 @@ public class InteractionActivity extends FragmentActivity implements
             customProgressDialog.setMessage("Please wait.");
             customProgressDialog.show();
 
-            Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
+            Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
             if (surveyIdSerializable != null) {
-                long surveyId = (Long) surveyIdSerializable;
-                CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-                new CXApiHandler(this, this).makeApiCall(ApiName.GET_SURVEY);
+                Intercept intercept = (Intercept) surveyIdSerializable;
+                CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
+
+                new CXApiHandler(this, this).getInterceptSurvey(intercept);
+
             }else{
                 showErrorDialog("Survey Id is null");
             }
@@ -137,6 +140,8 @@ public class InteractionActivity extends FragmentActivity implements
             String errorMessage = "Something went wrong. Unable to load the survey.";
             if (response.has("error") && response.getJSONObject("error").has("message")) {
                 errorMessage = "Error: " + response.getJSONObject("error").getString("message");
+            }else if(response.has("message")){
+                errorMessage = "Error: " + response.getString("message");
             }
             final String finalErrorMessage = errorMessage;
             runOnUiThread(new Runnable() {
