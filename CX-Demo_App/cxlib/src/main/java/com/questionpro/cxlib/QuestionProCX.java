@@ -12,34 +12,46 @@ import android.widget.Toast;
 
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
-import com.questionpro.cxlib.dataconnect.CXPayloadWorker;
+import com.questionpro.cxlib.enums.InterceptCondition;
+import com.questionpro.cxlib.enums.InterceptRuleType;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
+import com.questionpro.cxlib.interfaces.QuestionProIntercepts;
 import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.model.Intercept;
+import com.questionpro.cxlib.model.InterceptRule;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interaction.InteractionActivity;
-import com.questionpro.cxlib.util.ApiNameEnum;
 import com.questionpro.cxlib.util.CXUtils;
+import com.questionpro.cxlib.util.DateTimeUtils;
+import com.questionpro.cxlib.util.SharedPreferenceManager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Dattakunde on 14/04/16.
  */
-public class QuestionProCX implements QuestionProApiCallback {
+public class QuestionProCX implements QuestionProApiCallback, QuestionProIntercepts {
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
-    private static ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;
 
-    private static WeakReference<Activity> mActivity;
+    private WeakReference<Activity> mActivity;
 
     private static QuestionProCX mInstance = null;
 
     private IQuestionProInitCallback questionProInitCallback;
+
+    private SharedPreferenceManager preferenceManager;
+
+    private static final HashMap<Integer, ArrayList<String>> interceptSatisfiedRules = new HashMap<>();
 
     public QuestionProCX(){
     }
@@ -67,15 +79,22 @@ public class QuestionProCX implements QuestionProApiCallback {
             initialize(activity);
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
 
-            new  CXApiHandler(activity, this).makeApiCall(ApiNameEnum.GET_INTERCEPTS);
+            new CXApiHandler(activity, this).getIntercept();
             //callback.onSuccess("QuestionPro SDK initialise successfully!");
         }catch (Exception e){
             callback.onFailed(e.getMessage());
         }
     }
 
-    private static void initialize(Activity activity) throws Exception{
+    public void reset(){
+        MonitorAppEvents.getInstance().stopTimer();
+        interceptSatisfiedRules.clear();
+    }
+
+    private void initialize(Activity activity) throws Exception{
         mActivity = new WeakReference<>(activity);
+
+        preferenceManager = new SharedPreferenceManager(activity);
 
         final Context appContext = activity.getApplicationContext();
         ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
@@ -95,12 +114,114 @@ public class QuestionProCX implements QuestionProApiCallback {
     public void onSuccess(String message) {
         //Log.d("Datta", "Initialization API response: "+message);
         questionProInitCallback.onSuccess(message);
+        setUpIntercept();
     }
 
     @Override
     public void onError(JSONObject error) {
         //Log.d("Datta", "Error in initialization: "+error.toString());
         questionProInitCallback.onFailed(error.toString());
+    }
+
+
+    private void setUpIntercept(){
+        try{
+            JSONObject interceptObj =new JSONObject(preferenceManager.getIntercepts());
+            JSONArray interceptArray = interceptObj.getJSONArray("intercepts");
+            for(int i = 0; i < interceptArray.length(); i++){
+                JSONObject jsonObject = interceptArray.getJSONObject(i);
+                //setUpTimeSpendIntercept(obj);
+                Intercept intercept = Intercept.fromJSON(jsonObject);
+                for(InterceptRule rule: intercept.interceptRule){
+                    if(rule.name.equals(InterceptRuleType.TIME_SPENT.name())){
+                        MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
+                    }else if(rule.name.equals(InterceptRuleType.VIEW_COUNT.name())){
+                        setUpViewCountRule(rule, intercept.id);
+                    } else if(rule.name.equals(InterceptRuleType.DAY.name())){
+                        checkDayRule(rule, intercept.id);
+                    } else if(rule.name.equals(InterceptRuleType.DATE.name())){
+                        checkDateRule(rule, intercept.id);
+                    }
+                }
+            }
+        }catch (Exception e){}
+
+    }
+
+    private void checkDateRule(InterceptRule rule, int interceptId){
+        Log.d("Datta","Date: "+DateTimeUtils.getCurrentDayOfMonth());
+    }
+
+    private void checkDayRule(InterceptRule rule, int interceptId){
+        Log.d("Datta","Day of week: "+DateTimeUtils.getCurrentDayOfWeek());
+        if(rule.name.equals(DateTimeUtils.getCurrentDayOfWeek())){
+            ArrayList<String> interceptRules = new ArrayList<>();
+            if(interceptSatisfiedRules.containsKey(interceptId)) {
+                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+            }
+            interceptRules.add(InterceptRuleType.DAY.name());
+
+            interceptSatisfiedRules.put(interceptId, interceptRules);
+            checkAllRulesForIntercept(interceptId);
+        }
+    }
+
+    private void setUpViewCountRule(InterceptRule rule, int interceptId){
+        preferenceManager.updateAppViewCount();
+        int appViewCount = preferenceManager.getAppViewCount();
+        Log.d("Datta", "App visit count: "+appViewCount);
+        if(appViewCount == Integer.parseInt(rule.value)){
+            preferenceManager.resetAppViewCount();
+            ArrayList<String> interceptRules = new ArrayList<>();
+            if(interceptSatisfiedRules.containsKey(interceptId)) {
+                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+            }
+            interceptRules.add(InterceptRuleType.VIEW_COUNT.name());
+
+            interceptSatisfiedRules.put(interceptId, interceptRules);
+            checkAllRulesForIntercept(interceptId);
+        }
+    }
+
+    @Override
+    public void onTimeSpendSatisfied(int interceptId) {
+        try {
+            int surveyId = preferenceManager.getInterceptSurveyId(interceptId);
+            Log.d("Datta","Trigger the intercept as time is satisfied:"+surveyId);
+            ArrayList<String> interceptRules = new ArrayList<>();
+            if(interceptSatisfiedRules.containsKey(interceptId)) {
+                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+            }
+            interceptRules.add(InterceptRuleType.TIME_SPENT.name());
+
+            interceptSatisfiedRules.put(interceptId, interceptRules);
+
+            checkAllRulesForIntercept(interceptId);
+        }catch (Exception e){}
+    }
+
+    private void checkAllRulesForIntercept(int interceptId){
+        try {
+            Intercept intercept = preferenceManager.getInterceptById(interceptId);
+
+            ArrayList<String> temp = interceptSatisfiedRules.get(interceptId);
+            assert temp != null;
+            Log.d("Datta",interceptId+" Satisfied intercepts: "+temp);
+
+            if(intercept.condition.equals(InterceptCondition.OR.name())){
+                launchFeedbackSurvey(intercept);
+            }else if(intercept.interceptRule.size() == temp.size()){
+                launchFeedbackSurvey(intercept);
+            }
+
+            /*Iterator it = interceptSatisfiedRules.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                System.out.println(pair.getKey() + " = " + pair.getValue());
+                it.remove(); // avoids a ConcurrentModificationException
+            }*/
+
+        }catch (Exception e){}
     }
 
     private void showProgress(){
@@ -127,11 +248,13 @@ public class QuestionProCX implements QuestionProApiCallback {
         }
     }
 
+    /** Use this function while launching the survey Activity. Check if feedback activity is already running */
     public void onStart(Activity activity){
         //init(activity);
+        Log.d("Datta","Interaction Activity onStart");
         ActivityLifecycleManager.activityStarted(activity);
         if (runningActivities == 0) {
-            CXPayloadWorker.appWentToForeground(activity);
+            //CXPayloadWorker.appWentToForeground(activity);
         }
         runningActivities++;
     }
@@ -142,30 +265,21 @@ public class QuestionProCX implements QuestionProApiCallback {
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
         CXPayloadWorker.appWentToForeground(mActivity.get());*/
 
-        Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
-        intent.putExtra("SURVEY_ID", surveyId);
-        mActivity.get().startActivity(intent);
-    }
-
-    public void onStop(Activity activity){
-        try {
-            ActivityLifecycleManager.activityStopped(activity);
-            runningActivities--;
-            if (runningActivities < 0) {
-                Log.e(LOG_TAG,"Incorrect number of running Activities encountered. Resetting to 0. Did you make sure to call Apptentive.onStart() and Apptentive.onStop() in all your Activities?");
-                runningActivities = 0;
-            }
-            // If there are no running activities, wake the thread so it can stop immediately and gracefully.
-            if (runningActivities == 0) {
-                CXPayloadWorker.appWentToBackground();
-
-            }
-
-        } catch (Exception e) {
-            Log.w(LOG_TAG,"Error stopping Apptentive Activity.", e);
-
+        if(runningActivities == 0) {
+            Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
+            intent.putExtra("SURVEY_ID", surveyId);
+            mActivity.get().startActivity(intent);
         }
     }
+
+    private synchronized void launchFeedbackSurvey(Intercept intercept){
+        if(runningActivities == 0) {
+            Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
+            intent.putExtra("INTERCEPT", intercept);
+            mActivity.get().startActivity(intent);
+        }
+    }
+
     public synchronized  void launchFeedbackScreen(Activity activity, CXInteraction cxInteraction){
         try {
             progressDialog.cancel();
@@ -184,6 +298,25 @@ public class QuestionProCX implements QuestionProApiCallback {
             CXGlobalInfo.clearInteraction(activity, touchPointID);*/
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void onStop(Activity activity){
+        Log.d("Datta","Interaction Activity onStop");
+        try {
+            ActivityLifecycleManager.activityStopped(activity);
+            runningActivities--;
+            if (runningActivities < 0) {
+                Log.e(LOG_TAG,"Incorrect number of running Activities encountered. Resetting to 0. Did you make sure to call Apptentive.onStart() and Apptentive.onStop() in all your Activities?");
+                runningActivities = 0;
+            }
+            // If there are no running activities, wake the thread so it can stop immediately and gracefully.
+            if (runningActivities == 0) {
+                //CXPayloadWorker.appWentToBackground();
+            }
+
+        } catch (Exception e) {
+            Log.w(LOG_TAG,"Error stopping Apptentive Activity.", e);
         }
     }
 }
