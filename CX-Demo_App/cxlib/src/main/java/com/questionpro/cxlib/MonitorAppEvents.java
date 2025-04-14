@@ -5,10 +5,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.questionpro.cxlib.interfaces.QuestionProIntercepts;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import com.questionpro.cxlib.model.InterceptRule;
 
 public class MonitorAppEvents {
 
@@ -24,23 +21,17 @@ public class MonitorAppEvents {
         return mMonitorEvents;
     }
 
-    protected void appSessionStarted(final long delay, final int interceptId, final QuestionProIntercepts intercepts) {
+    protected void appSessionStarted(final int interceptId, InterceptRule rule, final QuestionProIntercepts intercepts) {
         handler = new Handler(Looper.getMainLooper());
-
+        long delay = Long.parseLong(rule.value);
         eventRunnable = new Runnable() {
             @Override
             public void run() {
                 // Trigger your event here
-                //triggerMyEvent(surveyId);
                 intercepts.onTimeSpendSatisfied(interceptId);
             }
         };
-        handler.postDelayed(eventRunnable, delay); // 5 minutes in milliseconds
-    }
-
-    private void triggerMyEvent(int surveyId) {
-        Log.d("Datta", "Trigger the Event...."+surveyId);
-        QuestionProCX.getInstance().launchFeedbackSurvey(surveyId);
+        handler.postDelayed(eventRunnable, delay * 1000); // 5 minutes in milliseconds
     }
 
     protected void stopTimer() {
