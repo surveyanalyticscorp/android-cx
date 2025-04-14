@@ -86,9 +86,38 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
         }
     }
 
+    /**
+     * @param tagName : TagName or screen name which is set while configuring the intercept rules.
+     */
+    public void setScreenVisited(String tagName){
+        int viewCountForTag = preferenceManager.updateViewCountForTag(tagName);
+        //Log.d("Datta", "View count for tag name: "+tagName+" is: "+viewCountForTag);
+        try {
+            JSONObject interceptObj = new JSONObject(preferenceManager.getIntercepts());
+            JSONArray interceptArray = interceptObj.getJSONArray("intercepts");
+            for (int i = 0; i < interceptArray.length(); i++) {
+                JSONObject jsonObject = interceptArray.getJSONObject(i);
+                Intercept intercept = Intercept.fromJSON(jsonObject);
+                //Log.d("Datta", "Intercept Id for tag "+tagName+" : "+intercept.id);
+                for(InterceptRule rule: intercept.interceptRule){
+                    if(rule.name.equals(InterceptRuleType.VIEW_COUNT.name()) &&
+                            rule.key.equals(tagName) &&
+                            Integer.parseInt(rule.value) == viewCountForTag ){
+                        //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
+                        updateViewCountForIntercept(intercept.id);
+                        preferenceManager.resetViewCountForTag(tagName);
+                    }
+                }
+            }
+        }catch (Exception jsonException){
+
+        }
+    }
+
     public void reset(){
         MonitorAppEvents.getInstance().stopTimer();
         interceptSatisfiedRules.clear();
+        preferenceManager.resetPreferences();
     }
 
     private void initialize(Activity activity) throws Exception{
@@ -136,7 +165,7 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
                     if(rule.name.equals(InterceptRuleType.TIME_SPENT.name())){
                         MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
                     }else if(rule.name.equals(InterceptRuleType.VIEW_COUNT.name())){
-                        setUpViewCountRule(rule, intercept.id);
+                        //setUpViewCountRule(rule, intercept.id);
                     } else if(rule.name.equals(InterceptRuleType.DAY.name())){
                         checkDayRule(rule, intercept.id);
                     } else if(rule.name.equals(InterceptRuleType.DATE.name())){
@@ -149,12 +178,22 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     }
 
     private void checkDateRule(InterceptRule rule, int interceptId){
-        Log.d("Datta","Date: "+DateTimeUtils.getCurrentDayOfMonth());
+        //Log.d("Datta","Date: "+DateTimeUtils.getCurrentDayOfMonth());
+        if(rule.value.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfMonth())){
+            ArrayList<String> interceptRules = new ArrayList<>();
+            if(interceptSatisfiedRules.containsKey(interceptId)) {
+                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+            }
+            interceptRules.add(InterceptRuleType.DATE.name());
+
+            interceptSatisfiedRules.put(interceptId, interceptRules);
+            checkAllRulesForIntercept(interceptId);
+        }
     }
 
     private void checkDayRule(InterceptRule rule, int interceptId){
-        Log.d("Datta","Day of week: "+DateTimeUtils.getCurrentDayOfWeek());
-        if(rule.name.equals(DateTimeUtils.getCurrentDayOfWeek())){
+        //Log.d("Datta","Day of week: "+DateTimeUtils.getCurrentDayOfWeek());
+        if(rule.value.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfWeek())){
             ArrayList<String> interceptRules = new ArrayList<>();
             if(interceptSatisfiedRules.containsKey(interceptId)) {
                 interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
@@ -181,6 +220,18 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
             interceptSatisfiedRules.put(interceptId, interceptRules);
             checkAllRulesForIntercept(interceptId);
         }
+    }
+
+    private void updateViewCountForIntercept(int interceptId){
+
+        ArrayList<String> interceptRules = new ArrayList<>();
+        if(interceptSatisfiedRules.containsKey(interceptId)) {
+            interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+        }
+        interceptRules.add(InterceptRuleType.VIEW_COUNT.name());
+
+        interceptSatisfiedRules.put(interceptId, interceptRules);
+        checkAllRulesForIntercept(interceptId);
     }
 
     @Override
