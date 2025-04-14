@@ -14,6 +14,7 @@ public class SharedPreferenceManager {
     private SharedPreferences prefs;
     private final String INTERCEPT = "Intercepts";
     private final String APP_VIEW_COUNT = "app_view_count";
+    private final String VIEW_COUNT_TAG = "view_count_tag";
     private static String interceptStr;
     public SharedPreferenceManager(Activity activity){
         prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
@@ -59,7 +60,24 @@ public class SharedPreferenceManager {
         return prefs.getInt(APP_VIEW_COUNT,0);
     }
 
+    public int updateViewCountForTag(String tag){
+        int updatedViewCount = getViewCountForTag(tag) + 1;
+        prefs.edit().putInt(tag, updatedViewCount).apply();
+        return updatedViewCount;
+    }
+
+    public void resetViewCountForTag(String tag){
+        prefs.edit().putInt(tag, 0).apply();
+    }
+    public int getViewCountForTag(String tag){
+        return prefs.getInt(tag,0);
+    }
+
     public void resetAppViewCount(){
         prefs.edit().putInt(APP_VIEW_COUNT, 0).apply();
+    }
+
+    public void resetPreferences(){
+        prefs.edit().clear().apply();
     }
 }
