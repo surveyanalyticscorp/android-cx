@@ -6,7 +6,10 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+
+import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.dataconnect.CXPayload;
+import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.TouchPoint;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,6 +140,18 @@ public class CXGlobalInfo {
             payloadObj.remove("themeColor");
             payloadObj.remove("type");
             payloadObj.remove("dataCenter");
+            return payloadObj.toString();
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    public static String getInterceptApiPayload(Intercept intercept){
+        try {
+            JSONObject payloadObj = new JSONObject();
+            payloadObj.put("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
+            payloadObj.put("visitedUserId","afe33768-6b2f-4cdd-93a9-5bbe953cd503");
+            payloadObj.put("interceptId",intercept.id);
+            payloadObj.put("surveyId",intercept.surveyId);
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";

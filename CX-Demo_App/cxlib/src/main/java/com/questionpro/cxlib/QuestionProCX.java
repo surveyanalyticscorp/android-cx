@@ -49,7 +49,7 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
 
     private IQuestionProInitCallback questionProInitCallback;
 
-    private SharedPreferenceManager preferenceManager;
+    private SharedPreferenceManager preferenceManager = null;
 
     private static final HashMap<Integer, ArrayList<String>> interceptSatisfiedRules = new HashMap<>();
 
@@ -90,31 +90,10 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
-        int viewCountForTag = preferenceManager.updateViewCountForTag(tagName);
-        //Log.d("Datta", "View count for tag name: "+tagName+" is: "+viewCountForTag);
-        try {
-            JSONObject interceptObj = new JSONObject(preferenceManager.getIntercepts());
-            JSONArray interceptArray = interceptObj.getJSONArray("intercepts");
-            for (int i = 0; i < interceptArray.length(); i++) {
-                JSONObject jsonObject = interceptArray.getJSONObject(i);
-                Intercept intercept = Intercept.fromJSON(jsonObject);
-                //Log.d("Datta", "Intercept Id for tag "+tagName+" : "+intercept.id);
-                for(InterceptRule rule: intercept.interceptRule){
-                    if(rule.name.equals(InterceptRuleType.VIEW_COUNT.name()) &&
-                            rule.key.equals(tagName) &&
-                            Integer.parseInt(rule.value) == viewCountForTag ){
-                        //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
-                        updateViewCountForIntercept(intercept.id);
-                        preferenceManager.resetViewCountForTag(tagName);
-                    }
-                }
-            }
-        }catch (Exception jsonException){
-
-        }
+        MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, preferenceManager, QuestionProCX.this);
     }
 
-    public void reset(){
+    public void clearSession(){
         MonitorAppEvents.getInstance().stopTimer();
         interceptSatisfiedRules.clear();
         preferenceManager.resetPreferences();
@@ -164,8 +143,6 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
                 for(InterceptRule rule: intercept.interceptRule){
                     if(rule.name.equals(InterceptRuleType.TIME_SPENT.name())){
                         MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
-                    }else if(rule.name.equals(InterceptRuleType.VIEW_COUNT.name())){
-                        //setUpViewCountRule(rule, intercept.id);
                     } else if(rule.name.equals(InterceptRuleType.DAY.name())){
                         checkDayRule(rule, intercept.id);
                     } else if(rule.name.equals(InterceptRuleType.DATE.name())){
@@ -205,25 +182,8 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
         }
     }
 
-    private void setUpViewCountRule(InterceptRule rule, int interceptId){
-        preferenceManager.updateAppViewCount();
-        int appViewCount = preferenceManager.getAppViewCount();
-        Log.d("Datta", "App visit count: "+appViewCount);
-        if(appViewCount == Integer.parseInt(rule.value)){
-            preferenceManager.resetAppViewCount();
-            ArrayList<String> interceptRules = new ArrayList<>();
-            if(interceptSatisfiedRules.containsKey(interceptId)) {
-                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
-            }
-            interceptRules.add(InterceptRuleType.VIEW_COUNT.name());
-
-            interceptSatisfiedRules.put(interceptId, interceptRules);
-            checkAllRulesForIntercept(interceptId);
-        }
-    }
-
-    private void updateViewCountForIntercept(int interceptId){
-
+    @Override
+    public void onViewCountRuleSatisfied(int interceptId) {
         ArrayList<String> interceptRules = new ArrayList<>();
         if(interceptSatisfiedRules.containsKey(interceptId)) {
             interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
@@ -253,16 +213,21 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
 
     private void checkAllRulesForIntercept(int interceptId){
         try {
-            Intercept intercept = preferenceManager.getInterceptById(interceptId);
+            if(!preferenceManager.getLaunchedSurveys().contains(String.valueOf(interceptId))) {
 
-            ArrayList<String> temp = interceptSatisfiedRules.get(interceptId);
-            assert temp != null;
-            Log.d("Datta",interceptId+" Satisfied intercepts: "+temp);
+                Intercept intercept = preferenceManager.getInterceptById(interceptId);
 
-            if(intercept.condition.equals(InterceptCondition.OR.name())){
-                launchFeedbackSurvey(intercept);
-            }else if(intercept.interceptRule.size() == temp.size()){
-                launchFeedbackSurvey(intercept);
+                ArrayList<String> temp = interceptSatisfiedRules.get(interceptId);
+                assert temp != null;
+                Log.d("Datta", interceptId + " Satisfied intercepts: " + temp);
+
+                if (intercept.condition.equals(InterceptCondition.OR.name())) {
+                    launchFeedbackSurvey(intercept);
+                } else if (intercept.interceptRule.size() == temp.size()) {
+                    launchFeedbackSurvey(intercept);
+                }
+            }else{
+                Log.d("Datta","The survey was already answered for ongoing session: "+interceptId);
             }
 
             /*Iterator it = interceptSatisfiedRules.entrySet().iterator();
@@ -325,6 +290,8 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
 
     private synchronized void launchFeedbackSurvey(Intercept intercept){
         if(runningActivities == 0) {
+            preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
+
             Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
             intent.putExtra("INTERCEPT", intercept);
             mActivity.get().startActivity(intent);
