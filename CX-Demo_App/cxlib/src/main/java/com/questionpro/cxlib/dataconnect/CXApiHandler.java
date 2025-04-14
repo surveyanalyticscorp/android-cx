@@ -2,7 +2,6 @@ package com.questionpro.cxlib.dataconnect;
 
 import android.app.Activity;
 import android.os.Looper;
-import android.util.Log;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,16 +12,12 @@ import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
-import com.questionpro.cxlib.model.CXInteraction;
-import com.questionpro.cxlib.enums.ApiName;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.net.URI;
 
 public class CXApiHandler {
 
