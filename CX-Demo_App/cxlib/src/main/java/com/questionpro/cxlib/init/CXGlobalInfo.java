@@ -11,6 +11,8 @@ import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.TouchPoint;
+import com.questionpro.cxlib.util.SharedPreferenceManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -145,11 +147,11 @@ public class CXGlobalInfo {
         return "";
     }
 
-    public static String getInterceptApiPayload(Intercept intercept){
+    public static String getInterceptApiPayload(Intercept intercept, Activity activity){
         try {
             JSONObject payloadObj = new JSONObject();
             payloadObj.put("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
-            payloadObj.put("visitedUserId","afe33768-6b2f-4cdd-93a9-5bbe953cd503");
+            payloadObj.put("visitedUserId",new SharedPreferenceManager(activity).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);
             return payloadObj.toString();
