@@ -86,15 +86,17 @@ public class CXApiHandler {
 
     private void getInterceptConfigurations(){
         try {
+            SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mActivity);
+
             CXHttpResponse response = CXUploadClient.getCxApi(mActivity);
             if (response != null && response.isSuccessful()) {
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
                     JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
-                    SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mActivity);
                     sharedPreferenceManager.saveIntercepts(responseJson.toString());
                 }
-                mQuestionProApiCall.onSuccess("SDK is Initialised");
+                sharedPreferenceManager.saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
+                mQuestionProApiCall.onSurveyUrlReceived(null, "SDK is Initialised");
             }else if(response != null && response.isRejectedPermanently()){
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 mQuestionProApiCall.onError(jsonObject);
@@ -108,7 +110,7 @@ public class CXApiHandler {
 
     private void getSurveyUrl(Intercept intercept){
         try {
-            String payload = CXGlobalInfo.getInterceptApiPayload(intercept);
+            String payload = CXGlobalInfo.getInterceptApiPayload(intercept, mActivity);
             //JSONObject payloadObj = new JSONObject(payload);
             CXHttpResponse response = CXUploadClient.uploadforCX(mActivity, payload);
             if (response != null) {
@@ -116,7 +118,7 @@ public class CXApiHandler {
                 if (response.isSuccessful()) {
                     JSONObject jsonObject = new JSONObject(response.getContent());
                     if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
-                        mQuestionProApiCall.onSuccess(jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
+                        mQuestionProApiCall.onSurveyUrlReceived(intercept, jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
                     }else{
                         mQuestionProApiCall.onError(jsonObject);
                     }
