@@ -14,6 +14,7 @@ import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.enums.InterceptCondition;
 import com.questionpro.cxlib.enums.InterceptRuleType;
+import com.questionpro.cxlib.enums.InterceptType;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.interfaces.QuestionProIntercepts;
@@ -119,10 +120,14 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     }
 
     @Override
-    public void onSuccess(String message) {
-        //Log.d("Datta", "Initialization API response: "+message);
-        questionProInitCallback.onSuccess(message);
-        setUpIntercept();
+    public void onSurveyUrlReceived(Intercept intercept, String surveyUrl) {
+        if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
+            questionProInitCallback.getSurveyUrl(surveyUrl);
+        }else{
+            Log.d("Datta", "Initialization API response: "+surveyUrl);
+            questionProInitCallback.onSuccess(surveyUrl);
+            setUpIntercept();
+        }
     }
 
     @Override
@@ -130,7 +135,6 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
         //Log.d("Datta", "Error in initialization: "+error.toString());
         questionProInitCallback.onFailed(error.toString());
     }
-
 
     private void setUpIntercept(){
         try{
@@ -289,12 +293,16 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     }
 
     private synchronized void launchFeedbackSurvey(Intercept intercept){
-        if(runningActivities == 0) {
-            preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
+        if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
+            new CXApiHandler(mActivity.get(), this).getInterceptSurvey(intercept);
+        }else {
+            if (runningActivities == 0) {
+                preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
 
-            Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
-            intent.putExtra("INTERCEPT", intercept);
-            mActivity.get().startActivity(intent);
+                Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
+                intent.putExtra("INTERCEPT", intercept);
+                mActivity.get().startActivity(intent);
+            }
         }
     }
 
