@@ -126,21 +126,6 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onSuccess(final String surveyUrl) {
-        Log.d("Datta","Url: "+surveyUrl);
-        if(surveyUrl==null || CXUtils.isEmpty(surveyUrl)){
-            finish();
-        } else{
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    launchSurvey(surveyUrl);
-                }
-            });
-        }
-    }
-
-    @Override
     public void onError(JSONObject response) {
         if(null != customProgressDialog && customProgressDialog.isShowing()){
             customProgressDialog.dismiss();
@@ -159,6 +144,23 @@ public class InteractionActivity extends FragmentActivity implements
                 }
             });
         }catch (Exception e){}
+    }
+
+    @Override
+    public void onSurveyUrlReceived(Intercept intercept, final String surveyUrl) {
+        if(intercept != null && !intercept.type.equals(InterceptType.SURVEY_URL.name())) {
+            Log.d("Datta", "Url: " + surveyUrl);
+            if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
+                finish();
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchSurvey(surveyUrl);
+                    }
+                });
+            }
+        }
     }
 
     private void showErrorDialog(String errorMsg){
