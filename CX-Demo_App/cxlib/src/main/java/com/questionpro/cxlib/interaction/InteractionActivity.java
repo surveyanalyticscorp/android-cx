@@ -114,6 +114,7 @@ public class InteractionActivity extends FragmentActivity implements
         try {
             customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
             customProgressDialog.setMessage("Please wait.");
+            customProgressDialog.setCancelable(false);
             customProgressDialog.show();
 
             new CXApiHandler(this, this).getInterceptSurvey(intercept);
