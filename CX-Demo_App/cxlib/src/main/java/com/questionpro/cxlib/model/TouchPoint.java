@@ -122,60 +122,60 @@ public class TouchPoint implements Serializable{
             this.dataCenter = dataCenter;
         }
 
-        public Builder email(String email){
+        private Builder email(String email){
             this.email = email;
             return this;
         }
-        public Builder firstName(String fName){
+        private Builder firstName(String fName){
             this.firstName = fName;
             return this;
         }
 
-        public Builder lastName(String lName){
+        private Builder lastName(String lName){
             this.lastName = lName;
             return this;
         }
 
-        public Builder showAsDialog(boolean showAsDialog){
+        private Builder showAsDialog(boolean showAsDialog){
             this.showAsDialog = showAsDialog;
             return  this;
         }
 
-        public Builder transactionLanguage(String transactionLanguage){
+        private Builder transactionLanguage(String transactionLanguage){
             this.transactionLanguage = transactionLanguage;
             return this;
         }
-         public Builder transactionDate(String transactionDate){
+         private Builder transactionDate(String transactionDate){
             this.transactionDate = transactionDate;
             return this;
          }
 
-         public Builder customVariable1(String customVariable1){
+         private Builder customVariable1(String customVariable1){
             this.customVariable1 = customVariable1;
             return this;
          }
 
-        public Builder customVariable2(String customVariable2){
+        private Builder customVariable2(String customVariable2){
             this.customVariable2 = customVariable2;
             return this;
         }
 
-        public Builder customVariable3(String customVariable3){
+        private Builder customVariable3(String customVariable3){
             this.customVariable3 = customVariable3;
             return this;
         }
 
-         public Builder mobile(String mobile){
+         private Builder mobile(String mobile){
             this.mobile = mobile;
             return this;
          }
 
-         public Builder segmentCode(String segmentCode){
+         private Builder segmentCode(String segmentCode){
             this.segmentCode = segmentCode;
             return this;
          }
 
-         public Builder themeColor (String themeColor){
+         private Builder themeColor (String themeColor){
             this.themeColor = themeColor;
             return this;
          }
