@@ -120,7 +120,9 @@ public class CXApiHandler {
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
             headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
-            CXHttpResponse response = CXUploadClient.getCxApi(mActivity, headers);
+
+            java.net.URL url = new URL(CXConstants.getInterceptsUrl());
+            CXHttpResponse response = CXUploadClient.getCxApi(url, headers);
 
             if (response != null && response.isSuccessful()) {
                 JSONObject jsonObject = new JSONObject(response.getContent());

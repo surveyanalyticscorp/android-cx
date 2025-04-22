@@ -35,20 +35,13 @@ public class CXUploadClient {
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 30000;
     private static final String LOG_TAG = "CXUploadClient";
 
-    public static CXHttpResponse  uploadforCX(Context context, String payload) {
+    public static CXHttpResponse  uploadCXApi(URL url, HashMap<String, String> requestHeaders, String payload) {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
-            JSONObject payloadObj = new JSONObject(payload);
-            java.net.URL uRL = new URL(CXConstants.getUrl(context));//, payloadObj.getString("surveyID")
-            if (!CXUtils.isNetworkConnectionPresent(context)) {
-                Log.d(LOG_TAG,"Network unavailable.");
-                return cxHttpResponse;
-            }
-            urlConnection = (HttpURLConnection) uRL.openConnection();
-            urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
-            urlConnection.setRequestProperty("x-app-key", CXGlobalInfo.getInstance().getApiKey());
-            urlConnection.setRequestProperty("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            setHeadersToHttpConnection(urlConnection,requestHeaders);
+
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);
@@ -101,19 +94,12 @@ public class CXUploadClient {
         return cxHttpResponse;
     }
 
-    public static CXHttpResponse getCxApi(Context context) {
+    public static CXHttpResponse getCxApi(URL url, HashMap<String, String> requestHeaders) {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try{
-            if (!CXUtils.isNetworkConnectionPresent(context)) {
-                Log.d(LOG_TAG,"Network unavailable.");
-                return cxHttpResponse;
-            }
-            java.net.URL uRL = new URL(CXConstants.getInterceptsUrl());
-            urlConnection = (HttpURLConnection) uRL.openConnection();
-            urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
-            urlConnection.setRequestProperty("x-app-key", CXGlobalInfo.getInstance().getApiKey());
-            urlConnection.setRequestProperty("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            setHeadersToHttpConnection(urlConnection, requestHeaders);
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);
@@ -173,5 +159,13 @@ public class CXUploadClient {
 
         }
         return null;
+    }
+
+    private static void setHeadersToHttpConnection(HttpURLConnection urlConnection, HashMap<String, String> headers){
+        urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
+        for (String key : headers.keySet()) {
+            String value = headers.get(key);
+            urlConnection.setRequestProperty(key, value);
+        }
     }
 }
