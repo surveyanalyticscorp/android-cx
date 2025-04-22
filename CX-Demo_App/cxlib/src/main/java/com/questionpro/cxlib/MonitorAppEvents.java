@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.questionpro.cxlib.enums.InterceptRuleType;
-import com.questionpro.cxlib.interfaces.QuestionProIntercepts;
+import com.questionpro.cxlib.interfaces.IQuestionProRulesCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
@@ -26,14 +26,14 @@ public class MonitorAppEvents {
         return mMonitorEvents;
     }
 
-    protected void appSessionStarted(final int interceptId, InterceptRule rule, final QuestionProIntercepts intercepts) {
+    protected void appSessionStarted(final int interceptId, InterceptRule rule, final IQuestionProRulesCallback rulesCallback) {
         handler = new Handler(Looper.getMainLooper());
         long delay = Long.parseLong(rule.value);
         eventRunnable = new Runnable() {
             @Override
             public void run() {
                 // Trigger your event here
-                intercepts.onTimeSpendSatisfied(interceptId);
+                rulesCallback.onTimeSpendSatisfied(interceptId);
             }
         };
         handler.postDelayed(eventRunnable, delay * 1000); // 5 minutes in milliseconds
@@ -46,7 +46,7 @@ public class MonitorAppEvents {
         }
     }
 
-    protected void setTagNameCheckRules(String tagName, SharedPreferenceManager preferenceManager, final QuestionProIntercepts intercepts){
+    protected void setTagNameCheckRules(String tagName, SharedPreferenceManager preferenceManager, final IQuestionProRulesCallback rulesCallback){
         if(preferenceManager != null) {
             int viewCountForTag = preferenceManager.updateViewCountForTag(tagName);
             //Log.d("Datta", "View count for tag name: "+tagName+" is: "+viewCountForTag);
@@ -62,7 +62,7 @@ public class MonitorAppEvents {
                                 rule.key.equals(tagName) &&
                                 Integer.parseInt(rule.value) == viewCountForTag) {
                             //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
-                            intercepts.onViewCountRuleSatisfied(intercept.id);
+                            rulesCallback.onViewCountRuleSatisfied(intercept.id);
                             preferenceManager.resetViewCountForTag(tagName);
                         }
                     }

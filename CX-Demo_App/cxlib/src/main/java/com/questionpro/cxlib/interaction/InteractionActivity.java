@@ -22,7 +22,7 @@ import com.questionpro.cxlib.R;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.enums.InterceptType;
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
+import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 public class InteractionActivity extends FragmentActivity implements
         MyWebChromeClient.ProgressListener,
-        QuestionProApiCallback {
+        IQuestionProApiCallback {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
     //private ProgressDialog progressDialog;
@@ -124,7 +124,7 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onError(JSONObject response) {
+    public void OnApiCallbackFailed(JSONObject response) {
         if(null != customProgressDialog && customProgressDialog.isShowing()){
             customProgressDialog.dismiss();
         }
@@ -145,7 +145,7 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onSurveyUrlReceived(Intercept intercept, final String surveyUrl) {
+    public void onApiCallbackSuccess(Intercept intercept, final String surveyUrl) {
         if(intercept != null && !intercept.type.equals(InterceptType.SURVEY_URL.name())) {
             Log.d("Datta", "Url: " + surveyUrl);
             if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {

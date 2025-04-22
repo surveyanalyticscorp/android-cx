@@ -16,9 +16,8 @@ import com.questionpro.cxlib.enums.InterceptCondition;
 import com.questionpro.cxlib.enums.InterceptRuleType;
 import com.questionpro.cxlib.enums.InterceptType;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
-import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
-import com.questionpro.cxlib.interfaces.QuestionProIntercepts;
-import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
+import com.questionpro.cxlib.interfaces.IQuestionProRulesCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
 import com.questionpro.cxlib.model.TouchPoint;
@@ -39,7 +38,7 @@ import java.util.HashMap;
 /**
  * Created by Dattakunde on 14/04/16.
  */
-public class QuestionProCX implements QuestionProApiCallback, QuestionProIntercepts {
+public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRulesCallback {
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
     private ProgressDialog progressDialog;
@@ -120,7 +119,7 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     }
 
     @Override
-    public void onSurveyUrlReceived(Intercept intercept, String surveyUrl) {
+    public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
             preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
             new CXApiHandler(mActivity.get(), this).submitFeedback(intercept, "MATCHED");
@@ -133,7 +132,7 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     }
 
     @Override
-    public void onError(JSONObject error) {
+    public void OnApiCallbackFailed(JSONObject error) {
         //Log.d("Datta", "Error in initialization: "+error.toString());
         questionProCallback.onInitializationFailure(error.toString());
     }

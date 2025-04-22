@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import android.os.Handler;
-import android.util.Log;
 
 
 import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
+import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
@@ -26,9 +25,9 @@ import org.json.JSONObject;
 public class CXApiHandler {
 
     private final Activity mActivity;
-    private final QuestionProApiCallback mQuestionProApiCall;
+    private final IQuestionProApiCallback mQuestionProApiCall;
 
-    public CXApiHandler(Activity activity, QuestionProApiCallback call){
+    public CXApiHandler(Activity activity, IQuestionProApiCallback call){
         this.mActivity = activity;
         mQuestionProApiCall = call;
     }
@@ -41,13 +40,13 @@ public class CXApiHandler {
             public void run() {
                 try{
                     if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
-                        mQuestionProApiCall.onError(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
                     getSurveyUrl(intercept);
                 }catch (Exception e){
                     try {
-                        mQuestionProApiCall.onError(new JSONObject().put("error", e.getMessage()));
+                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", e.getMessage()));
                     } catch (JSONException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -65,13 +64,13 @@ public class CXApiHandler {
                 // Background Task (Simulating heavy work)
                 try {
                     if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
-                        mQuestionProApiCall.onError(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
                     getInterceptConfigurations();
                 }catch (JSONException e){
                     try {
-                        mQuestionProApiCall.onError(new JSONObject().put("error", e.getMessage()));
+                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", e.getMessage()));
                     } catch (JSONException ex) {
                         throw new RuntimeException(ex);
                     }
@@ -131,14 +130,14 @@ public class CXApiHandler {
                     sharedPreferenceManager.saveIntercepts(responseJson.toString());
                 }
                 sharedPreferenceManager.saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
-                mQuestionProApiCall.onSurveyUrlReceived(null, "SDK is Initialised");
+                mQuestionProApiCall.onApiCallbackSuccess(null, "SDK is Initialised");
             }else if(response != null && response.isRejectedPermanently()){
                 JSONObject jsonObject = new JSONObject(response.getContent());
-                mQuestionProApiCall.onError(jsonObject);
+                mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
             }else
-                mQuestionProApiCall.onError(new JSONObject().put("error","Error in fetching the intercept settings"));
+                mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error","Error in fetching the intercept settings"));
         }catch (Exception e){
-            mQuestionProApiCall.onError(new JSONObject());
+            mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
         }
     }
 
@@ -160,26 +159,26 @@ public class CXApiHandler {
                 if (response.isSuccessful()) {
                     JSONObject jsonObject = new JSONObject(response.getContent());
                     if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
-                        mQuestionProApiCall.onSurveyUrlReceived(intercept, jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
+                        mQuestionProApiCall.onApiCallbackSuccess(intercept, jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
                     }else{
-                        mQuestionProApiCall.onError(jsonObject);
+                        mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
                     }
                 } else if (response.isRejectedPermanently() || response.isBadPayload()) {
                     //Log.v("Rejected json:", response.getContent());
                     JSONObject jsonObject = new JSONObject(response.getContent());
                     if (jsonObject.has("response")) {
-                        mQuestionProApiCall.onError(jsonObject.getJSONObject("response"));
+                        mQuestionProApiCall.OnApiCallbackFailed(jsonObject.getJSONObject("response"));
                     }else if(jsonObject.has("message")){
-                        mQuestionProApiCall.onError(jsonObject);
+                        mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
                     }else{
-                        mQuestionProApiCall.onError(new JSONObject());
+                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
                     }
                 } else {
-                    mQuestionProApiCall.onError(new JSONObject());
+                    mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
                 }
             }
         }catch (Exception e){
-            mQuestionProApiCall.onError(new JSONObject());
+            mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
         }
     }
 
