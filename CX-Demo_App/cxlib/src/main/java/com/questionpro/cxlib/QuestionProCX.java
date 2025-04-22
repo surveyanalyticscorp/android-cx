@@ -122,6 +122,8 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     @Override
     public void onSurveyUrlReceived(Intercept intercept, String surveyUrl) {
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
+            preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
+            new CXApiHandler(mActivity.get(), this).submitFeedback(intercept, "MATCHED");
             questionProInitCallback.getSurveyUrl(surveyUrl);
         }else{
             Log.d("Datta", "Initialization API response: "+surveyUrl);
@@ -233,14 +235,6 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
             }else{
                 Log.d("Datta","The survey was already answered for ongoing session: "+interceptId);
             }
-
-            /*Iterator it = interceptSatisfiedRules.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
-                System.out.println(pair.getKey() + " = " + pair.getValue());
-                it.remove(); // avoids a ConcurrentModificationException
-            }*/
-
         }catch (Exception e){}
     }
 
@@ -280,50 +274,15 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     }
 
 
-    public synchronized void launchFeedbackSurvey(long surveyId){
-        /*showProgress();
-        CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-        CXPayloadWorker.appWentToForeground(mActivity.get());*/
-
-        if(runningActivities == 0) {
-            Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
-            intent.putExtra("SURVEY_ID", surveyId);
-            mActivity.get().startActivity(intent);
-        }
-    }
-
     private synchronized void launchFeedbackSurvey(Intercept intercept){
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
             new CXApiHandler(mActivity.get(), this).getInterceptSurvey(intercept);
         }else {
             if (runningActivities == 0) {
-                preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
-
                 Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
                 intent.putExtra("INTERCEPT", intercept);
                 mActivity.get().startActivity(intent);
             }
-        }
-    }
-
-    public synchronized  void launchFeedbackScreen(Activity activity, CXInteraction cxInteraction){
-        try {
-            progressDialog.cancel();
-            Intent intent = new Intent(activity, InteractionActivity.class);
-            intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, cxInteraction);
-            activity.startActivity(intent);
-
-           /* Bundle args=new Bundle();
-            args.putSerializable(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
-            activity.getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(android.R.id.content, InteractionFragment.class, args)
-                    .addToBackStack(null)
-                    .commit();
-
-            CXGlobalInfo.clearInteraction(activity, touchPointID);*/
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
