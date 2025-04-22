@@ -10,11 +10,15 @@ import com.questionpro.cxlib.model.Intercept;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.HashSet;
+import java.util.Set;
+
+
 public class SharedPreferenceManager {
     private SharedPreferences prefs;
     private final String INTERCEPT = "Intercepts";
-    private final String APP_VIEW_COUNT = "app_view_count";
-    private final String VIEW_COUNT_TAG = "view_count_tag";
+    private final String VISITORS_UUID = "visitors_uuid";
+    private final String LAUNCHED_SURVEYS = "launched_surveys";
     private static String interceptStr;
     public SharedPreferenceManager(Activity activity){
         prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
@@ -29,6 +33,13 @@ public class SharedPreferenceManager {
         return prefs.getString(INTERCEPT, "");
     }
 
+    public void saveVisitorsUUID(String uuid){
+        prefs.edit().putString(VISITORS_UUID, uuid).apply();
+    }
+
+    public String getVisitorsUUID(){
+        return prefs.getString(VISITORS_UUID, "");
+    }
 
     public Intercept getInterceptById(int interceptId) throws Exception{
         JSONArray interceptArray = new JSONObject(interceptStr).getJSONArray("intercepts");
@@ -52,14 +63,6 @@ public class SharedPreferenceManager {
         return -1;
     }
 
-    public void updateAppViewCount(){
-        prefs.edit().putInt(APP_VIEW_COUNT, getAppViewCount() + 1).apply();
-    }
-
-    public int getAppViewCount(){
-        return prefs.getInt(APP_VIEW_COUNT,0);
-    }
-
     public int updateViewCountForTag(String tag){
         int updatedViewCount = getViewCountForTag(tag) + 1;
         prefs.edit().putInt(tag, updatedViewCount).apply();
@@ -69,12 +72,22 @@ public class SharedPreferenceManager {
     public void resetViewCountForTag(String tag){
         prefs.edit().putInt(tag, 0).apply();
     }
-    public int getViewCountForTag(String tag){
+    private int getViewCountForTag(String tag){
         return prefs.getInt(tag,0);
     }
 
-    public void resetAppViewCount(){
-        prefs.edit().putInt(APP_VIEW_COUNT, 0).apply();
+    public void saveInterceptIdForLaunchedSurvey(String interceptId){
+        Set<String> interceptIds = getLaunchedSurveys();
+        interceptIds.add(interceptId);
+
+        prefs.edit().putStringSet(LAUNCHED_SURVEYS, interceptIds).apply();
+    }
+
+    public Set<String> getLaunchedSurveys(){
+        return prefs.getStringSet(LAUNCHED_SURVEYS, new HashSet<String>());
+    }
+    protected boolean checkIfSurveyAlreadyLaunchedForIntercept(int interceptId){
+        return false;
     }
 
     public void resetPreferences(){
