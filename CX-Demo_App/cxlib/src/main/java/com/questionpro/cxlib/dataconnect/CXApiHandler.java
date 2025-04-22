@@ -3,11 +3,15 @@ package com.questionpro.cxlib.dataconnect;
 import android.app.Activity;
 import android.os.Looper;
 
+import java.net.URL;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import android.os.Handler;
+import android.util.Log;
 
 
+import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
@@ -84,11 +88,40 @@ public class CXApiHandler {
         });
     }
 
+    public void submitFeedback(final Intercept intercept, final String type){
+        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String payload = getSurveyFeedbackApiPayload(intercept, type);
+
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
+                    headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+                    headers.put("visitor-id", new SharedPreferenceManager(mActivity).getVisitorsUUID());
+
+                    URL url = new URL(CXConstants.getFeedbackUrl());
+
+                    CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
+
+                    if (response != null) {
+                        JSONObject jsonObject = new JSONObject(response.getContent());
+                    }
+                }catch (Exception e){}
+            }
+        });
+    }
+
     private void getInterceptConfigurations(){
         try {
             SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mActivity);
 
-            CXHttpResponse response = CXUploadClient.getCxApi(mActivity);
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
+            headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+            CXHttpResponse response = CXUploadClient.getCxApi(mActivity, headers);
+
             if (response != null && response.isSuccessful()) {
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
@@ -111,8 +144,15 @@ public class CXApiHandler {
     private void getSurveyUrl(Intercept intercept){
         try {
             String payload = CXGlobalInfo.getInterceptApiPayload(intercept, mActivity);
-            //JSONObject payloadObj = new JSONObject(payload);
-            CXHttpResponse response = CXUploadClient.uploadforCX(mActivity, payload);
+
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
+            headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+
+            URL url = new URL(CXConstants.getSurveyUrl(mActivity));
+
+            CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
+
             if (response != null) {
                 QuestionProCX questionProCX = new QuestionProCX();
                 if (response.isSuccessful()) {
@@ -139,5 +179,18 @@ public class CXApiHandler {
         }catch (Exception e){
             mQuestionProApiCall.onError(new JSONObject());
         }
+    }
+
+    private String getSurveyFeedbackApiPayload(Intercept intercept, String surveyType){
+        try {
+            JSONObject payloadObj = new JSONObject();
+            payloadObj.put("interceptId",intercept.id);
+            payloadObj.put("ruleGroupId", intercept.ruleGroupId);
+            payloadObj.put("surveyId",intercept.surveyId);
+            payloadObj.put("surveyType",surveyType);
+
+            return payloadObj.toString();
+        }catch (Exception e){e.printStackTrace();}
+        return "";
     }
 }
