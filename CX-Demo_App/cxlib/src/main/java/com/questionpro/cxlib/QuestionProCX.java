@@ -15,7 +15,7 @@ import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.enums.InterceptCondition;
 import com.questionpro.cxlib.enums.InterceptRuleType;
 import com.questionpro.cxlib.enums.InterceptType;
-import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
+import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.interfaces.QuestionProIntercepts;
 import com.questionpro.cxlib.model.CXInteraction;
@@ -48,7 +48,7 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
 
     private static QuestionProCX mInstance = null;
 
-    private IQuestionProInitCallback questionProInitCallback;
+    private IQuestionProCallback questionProCallback;
 
     private SharedPreferenceManager preferenceManager = null;
 
@@ -73,8 +73,8 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
         }
     }
 
-    public synchronized void init(Activity activity, TouchPoint touchPoint, IQuestionProInitCallback callback){
-        questionProInitCallback = callback;
+    public synchronized void init(Activity activity, TouchPoint touchPoint, IQuestionProCallback callback){
+        questionProCallback = callback;
         try {
             Log.d("Datta","Initialising the SDK");
             initialize(activity);
@@ -83,7 +83,7 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
             new CXApiHandler(activity, this).getIntercept();
             //callback.onSuccess("QuestionPro SDK initialise successfully!");
         }catch (Exception e){
-            callback.onFailed(e.getMessage());
+            callback.onInitializationFailure(e.getMessage());
         }
     }
 
@@ -124,10 +124,10 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
             preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
             new CXApiHandler(mActivity.get(), this).submitFeedback(intercept, "MATCHED");
-            questionProInitCallback.getSurveyUrl(surveyUrl);
+            questionProCallback.getSurveyUrl(surveyUrl);
         }else{
             Log.d("Datta", "Initialization API response: "+surveyUrl);
-            questionProInitCallback.onSuccess(surveyUrl);
+            questionProCallback.onInitializationSuccess(surveyUrl);
             setUpIntercept();
         }
     }
@@ -135,7 +135,7 @@ public class QuestionProCX implements QuestionProApiCallback, QuestionProInterce
     @Override
     public void onError(JSONObject error) {
         //Log.d("Datta", "Error in initialization: "+error.toString());
-        questionProInitCallback.onFailed(error.toString());
+        questionProCallback.onInitializationFailure(error.toString());
     }
 
     private void setUpIntercept(){
