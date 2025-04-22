@@ -25,6 +25,7 @@ import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
+import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONObject;
 
@@ -44,6 +45,8 @@ public class InteractionActivity extends FragmentActivity implements
     private WebView webView;
     private Intercept intercept;
 
+    private SharedPreferenceManager preferenceManager;
+
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class InteractionActivity extends FragmentActivity implements
         }else{
             showErrorDialog("Survey Id is null");
         }
+        preferenceManager = new SharedPreferenceManager(this);
     }
 
     private void init(){
@@ -100,6 +104,9 @@ public class InteractionActivity extends FragmentActivity implements
     }
     
     private void launchSurvey(String url){
+        preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
+        new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, "LAUNCHED");
+
         webView.loadUrl(url);
     }
 
@@ -110,16 +117,6 @@ public class InteractionActivity extends FragmentActivity implements
             customProgressDialog.show();
 
             new CXApiHandler(this, this).getInterceptSurvey(intercept);
-            /*Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
-            if (surveyIdSerializable != null) {
-                Intercept intercept = (Intercept) surveyIdSerializable;
-                CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
-
-                new CXApiHandler(this, this).getInterceptSurvey(intercept);
-
-            }else{
-                showErrorDialog("Survey Id is null");
-            }*/
         }catch (Exception e){
             e.printStackTrace();
         }
