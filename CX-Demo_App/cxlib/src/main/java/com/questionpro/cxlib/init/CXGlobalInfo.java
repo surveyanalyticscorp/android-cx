@@ -96,7 +96,7 @@ public class CXGlobalInfo {
     }*/
 
     @NonNull
-    public static String getDataCenter(Context context){
+    public static String getDataCenter(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("dataCenter");
