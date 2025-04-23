@@ -14,16 +14,18 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.R;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
+import com.questionpro.cxlib.enums.InterceptType;
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.interfaces.QuestionProApiCall;
-import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
+import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
+import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONObject;
 
@@ -32,28 +34,40 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class InteractionActivity extends FragmentActivity implements MyWebChromeClient.ProgressListener, QuestionProApiCall {
+public class InteractionActivity extends FragmentActivity implements
+        MyWebChromeClient.ProgressListener,
+        IQuestionProApiCallback {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
     //private ProgressDialog progressDialog;
     private ProgressDialog customProgressDialog;
 
     private WebView webView;
-    private String url = "";
+    private Intercept intercept;
+
+    private SharedPreferenceManager preferenceManager;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        init();
+        Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
+        if (surveyIdSerializable != null) {
+            intercept = (Intercept) surveyIdSerializable;
+            CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
 
-        getSurveyDetails();
+            init();
 
+            getSurveyDetails();
+        }else{
+            showErrorDialog("Survey Id is null");
+        }
+        preferenceManager = new SharedPreferenceManager(this);
     }
 
     private void init(){
-        if(CXGlobalInfo.isShowDialog(this)) {
+        if(intercept.type.equals(InterceptType.PROMPT.name())) {
             setContentView(R.layout.cx_webview_dialog);
            
         } else {
@@ -90,6 +104,9 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
     }
     
     private void launchSurvey(String url){
+        preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
+        new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, "LAUNCHED");
+
         webView.loadUrl(url);
     }
 
@@ -97,38 +114,17 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         try {
             customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
             customProgressDialog.setMessage("Please wait.");
+            customProgressDialog.setCancelable(false);
             customProgressDialog.show();
 
-            Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
-            if (surveyIdSerializable != null) {
-                long surveyId = (Long) surveyIdSerializable;
-                CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-                new CXApiHandler(this).execute();
-            }else{
-                showErrorDialog("Survey Id is null");
-            }
+            new CXApiHandler(this, this).getInterceptSurvey(intercept);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
     @Override
-    public void onSuccess(final String surveyUrl) {
-        Log.d("Datta","Url: "+surveyUrl);
-        if(surveyUrl==null || CXUtils.isEmpty(surveyUrl)){
-            finish();
-        } else{
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    launchSurvey(surveyUrl);
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onError(JSONObject response) {
+    public void OnApiCallbackFailed(JSONObject response) {
         if(null != customProgressDialog && customProgressDialog.isShowing()){
             customProgressDialog.dismiss();
         }
@@ -136,6 +132,8 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             String errorMessage = "Something went wrong. Unable to load the survey.";
             if (response.has("error") && response.getJSONObject("error").has("message")) {
                 errorMessage = "Error: " + response.getJSONObject("error").getString("message");
+            }else if(response.has("message")){
+                errorMessage = "Error: " + response.getString("message");
             }
             final String finalErrorMessage = errorMessage;
             runOnUiThread(new Runnable() {
@@ -144,6 +142,23 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
                 }
             });
         }catch (Exception e){}
+    }
+
+    @Override
+    public void onApiCallbackSuccess(Intercept intercept, final String surveyUrl) {
+        if(intercept != null && !intercept.type.equals(InterceptType.SURVEY_URL.name())) {
+            Log.d("Datta", "Url: " + surveyUrl);
+            if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
+                finish();
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchSurvey(surveyUrl);
+                    }
+                });
+            }
+        }
     }
 
     private void showErrorDialog(String errorMsg){
@@ -174,6 +189,18 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
                 progressBar.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        QuestionProCX.getInstance().onStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        QuestionProCX.getInstance().onStop(this);
     }
 
     private static final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
@@ -218,7 +245,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     @Override
     public void onBackPressed() {
-        if(!CXGlobalInfo.isShowDialog(this)){
+        if(intercept.type.equals(InterceptType.EMBED.name())){
             super.onBackPressed();
         }
     }

@@ -73,7 +73,7 @@ public class CXPayloadWorker {
                     Log.v(LOG_TAG, "Checking for payloads to send.");
                     String payload = CXGlobalInfo.getApiPayload((Activity)contextRef.get());
                     //JSONObject payloadObj = new JSONObject(payload);
-                    CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
+                    /*CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
                     if (response != null) {
                         QuestionProCX questionProCX = new QuestionProCX();
                         if (response.isSuccessful()) {
@@ -89,10 +89,10 @@ public class CXPayloadWorker {
                                     //long surveyID = CXGlobalInfo.getSurveyIDFromPayload(payload);
                                     //CXGlobalInfo.storeInteraction(activity, surveyID, cxInteraction);
                                     if(!activity.isFinishing()){
-                                        QuestionProCX.launchFeedbackScreen(activity, cxInteraction);
+                                        QuestionProCX.getInstance().launchFeedbackScreen(activity, cxInteraction);
                                     }
                                 }else{
-                                    questionProCX.onError(responseJson);
+                                    questionProCX.handleError(responseJson);
                                 }
                             }
                             //Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
@@ -101,12 +101,12 @@ public class CXPayloadWorker {
                             Log.v("Rejected json:", response.getContent());
                             JSONObject jsonObject = new JSONObject(response.getContent());
                             if(jsonObject.has("response")) {
-                                questionProCX.onError(jsonObject.getJSONObject("response"));
+                                questionProCX.handleError(jsonObject.getJSONObject("response"));
                             }
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");
                         }
-                    }
+                    }*/
                 }
             } catch (Exception e){
                 e.printStackTrace();
