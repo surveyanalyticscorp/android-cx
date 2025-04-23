@@ -161,29 +161,39 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void checkDateRule(InterceptRule rule, int interceptId){
         //Log.d("Datta","Date: "+DateTimeUtils.getCurrentDayOfMonth());
-        if(rule.value.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfMonth())){
-            ArrayList<String> interceptRules = new ArrayList<>();
-            if(interceptSatisfiedRules.containsKey(interceptId)) {
-                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
-            }
-            interceptRules.add(InterceptRuleType.DATE.name());
+        if(!CXUtils.isEmpty(rule.value)) {
+            String[] dates = rule.value.split(",");
+            for(String date: dates) {
+                if (date.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfMonth())) {
+                    ArrayList<String> interceptRules = new ArrayList<>();
+                    if (interceptSatisfiedRules.containsKey(interceptId)) {
+                        interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+                    }
+                    interceptRules.add(InterceptRuleType.DATE.name());
 
-            interceptSatisfiedRules.put(interceptId, interceptRules);
-            checkAllRulesForIntercept(interceptId);
+                    interceptSatisfiedRules.put(interceptId, interceptRules);
+                    checkAllRulesForIntercept(interceptId);
+                }
+            }
         }
     }
 
     private void checkDayRule(InterceptRule rule, int interceptId){
         //Log.d("Datta","Day of week: "+DateTimeUtils.getCurrentDayOfWeek());
-        if(rule.value.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfWeek())){
-            ArrayList<String> interceptRules = new ArrayList<>();
-            if(interceptSatisfiedRules.containsKey(interceptId)) {
-                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
-            }
-            interceptRules.add(InterceptRuleType.DAY.name());
+        if(!CXUtils.isEmpty(rule.value)) {
+            String[] days = rule.value.split(",");
+            for (String day : days) {
+                if (day.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfWeek())) {
+                    ArrayList<String> interceptRules = new ArrayList<>();
+                    if (interceptSatisfiedRules.containsKey(interceptId)) {
+                        interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+                    }
+                    interceptRules.add(InterceptRuleType.DAY.name());
 
-            interceptSatisfiedRules.put(interceptId, interceptRules);
-            checkAllRulesForIntercept(interceptId);
+                    interceptSatisfiedRules.put(interceptId, interceptRules);
+                    checkAllRulesForIntercept(interceptId);
+                }
+            }
         }
     }
 
