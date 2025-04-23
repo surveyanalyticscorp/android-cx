@@ -67,6 +67,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         try {
             initialize(activity);
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+            new CXApiHandler(activity, this).getIntercept();
         }catch (Exception e){
             Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
         }
@@ -123,10 +124,14 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
             preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
             new CXApiHandler(mActivity.get(), this).submitFeedback(intercept, "MATCHED");
-            questionProCallback.getSurveyUrl(surveyUrl);
+            if(questionProCallback != null) {
+                questionProCallback.getSurveyUrl(surveyUrl);
+            }
         }else{
             Log.d("Datta", "Initialization API response: "+surveyUrl);
-            questionProCallback.onInitializationSuccess(surveyUrl);
+            if(questionProCallback != null) {
+                questionProCallback.onInitializationSuccess(surveyUrl);
+            }
             setUpIntercept();
         }
     }
@@ -134,7 +139,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     @Override
     public void OnApiCallbackFailed(JSONObject error) {
         //Log.d("Datta", "Error in initialization: "+error.toString());
-        questionProCallback.onInitializationFailure(error.toString());
+        if(questionProCallback != null) {
+            questionProCallback.onInitializationFailure(error.toString());
+        }
     }
 
     private void setUpIntercept(){
