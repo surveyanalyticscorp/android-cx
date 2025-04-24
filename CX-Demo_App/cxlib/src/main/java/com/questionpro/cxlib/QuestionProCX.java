@@ -76,7 +76,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public synchronized void init(Activity activity, TouchPoint touchPoint, IQuestionProCallback callback){
         questionProCallback = callback;
         try {
-            Log.d("Datta","Initialising the SDK");
+            CXUtils.printLog("Datta","Initialising the SDK");
             initialize(activity);
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
 
@@ -95,7 +95,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     public void clearSession(){
-        MonitorAppEvents.getInstance().stopTimer();
+        MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
         preferenceManager.resetPreferences();
     }
@@ -111,7 +111,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
         if (metaData != null) {
             String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-            Log.d(LOG_TAG,"API key: "+apiKey);
+            CXUtils.printLog(LOG_TAG,"API key: "+apiKey);
             CXGlobalInfo.getInstance().setApiKey(apiKey);
             CXGlobalInfo.getInstance().setAppPackage(appContext.getPackageName());
             CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(activity));
@@ -128,7 +128,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 questionProCallback.getSurveyUrl(surveyUrl);
             }
         }else{
-            Log.d("Datta", "Initialization API response: "+surveyUrl);
+            CXUtils.printLog("Datta", "Initialization API response: "+surveyUrl);
             if(questionProCallback != null) {
                 questionProCallback.onInitializationSuccess(surveyUrl);
             }
@@ -138,7 +138,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     @Override
     public void OnApiCallbackFailed(JSONObject error) {
-        //Log.d("Datta", "Error in initialization: "+error.toString());
+        CXUtils.printLog("Datta", "Error in initialization: "+error.toString());
         if(questionProCallback != null) {
             questionProCallback.onInitializationFailure(error.toString());
         }
@@ -167,7 +167,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     private void checkDateRule(InterceptRule rule, int interceptId){
-        //Log.d("Datta","Date: "+DateTimeUtils.getCurrentDayOfMonth());
         if(!CXUtils.isEmpty(rule.value)) {
             String[] dates = rule.value.split(",");
             for(String date: dates) {
@@ -186,7 +185,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     private void checkDayRule(InterceptRule rule, int interceptId){
-        //Log.d("Datta","Day of week: "+DateTimeUtils.getCurrentDayOfWeek());
         if(!CXUtils.isEmpty(rule.value)) {
             String[] days = rule.value.split(",");
             for (String day : days) {
@@ -220,7 +218,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public void onTimeSpendSatisfied(int interceptId) {
         try {
             int surveyId = preferenceManager.getInterceptSurveyId(interceptId);
-            Log.d("Datta","Trigger the intercept as time is satisfied:"+surveyId);
+            CXUtils.printLog("Datta","Trigger the intercept as time is satisfied:"+interceptId);
             ArrayList<String> interceptRules = new ArrayList<>();
             if(interceptSatisfiedRules.containsKey(interceptId)) {
                 interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
@@ -241,7 +239,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
                 ArrayList<String> temp = interceptSatisfiedRules.get(interceptId);
                 assert temp != null;
-                Log.d("Datta", interceptId + " Satisfied intercepts: " + temp);
+                CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
 
                 if (intercept.condition.equals(InterceptCondition.OR.name())) {
                     launchFeedbackSurvey(intercept);
@@ -249,7 +247,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     launchFeedbackSurvey(intercept);
                 }
             }else{
-                Log.d("Datta","The survey was already answered for ongoing session: "+interceptId);
+                CXUtils.printLog("Datta","The survey was already answered for ongoing session: "+interceptId);
             }
         }catch (Exception e){}
     }
@@ -281,7 +279,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     /** Use this function while launching the survey Activity. Check if feedback activity is already running */
     public void onStart(Activity activity){
         //init(activity);
-        Log.d("Datta","Interaction Activity onStart");
+        CXUtils.printLog("Datta","Interaction Activity onStart");
         ActivityLifecycleManager.activityStarted(activity);
         if (runningActivities == 0) {
             //CXPayloadWorker.appWentToForeground(activity);
@@ -303,7 +301,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     public void onStop(Activity activity){
-        Log.d("Datta","Interaction Activity onStop");
+        CXUtils.printLog("Datta","Interaction Activity onStop");
         try {
             ActivityLifecycleManager.activityStopped(activity);
             runningActivities--;

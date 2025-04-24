@@ -147,7 +147,7 @@ public class InteractionActivity extends FragmentActivity implements
     @Override
     public void onApiCallbackSuccess(Intercept intercept, final String surveyUrl) {
         if(intercept != null && !intercept.type.equals(InterceptType.SURVEY_URL.name())) {
-            Log.d("Datta", "Url: " + surveyUrl);
+            CXUtils.printLog("Datta", "Url: " + surveyUrl);
             if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
                 finish();
             } else {

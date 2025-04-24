@@ -57,7 +57,7 @@ public class CXUploadClient {
             int responseCode = urlConnection.getResponseCode();
             cxHttpResponse.setCode(responseCode);
             cxHttpResponse.setReason(urlConnection.getResponseMessage());
-            Log.d(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
+            CXUtils.printLog(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
 
             // Get the Http response header values
             Map<String, String> headers = new HashMap<String, String>();
@@ -70,7 +70,7 @@ public class CXUploadClient {
             // Read the response, if available
             if (responseCode >= 200 && responseCode < 300) {
                 cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
-                Log.v("Response: ", cxHttpResponse.getContent());
+                CXUtils.printLog("Response: ", cxHttpResponse.getContent());
             } else {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w("Response: ", cxHttpResponse.getContent());
@@ -120,7 +120,7 @@ public class CXUploadClient {
             cxHttpResponse.setHeaders(headers);
             if (responseCode >= 200 && responseCode < 300) {
                 cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
-                Log.v("Get Api Response: ", cxHttpResponse.getContent());
+                CXUtils.printLog("Get Api Response: ", cxHttpResponse.getContent());
             } else {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w("Get Api Response: ", cxHttpResponse.getContent());

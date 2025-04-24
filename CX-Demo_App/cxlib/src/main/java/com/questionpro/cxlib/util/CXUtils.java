@@ -115,4 +115,8 @@ public class CXUtils {
         );
         return px;
     }
+
+    public static void printLog(String tag, String message){
+        //Log.d(tag, message);
+    }
 }
