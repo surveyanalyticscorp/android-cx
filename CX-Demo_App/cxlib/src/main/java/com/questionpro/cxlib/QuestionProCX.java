@@ -32,8 +32,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Dattakunde on 14/04/16.
@@ -41,6 +42,7 @@ import java.util.HashMap;
 public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRulesCallback {
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
+    private static boolean isSessionAlive = false;
     private ProgressDialog progressDialog;
 
     private WeakReference<Activity> mActivity;
@@ -51,7 +53,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private SharedPreferenceManager preferenceManager = null;
 
-    private static final HashMap<Integer, ArrayList<String>> interceptSatisfiedRules = new HashMap<>();
+    private static final HashMap<Integer, Set<String>> interceptSatisfiedRules = new HashMap<>();
 
     public QuestionProCX(){
     }
@@ -95,6 +97,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     public void clearSession(){
+        CXUtils.printLog("Datta","Clearing session.");
+        isSessionAlive = false;
         MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
         preferenceManager.resetPreferences();
@@ -102,7 +106,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void initialize(Activity activity) throws Exception{
         mActivity = new WeakReference<>(activity);
-
+        isSessionAlive = true;
         preferenceManager = new SharedPreferenceManager(activity);
 
         final Context appContext = activity.getApplicationContext();
@@ -122,7 +126,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     @Override
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
-            preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
+            //preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
             new CXApiHandler(mActivity.get(), this).submitFeedback(intercept, "MATCHED");
             if(questionProCallback != null) {
                 questionProCallback.getSurveyUrl(surveyUrl);
@@ -171,7 +175,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             String[] dates = rule.value.split(",");
             for(String date: dates) {
                 if (date.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfMonth())) {
-                    ArrayList<String> interceptRules = new ArrayList<>();
+                    Set<String> interceptRules = new HashSet<>();
                     if (interceptSatisfiedRules.containsKey(interceptId)) {
                         interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
                     }
@@ -189,7 +193,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             String[] days = rule.value.split(",");
             for (String day : days) {
                 if (day.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfWeek())) {
-                    ArrayList<String> interceptRules = new ArrayList<>();
+                    Set<String> interceptRules = new HashSet<>();
                     if (interceptSatisfiedRules.containsKey(interceptId)) {
                         interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
                     }
@@ -204,7 +208,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     @Override
     public void onViewCountRuleSatisfied(int interceptId) {
-        ArrayList<String> interceptRules = new ArrayList<>();
+        Set<String> interceptRules = new HashSet<>();
         if(interceptSatisfiedRules.containsKey(interceptId)) {
             interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
         }
@@ -219,7 +223,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         try {
             int surveyId = preferenceManager.getInterceptSurveyId(interceptId);
             CXUtils.printLog("Datta","Trigger the intercept as time is satisfied:"+interceptId);
-            ArrayList<String> interceptRules = new ArrayList<>();
+            Set<String> interceptRules = new HashSet<>();
             if(interceptSatisfiedRules.containsKey(interceptId)) {
                 interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
             }
@@ -233,11 +237,14 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void checkAllRulesForIntercept(int interceptId){
         try {
-            if(!preferenceManager.getLaunchedSurveys().contains(String.valueOf(interceptId))) {
+            long prevTime = preferenceManager.getLaunchedInterceptTime(mActivity.get(), interceptId);
+            boolean isSleepTimeOverForIntercept = CXUtils.isSleepTimeOver(prevTime);
+            Log.d("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
 
+            if(isSleepTimeOverForIntercept) {
                 Intercept intercept = preferenceManager.getInterceptById(interceptId);
 
-                ArrayList<String> temp = interceptSatisfiedRules.get(interceptId);
+                Set<String> temp = interceptSatisfiedRules.get(interceptId);
                 assert temp != null;
                 CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
 
@@ -292,7 +299,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
             new CXApiHandler(mActivity.get(), this).getInterceptSurvey(intercept);
         }else {
-            if (runningActivities == 0) {
+            CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
+            if (runningActivities == 0 && isSessionAlive) {
                 Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
                 intent.putExtra("INTERCEPT", intercept);
                 mActivity.get().startActivity(intent);

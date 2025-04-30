@@ -104,7 +104,8 @@ public class InteractionActivity extends FragmentActivity implements
     }
     
     private void launchSurvey(String url){
-        preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
+        preferenceManager.saveInterceptIdForLaunchedSurvey(this,
+                intercept.id, CXUtils.getCurrentLocalTimeInMillis());
         new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, "LAUNCHED");
 
         webView.loadUrl(url);
