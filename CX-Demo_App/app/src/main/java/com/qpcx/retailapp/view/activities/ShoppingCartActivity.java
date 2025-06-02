@@ -21,18 +21,19 @@ public class ShoppingCartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shopping_cart);
 
         Button button = findViewById(R.id.launch_survey);
-        button.setText("Shopping_Cart");
+        button.setText("screen1");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US).build();
                 //QuestionProCX.getInstance().init(ShoppingCartActivity.this, touchPoint);
                 //QuestionProCX.getInstance().launchFeedbackSurvey(11543913);
-                QuestionProCX.getInstance().setScreenVisited("Shopping_Cart");
+                QuestionProCX.getInstance().setScreenVisited("screen1");
             }
         });
 
         Button buttonOne = findViewById(R.id.launch_survey_one);
+        buttonOne.setText("Checkout");
         buttonOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

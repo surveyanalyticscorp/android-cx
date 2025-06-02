@@ -200,16 +200,16 @@ public class ECartHomeActivity extends AppCompatActivity {
 	private void initialiseQpSdk(){
 		Activity activity =  ECartHomeActivity.this;
 
-		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.EU).build();
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US).build();
 		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProCallback() {
 			@Override
 			public void onInitializationSuccess(String message) {
-				Log.d("Datt", "onInitializationSuccess: "+message);
+				Log.d("Datta", "onInitializationSuccess: "+message);
 			}
 
 			@Override
 			public void onInitializationFailure(String error) {
-				Log.d("Datt", "onInitializationFailure: "+error);
+				Log.d("Datta", "onInitializationFailure: "+error);
 			}
 
 			@Override
@@ -217,6 +217,8 @@ public class ECartHomeActivity extends AppCompatActivity {
 				Log.d("Datta", "getSurveyUrl: "+surveyUrl);
 			}
 		});
+
+		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
 	}
 
 
