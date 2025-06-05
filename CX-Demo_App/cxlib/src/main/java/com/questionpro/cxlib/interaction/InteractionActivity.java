@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 
 import com.questionpro.cxlib.R;
+import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCall;
@@ -40,7 +42,6 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     private WebView webView;
     private String url = "";
-    private CXInteraction cxInteraction;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -68,6 +69,10 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             }
         });
 
+        View topBar = findViewById(R.id.topBar);
+        if(!CXUtils.isEmpty(CXGlobalInfo.getThemeColour(this)))
+            topBar.setBackgroundColor(Color.parseColor(CXGlobalInfo.getThemeColour(this)));
+
         //CXUtils.lockOrientation(this);
         progressBar =(ProgressBar) findViewById(R.id.progressBar);
         webView = (WebView)findViewById(R.id.surveyWebView);
@@ -83,11 +88,20 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         webView.getSettings().setUserAgentString("AndroidWebView");
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setBackgroundColor(Color.WHITE);
+        webView.addJavascriptInterface(new WebAppInterface(), "Android");
+
 
         /*int density = (int)getResources().getDisplayMetrics().density;
         webView.getSettings().setTextZoom(100 * density);*/
         webView.getSettings().setTextZoom(90);
 
+    }
+
+    public class WebAppInterface {
+        @JavascriptInterface
+        public void onMessage(String message) {
+            Log.d("Datta","Message from webview: "+message);
+        }
     }
     
     private void launchSurvey(String url){
@@ -184,7 +198,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
                 finish();
             }
         };
-        worker.schedule(task, 4, TimeUnit.SECONDS);
+        worker.schedule(task, 10, TimeUnit.SECONDS);
     }
     private class CXWebViewClient extends WebViewClient {
         @Override
@@ -219,7 +233,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
     @Override
     public void onBackPressed() {
-        if(!cxInteraction.isDialog){
+        if(!CXGlobalInfo.isShowDialog(this)){
             super.onBackPressed();
         }
     }

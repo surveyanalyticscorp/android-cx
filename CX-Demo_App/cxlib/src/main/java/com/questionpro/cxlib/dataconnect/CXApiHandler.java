@@ -33,13 +33,7 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... strings) {
-        /*try {
-            makeApiCall();
-        }catch (Exception e){
-            mQuestionProApiCall.onError("Error occurred.....");
-        }*/
         return makeApiCall();
-
     }
 
     @Override
@@ -70,7 +64,7 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
                         if (!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()) {
                             mQuestionProApiCall.onSuccess(cxInteraction.url);
                         } else {
-
+                            /* Handle the resting period use case. The survey URL is empty in that case.*/
                             mQuestionProApiCall.onError(responseJson);
                         }
                     }
