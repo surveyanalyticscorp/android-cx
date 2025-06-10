@@ -174,7 +174,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         if(!CXUtils.isEmpty(rule.value)) {
             String[] dates = rule.value.split(",");
             for(String date: dates) {
-                if (date.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfMonth())) {
+                if (Integer.parseInt(date) == Integer.parseInt(DateTimeUtils.getCurrentDayOfMonth())) {
                     Set<String> interceptRules = new HashSet<>();
                     if (interceptSatisfiedRules.containsKey(interceptId)) {
                         interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
