@@ -75,21 +75,18 @@ public class HomeFragment extends Fragment {
 					public void onClick(View v) {
 
 						HashMap<Integer, String> customVars = new HashMap<>();
-						customVars.put(2, "Datta");
-						customVars.put(3, "Kunde");
-						customVars.put(4, "Pune");
-						customVars.put(5, "Maharashtra");
-						customVars.put(100, "India");
+						customVars.put(4, "light");
+						customVars.put(6, "Anmol");
 
-						TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
+						TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.KSA)
 								.email("mobile.android@questionpro.com")
-								.transactionLanguage("English")
 								.customVariables(customVars)
+								.themeColor("#FCFEFF")
 								.build();
 						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);
 
 
-						QuestionProCX.launchFeedbackSurvey(12174640);
+						QuestionProCX.launchFeedbackSurvey(9826);
 					}
 				});
 
@@ -97,13 +94,17 @@ public class HomeFragment extends Fragment {
 		view.findViewById(R.id.launch_survey).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
+				HashMap<Integer, String> customVars = new HashMap<>();
+				customVars.put(4, "dark");
+				customVars.put(6, "Anmol");
+				TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.KSA)
 						.showAsDialog(true)
 						.email("mobile.android@questionpro.com")
-						.transactionLanguage("English")
+						.customVariables(customVars)
+						.themeColor("#282E3D")
 						.build();
 				QuestionProCX.init(getActivity(), touchPoint);
-				QuestionProCX.launchFeedbackSurvey(12174640);//Device audit: 8282698
+				QuestionProCX.launchFeedbackSurvey(9833);//Device audit: 8282698
 			}
 		});
 

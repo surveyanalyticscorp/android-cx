@@ -23,7 +23,7 @@
         android:theme="@style/MyTheme">
 
         <meta-data android:name="cx_manifest_api_key"
-            android:value="5e706b2b-dd69-4df5-bcf9-1fd9190854ad"/>
+            android:value="ec17fce0-daeb-4126-818a-1d3ef837d0d6"/>
 
         <!-- Single Activity Model-->
         <activity
