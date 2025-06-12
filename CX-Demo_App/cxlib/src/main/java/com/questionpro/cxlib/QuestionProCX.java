@@ -131,13 +131,13 @@ public class QuestionProCX {
     }
 
     public static synchronized void launchFeedbackSurvey(long surveyId){
-        /*showProgress();
+        //showProgress();
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-        CXPayloadWorker.appWentToForeground(mActivity.get());*/
+        CXPayloadWorker.appWentToForeground(mActivity.get());
 
-        Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
+        /*Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
         intent.putExtra("SURVEY_ID", surveyId);
-        mActivity.get().startActivity(intent);
+        mActivity.get().startActivity(intent);*/
     }
 
     public static void onStop(Activity activity){
@@ -161,7 +161,8 @@ public class QuestionProCX {
     }
     public static synchronized  void launchFeedbackScreen(Activity activity, CXInteraction cxInteraction){
         try {
-            progressDialog.cancel();
+            if(progressDialog != null && progressDialog.isShowing())
+                progressDialog.cancel();
             Intent intent = new Intent(activity, InteractionActivity.class);
             intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, cxInteraction);
             activity.startActivity(intent);
