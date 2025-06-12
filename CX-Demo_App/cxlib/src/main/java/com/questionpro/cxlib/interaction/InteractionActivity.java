@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -50,14 +53,17 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
 
         init();
 
-        getSurveyDetails();
+        CXInteraction interactionSerializable = (CXInteraction)getIntent().getSerializableExtra(CXConstants.CX_INTERACTION_CONTENT);
+        if(interactionSerializable != null){
+            launchSurvey(interactionSerializable.url);
+        }
+        //getSurveyDetails();
 
     }
 
     private void init(){
         if(CXGlobalInfo.isShowDialog(this)) {
             setContentView(R.layout.cx_webview_dialog);
-           
         } else {
             setContentView(R.layout.cx_webview_fullscreen);
         }
@@ -100,10 +106,21 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
     public class WebAppInterface {
         @JavascriptInterface
         public void onMessage(String message) {
-            Log.d("Datta","Message from webview: "+message);
+            Log.d("Datta","Web interface: "+message);
+            if(isValidWebUrl(message))
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(message)));
+            else
+                Toast.makeText(InteractionActivity.this, message,Toast.LENGTH_SHORT).show();
         }
     }
-    
+
+    private boolean isValidWebUrl(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return false;
+        }
+        return Patterns.WEB_URL.matcher(text).matches();
+    }
+
     private void launchSurvey(String url){
         webView.loadUrl(url);
     }
@@ -198,7 +215,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
                 finish();
             }
         };
-        worker.schedule(task, 10, TimeUnit.SECONDS);
+        worker.schedule(task, 5, TimeUnit.SECONDS);
     }
     private class CXWebViewClient extends WebViewClient {
         @Override
