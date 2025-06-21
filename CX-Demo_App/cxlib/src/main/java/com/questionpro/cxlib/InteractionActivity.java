@@ -1,4 +1,4 @@
-package com.questionpro.cxlib.interaction;
+package com.questionpro.cxlib;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -23,16 +23,12 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentActivity;
 
 import com.questionpro.cxlib.R;
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.dataconnect.CXApiHandler;
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.interaction.MyWebChromeClient;
 import com.questionpro.cxlib.interfaces.QuestionProApiCall;
-import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -125,7 +121,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         webView.loadUrl(url);
     }
 
-    private void getSurveyDetails(){
+    /*private void getSurveyDetails(){
         try {
             customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
             customProgressDialog.setMessage("Please wait.");
@@ -142,7 +138,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     public void onSuccess(final String surveyUrl) {

@@ -1,8 +1,4 @@
-package com.questionpro.cxlib.model;
-
-import android.util.Log;
-
-import com.questionpro.cxlib.constants.CXConstants;
+package com.questionpro.cxlib;
 
 import org.json.JSONObject;
 
@@ -13,7 +9,7 @@ public class CXInteraction implements Serializable{
     public boolean isDialog;
     public String themeColor;
 
-    public static CXInteraction fromJSON(JSONObject jsonObject) {
+    protected static CXInteraction fromJSON(JSONObject jsonObject) {
         CXInteraction cxInteraction = new CXInteraction();
         try {
             if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
@@ -36,7 +32,7 @@ public class CXInteraction implements Serializable{
         return cxInteraction;
     }
 
-    public static JSONObject toJSON(CXInteraction cxInteraction){
+    protected static JSONObject toJSON(CXInteraction cxInteraction){
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(CXConstants.JSONResponseFields.CX_SURVEY_URL, cxInteraction.url);

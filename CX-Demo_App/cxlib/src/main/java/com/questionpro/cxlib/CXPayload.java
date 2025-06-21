@@ -1,9 +1,8 @@
-package com.questionpro.cxlib.dataconnect;
+package com.questionpro.cxlib;
 
 import android.util.Log;
 
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.model.TouchPoint;
 
 import java.text.SimpleDateFormat;
@@ -20,7 +19,7 @@ import java.util.Locale;
  */
 public class CXPayload {
 
-    public static JSONObject getPayloadJSON(TouchPoint touchPoint) {
+    protected static JSONObject getPayloadJSON(TouchPoint touchPoint) {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("firstName", touchPoint.getFirstName());
@@ -37,8 +36,8 @@ public class CXPayload {
             //jsonObject.put("surveyID", touchPoint.getTouchPointID());
             jsonObject.put("showAsDialog",touchPoint.showAsDialog());
             jsonObject.put("themeColor", touchPoint.getThemeColor());
-            jsonObject.put("type", touchPoint.getType());
-            jsonObject.put("dataCenter", touchPoint.getDataCenter());
+            jsonObject.put("apiBaseUrl", touchPoint.getApiBaseUrl());
+            jsonObject.put("port", touchPoint.getPort());
             jsonObject.put("customVariables", touchPoint.getCustomVariables());
             Log.d("Datta", "Payload json: "+jsonObject.toString());
 

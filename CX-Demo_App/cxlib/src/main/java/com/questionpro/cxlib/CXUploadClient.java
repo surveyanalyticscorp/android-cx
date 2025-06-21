@@ -1,27 +1,23 @@
-package com.questionpro.cxlib.dataconnect;
+package com.questionpro.cxlib;
 
 import android.content.Context;
 import android.util.Log;
 
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.dataconnect.CXHttpResponse;
 import com.questionpro.cxlib.model.Type;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +36,13 @@ public class CXUploadClient {
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
             JSONObject payloadObj = new JSONObject(payload);
-            java.net.URL uRL = new URL(CXConstants.getUrl(context, payloadObj.getString("surveyID")));
+            java.net.URL mURL = new URL(CXConstants.getUrl());
+            Log.d("Datta","URL: "+mURL);
             if (!CXUtils.isNetworkConnectionPresent(context)) {
                 Log.d(LOG_TAG,"Network unavailable.");
                 return cxHttpResponse;
             }
-            urlConnection = (HttpURLConnection) uRL.openConnection();
+            urlConnection = (HttpURLConnection) mURL.openConnection();
             urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
             urlConnection.setRequestProperty("api-key", CXGlobalInfo.getInstance().getApiKey());
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
@@ -54,13 +51,13 @@ public class CXUploadClient {
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
 
-            if (Type.CUSTOMER_EXPERIENCE.toString().equals(CXGlobalInfo.getType(context))) {
+            //if (Type.CUSTOMER_EXPERIENCE.toString().equals(CXGlobalInfo.getType(context))) {
                 urlConnection.setRequestMethod("POST");
                 urlConnection.setFixedLengthStreamingMode(payload.length());
                 OutputStream os = urlConnection.getOutputStream();
                 os.write(payload.getBytes(StandardCharsets.UTF_8));
                 os.close();
-            }
+            //}
 
             int responseCode = urlConnection.getResponseCode();
             cxHttpResponse.setCode(responseCode);

@@ -9,8 +9,6 @@ package com.questionpro.cxlib;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.questionpro.cxlib.constants.CXConstants;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -5,11 +5,12 @@ import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.questionpro.cxlib.CXUploadClient;
 import com.questionpro.cxlib.QuestionProCX;
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.CXConstants;
+import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.QuestionProApiCall;
-import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.CXInteraction;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -42,7 +43,7 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
     }
 
     private String makeApiCall(){
-        try {
+        /*try {
             if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
                 Log.d("Datta", "Can't send payloads. No network connection.");
                 return "No network connection.";
@@ -64,7 +65,7 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
                         if (!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()) {
                             mQuestionProApiCall.onSuccess(cxInteraction.url);
                         } else {
-                            /* Handle the resting period use case. The survey URL is empty in that case.*/
+                            *//* Handle the resting period use case. The survey URL is empty in that case.*//*
                             mQuestionProApiCall.onError(responseJson);
                         }
                     }
@@ -85,7 +86,7 @@ public class CXApiHandler extends AsyncTask<String, String, String> {
         }catch (Exception e){
             mQuestionProApiCall.onError(new JSONObject());
             e.printStackTrace();
-        }
+        }*/
         return  "";
     }
 }

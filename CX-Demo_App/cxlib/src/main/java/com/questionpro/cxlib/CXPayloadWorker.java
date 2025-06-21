@@ -1,13 +1,10 @@
-package com.questionpro.cxlib.dataconnect;
+package com.questionpro.cxlib;
 
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import com.questionpro.cxlib.QuestionProCX;
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.dataconnect.CXHttpResponse;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -26,7 +23,7 @@ public class CXPayloadWorker {
     private static AtomicBoolean threadRunning = new AtomicBoolean(false);
 
     // A synchronized getter/setter to the static instance of thread object
-    public static synchronized CXPayloadSendThread getAndSetPayloadSendThread(boolean expect,
+    private static synchronized CXPayloadSendThread getAndSetPayloadSendThread(boolean expect,
                                                                             boolean createNew,
                                                                             Context context) {
         if (expect && createNew && context != null) {
@@ -99,9 +96,17 @@ public class CXPayloadWorker {
 
                         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
                             Log.v("Rejected json:", response.getContent());
-                            JSONObject jsonObject = new JSONObject(response.getContent());
-                            if(jsonObject.has("response")) {
-                                questionProCX.onError(jsonObject.getJSONObject("response"));
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.getContent());
+                                if (jsonObject.has("response")) {
+                                    questionProCX.onError(jsonObject.getJSONObject("response"));
+                                }
+                            }catch (Exception e){
+                                JSONObject errorBody = new JSONObject();
+                                JSONObject error = new JSONObject();
+                                error.put("message", "QuestionPro API - "+response.getReason());
+                                errorBody.put("error", error);
+                                questionProCX.onError(errorBody);
                             }
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");
@@ -125,7 +130,7 @@ public class CXPayloadWorker {
         }
     }
 
-    public static void appWentToForeground(Activity context) {
+    protected static void appWentToForeground(Activity context) {
         appInForeground.set(true);
         if (threadRunning.compareAndSet(false, true)) {
 			/* appInForeground was "false", and set to "true"

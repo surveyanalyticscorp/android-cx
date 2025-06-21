@@ -10,14 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.dataconnect.CXPayload;
-import com.questionpro.cxlib.dataconnect.CXPayloadWorker;
-import com.questionpro.cxlib.interaction.InteractionFragment;
-import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.model.TouchPoint;
-import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.interaction.InteractionActivity;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONException;
@@ -55,40 +48,6 @@ public class QuestionProCX {
         }catch (Exception e){
             Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
         }
-
-        /*if (!CXGlobalInfo.initialized) {
-            SharedPreferences prefs = appContext.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-            // First, Get the api key, and figure out if app is debuggable.
-            String apiKey = prefs.getString(CXConstants.PREF_KEY_API_KEY, null);
-
-            try {
-                ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
-                Bundle metaData = ai.metaData;
-                if (metaData != null) {
-                    *//*if (apiKey == null) {
-                        apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-                        Log.d(LOG_TAG,"Saving API key for the first time: "+apiKey);
-                        prefs.edit().putString(CXConstants.PREF_KEY_API_KEY, apiKey).apply();
-                    } else {
-                        Log.d(LOG_TAG,"Using cached API Key: "+apiKey);
-                    }*//*
-                    apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-                    Log.d(LOG_TAG,"API key: "+apiKey);
-                    prefs.edit().putString(CXConstants.PREF_KEY_API_KEY, apiKey).apply();
-                }
-            } catch (Exception e) {
-                Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
-            }
-            String errorString = "No CX api key specified. Please make sure you have specified your api key in your AndroidManifest.xml";
-            if(CXUtils.isEmpty(apiKey)){
-                Log.e("QuestionProCX", errorString);
-            }
-            CXGlobalInfo.apiKey = apiKey;
-            // Grab app info we need to access later on.
-            CXGlobalInfo.appPackage = appContext.getPackageName();
-            CXGlobalInfo.UUID = CXUtils.getUniqueDeviceId(activity);
-            CXGlobalInfo.initialized = true;
-        }*/
     }
 
     private static void showProgress(){

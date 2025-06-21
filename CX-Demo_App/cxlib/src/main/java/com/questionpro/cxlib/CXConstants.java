@@ -1,37 +1,46 @@
-package com.questionpro.cxlib.constants;
+package com.questionpro.cxlib;
 
 
 import android.content.Context;
 
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.model.DataCenter;
 import com.questionpro.cxlib.model.Type;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.questionpro.cxlib.util.CXUtils;
 
 public class CXConstants {
 
     private static final String CX_URL = "https://api.questionpro.com/a/api/questionpro.cx.getSurveyURL?apiKey=";
     private static final String CX_TRANSACTION_SURVEY_URL = "/a/api/v2/cx/transactions/survey-url";
     private static final String SURVEYS_URL = "/a/api/v2/surveys/";
-    public static final String PREF_NAME="questionpro_cx";
+    protected static final String PREF_NAME="questionpro_cx";
     //public static final String PREF_KEY_API_KEY="cx_pref_api_key";
-    public static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
-    public static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
+    protected static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
+    protected static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
     //public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
-    public static final String CX_INTERACTION_CONTENT="cx_interaction_content";
+    protected static final String CX_INTERACTION_CONTENT="cx_interaction_content";
 
 
-    public static String getUrl(Context context, String surveyId) {
+    protected static String getUrl() {
         try {
-            String type = CXGlobalInfo.getType(context);
+            String baseUrl = CXGlobalInfo.getBaseUrl();
+            String apiPort = CXGlobalInfo.getApiPort();
+            if(CXUtils.isEmpty(baseUrl))
+                baseUrl = "https://api.questionpro.com";
+
+            if(!CXUtils.isEmpty(apiPort)){
+                baseUrl = baseUrl + "/" + apiPort;
+            }
+
+            return baseUrl + CX_TRANSACTION_SURVEY_URL;
+            /*String type = CXGlobalInfo.getType(context);
             String dataCenter = CXGlobalInfo.getDataCenter(context);
+            return getBaseUrl("US") + CX_TRANSACTION_SURVEY_URL;
             if (Type.CUSTOMER_EXPERIENCE.toString().equals(type)) {
                 return getBaseUrl(dataCenter) + CX_TRANSACTION_SURVEY_URL;
             } else {
                 return getBaseUrl(dataCenter) + SURVEYS_URL + surveyId;
-            }
+            }*/
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -57,12 +66,12 @@ public class CXConstants {
         return "https://api.questionpro.com";
     }
 
-    public static class JSONUploadFields{
+    protected static class JSONUploadFields{
         public static final String UDID = "udid";
         public static final String SURVEY_ID = "surveyID";
     }
 
-    public static class JSONResponseFields{
+    protected static class JSONResponseFields{
         public static final String STATUS = "status";
         public static final String RESPONSE = "response";
         public static final String CX_SURVEY_URL = "surveyURL";

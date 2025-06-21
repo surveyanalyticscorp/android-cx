@@ -1,6 +1,6 @@
-package com.questionpro.cxlib.init;
+package com.questionpro.cxlib;
 
-import static com.questionpro.cxlib.constants.CXConstants.JSONUploadFields.SURVEY_ID;
+import static com.questionpro.cxlib.CXConstants.JSONUploadFields.SURVEY_ID;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,8 +9,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.TouchPoint;
 import org.json.JSONObject;
 
@@ -27,7 +25,7 @@ public class CXGlobalInfo {
 
     private static CXGlobalInfo ourInstance;
 
-    public static CXGlobalInfo getInstance() {
+    protected static CXGlobalInfo getInstance() {
         if(ourInstance == null){
             ourInstance = new CXGlobalInfo();
         }
@@ -41,31 +39,31 @@ public class CXGlobalInfo {
     /**
      * This function is used to save the payload in preferences at the time of initialization.
      */
-    public void savePayLoad(TouchPoint touchPoint){
+    protected void savePayLoad(TouchPoint touchPoint){
         CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint).toString();
     }
 
-    public void setApiKey(String apiKey){
+    protected void setApiKey(String apiKey){
         CXGlobalInfo.apiKey = apiKey;
     }
 
-    public String getApiKey(){
+    protected String getApiKey(){
         return CXGlobalInfo.apiKey;
     }
 
-    public void setAppPackage(String appPackage){
+    protected void setAppPackage(String appPackage){
         CXGlobalInfo.appPackage = appPackage;
     }
 
-    public void setUUID(String uuid){
+    protected void setUUID(String uuid){
         CXGlobalInfo.UUID = uuid;
     }
 
-    public String getUUID(){
+    protected String getUUID(){
         return CXGlobalInfo.UUID;
     }
 
-    public void setInitialized(boolean initialized){
+    protected void setInitialized(boolean initialized){
         CXGlobalInfo.initialized = initialized;
     }
 
@@ -73,7 +71,7 @@ public class CXGlobalInfo {
      * At the time of initialization we don't have surveyId in payload. add the surveyId
      * in payload and update preferences.
      */
-    public static void updateCXPayloadWithSurveyId(long surveyId){
+    protected static void updateCXPayloadWithSurveyId(long surveyId){
         try {
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             payloadObj.put(SURVEY_ID, surveyId);
@@ -84,29 +82,30 @@ public class CXGlobalInfo {
 
     /**
      * This function is used to get the type of Survey
-     * @param context
      * @return
      */
     @NonNull
-    public static String getType(Context context){
+    protected static String getBaseUrl(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("type");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
+            return payloadObj.getString("apiBaseUrl");
+        }catch (Exception e){
+            return "";
+        }
     }
 
     @NonNull
-    public static String getDataCenter(Context context){
+    protected static String getApiPort(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("dataCenter");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
+            return payloadObj.getString("port");
+        }catch (Exception e){
+            return "";
+        }
     }
 
     @NonNull
-    public static boolean isShowDialog(Context context){
+    protected static boolean isShowDialog(Context context){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getBoolean("showAsDialog");
@@ -115,7 +114,7 @@ public class CXGlobalInfo {
     }
 
     @NonNull
-    public static String getThemeColour(Context context){
+    protected static String getThemeColour(Context context){
         try{
             //AppCompatActivity activity = (AppCompatActivity) context;
             JSONObject payloadObj = new JSONObject(getStoredPayload());
@@ -135,7 +134,7 @@ public class CXGlobalInfo {
      * Get the payload in the form string at the time of fetching survey url.
      * Have to remove unwanted key from the stored object.
      */
-    public static String getApiPayload(Activity activity){
+    protected static String getApiPayload(Activity activity){
         try {
             //SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
             //JSONObject payloadObj = new JSONObject(prefs.getString(CXConstants.PREF_KEY_PAYLOAD, ""));
@@ -146,6 +145,8 @@ public class CXGlobalInfo {
             payloadObj.remove("themeColor");
             payloadObj.remove("type");
             payloadObj.remove("dataCenter");
+            payloadObj.remove("apiBaseUrl");
+            payloadObj.remove("port");
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";

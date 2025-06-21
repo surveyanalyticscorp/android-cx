@@ -15,13 +15,14 @@ public class TouchPoint implements Serializable{
     private final String segmentCode;
     private final String transactionDate;
 
+    private final String apiBaseUrl;
+    private final String port;
+
     private final Map<Integer, String> customVariables;
 
     /** Setting related variables */
     private final boolean showAsDialog;
     private final String themeColor;
-    private final Type mType;
-    private final DataCenter dataCenter;
 
     public TouchPoint(Builder builder) {
         this.showAsDialog = builder.showAsDialog;
@@ -34,8 +35,8 @@ public class TouchPoint implements Serializable{
         this.transactionDate = builder.transactionDate;
         this.customVariables = builder.customVariables;
         this.themeColor = builder.themeColor;
-        this.mType = builder.mType;
-        this.dataCenter = builder.dataCenter;
+        this.apiBaseUrl = builder.apiBaseUrl;
+        this.port = builder.port;
     }
 
     public boolean showAsDialog() {
@@ -76,13 +77,11 @@ public class TouchPoint implements Serializable{
     public String getThemeColor(){
         return themeColor;
     }
-
-    public Type getType() {
-        return mType;
+    public String getApiBaseUrl(){
+        return apiBaseUrl;
     }
-
-    public DataCenter getDataCenter(){
-        return dataCenter;
+    public String getPort(){
+        return port;
     }
 
     @NonNull
@@ -110,12 +109,12 @@ public class TouchPoint implements Serializable{
 
         private  boolean showAsDialog;
         private String themeColor = "";
-        private Type mType = null;
-        private DataCenter dataCenter = null;
 
-        public Builder(Type type, DataCenter dataCenter){
-            this.mType = type;
-            this.dataCenter = dataCenter;
+        private String apiBaseUrl = null;
+        private String port = null;
+
+        public Builder(String apiBaseUrl){
+            this.apiBaseUrl = apiBaseUrl;
         }
 
         public Builder email(String email){
@@ -165,6 +164,16 @@ public class TouchPoint implements Serializable{
             this.themeColor = themeColor;
             return this;
          }
+
+        /*public Builder apiBaseUrl (String apiBaseUrl){
+            this.apiBaseUrl = apiBaseUrl;
+            return this;
+        }*/
+
+        public Builder port (String port){
+            this.port = port;
+            return this;
+        }
 
         //Return the finally constructed object
         public TouchPoint build(){
