@@ -8,8 +8,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
+import com.questionpro.cxlib.interfaces.ClientModuleCallback;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.util.CXUtils;
 
@@ -17,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.Map;
+
 
 /**
  * Created by Dattakunde on 14/04/16.
