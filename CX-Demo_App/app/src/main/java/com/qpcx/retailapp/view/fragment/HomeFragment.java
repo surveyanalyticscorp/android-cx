@@ -78,15 +78,16 @@ public class HomeFragment extends Fragment {
 						customVars.put(4, "light");
 						customVars.put(6, "Anmol");
 
-						TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.KSA)
+						TouchPoint touchPoint = new TouchPoint.Builder("https://api.questionpro.com")
 								.email("mobile.android@questionpro.com")
 								.customVariables(customVars)
 								.themeColor("#FCFEFF")
+								.port("8081")
 								.build();
 						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);
 
 
-						QuestionProCX.launchFeedbackSurvey(9826);
+						QuestionProCX.launchFeedbackSurvey(12174640);
 					}
 				});
 
@@ -97,14 +98,14 @@ public class HomeFragment extends Fragment {
 				HashMap<Integer, String> customVars = new HashMap<>();
 				customVars.put(4, "dark");
 				customVars.put(6, "Anmol");
-				TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.KSA)
+				TouchPoint touchPoint = new TouchPoint.Builder("")
 						.showAsDialog(true)
 						.email("mobile.android@questionpro.com")
 						.customVariables(customVars)
 						.themeColor("#282E3D")
 						.build();
 				QuestionProCX.init(getActivity(), touchPoint);
-				QuestionProCX.launchFeedbackSurvey(9833);//Device audit: 8282698
+				QuestionProCX.launchFeedbackSurvey(12174902);//Device audit: 8282698
 			}
 		});
 

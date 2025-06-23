@@ -7,6 +7,8 @@ import android.os.Bundle;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +27,9 @@ import com.qpcx.retailapp.util.TinyDB;
 import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
+import com.questionpro.cxlib.ClientModule;
 import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.interfaces.ClientModuleCallback;
 import com.questionpro.cxlib.model.DataCenter;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.model.Type;
@@ -33,7 +37,11 @@ import com.questionpro.cxlib.model.Type;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ECartHomeActivity extends AppCompatActivity {
 
@@ -194,12 +202,82 @@ public class ECartHomeActivity extends AppCompatActivity {
 				});
 
 		initialiseQpSdk();
+
+		String accessToken = "initialAccessToken123";
+
+		ClientModule clientModule = new ClientModule(accessToken, new ClientModuleCallback() {
+			@Override
+			public Map.Entry<String, Map<String, String>> encryptData(String dataToEncrypt) {
+				Log.d("Test app", " data encryption started... " + dataToEncrypt);
+				try {
+					Thread.sleep(1000); // Simulate network delay
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
+				}
+				String encryptedData = "Encrypted " + dataToEncrypt;
+				Log.d("Test app: "," data encryption ended... " + encryptedData);
+				Map<String, String> headers = new HashMap<>();
+				headers.put("Content-Type", "application/json");
+				headers.put("Header-key", "Header value");
+				// Using AbstractMap.SimpleEntry to represent Kotlin's Pair
+				return new AbstractMap.SimpleEntry<>(encryptedData, headers);
+			}
+
+			@Override
+			public String refreshToken() {
+				Log.d("Test app"," Fetching new token...");
+				try {
+					Thread.sleep(2000); // Simulate network delay
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
+				}
+				String newToken = "newlyGeneratedAccessToken123";
+				Log.d("Test app"," New token: " + newToken);
+				return newToken;
+			}
+
+			@Override
+			public String decryptedData(Map.Entry<String, Map<String, String>> apiResponse) {
+				Log.d("Test app", " data decryption started... " + apiResponse.getKey()); // apiResponse.first
+				try {
+					Thread.sleep(1000); // Simulate network delay
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
+				}
+				Map<String, String> headers = apiResponse.getValue(); // apiResponse.second
+				// Joining map entries for printing, similar to Kotlin's joinToString
+				/*String headerString = headers.entrySet().stream()
+						.map(entry -> entry.getKey() + ": " + entry.getValue())
+						.collect(Collectors.joining(", "));*/
+
+				StringBuilder headerStringBuilder = new StringBuilder();
+				Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
+
+				while (iterator.hasNext()) {
+					Map.Entry<String, String> entry = iterator.next();
+					headerStringBuilder.append(entry.getKey()).append(": ").append(entry.getValue());
+					if (iterator.hasNext()) {
+						headerStringBuilder.append(", ");
+					}
+				}
+				String headerString = headerStringBuilder.toString();
+
+				Log.d("Test app"," Headers received: " + headerString);
+				String decryptedData = "Decrypted " + apiResponse.getKey(); // apiResponse.first
+				Log.d("Test app"," data decryption ended... " + decryptedData);
+				return decryptedData;
+
+			}
+		});
 	}
 
 	private void initialiseQpSdk(){
 
 		Activity activity =  ECartHomeActivity.this;
-		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
+		TouchPoint touchPoint = new TouchPoint.Builder("https://api.questionpro.com")
 				.email("mobile.android@questionpro.com")
 				.transactionLanguage("German")
 				/*.firstName("Datta")
