@@ -82,6 +82,7 @@ public class HomeFragment extends Fragment {
 								.email("mobile.android@questionpro.com")
 								.customVariables(customVars)
 								.themeColor("#FCFEFF")
+								.transactionLanguage("Arabic")
 								.build();
 						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);
 
