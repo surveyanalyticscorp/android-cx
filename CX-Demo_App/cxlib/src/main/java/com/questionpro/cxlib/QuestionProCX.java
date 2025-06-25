@@ -19,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.AbstractMap;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -31,6 +33,7 @@ public class QuestionProCX {
     private static ProgressDialog progressDialog;
 
     private static WeakReference<Activity> mActivity;
+
 
     public QuestionProCX(){
     }
@@ -88,9 +91,33 @@ public class QuestionProCX {
     }
 
 
-    public static synchronized void init(Activity activity, TouchPoint touchPoint){
+    public static synchronized void init(Activity activity, TouchPoint touchPoint, ClientModuleCallback clientModuleCallback){
         init(activity);
         CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+
+        String newAccessToken = clientModuleCallback.refreshToken();
+        Log.d("Datta","ClientModule new access token received: " + newAccessToken);
+
+        String dataToEncrypt = "Test Module data";
+        Map.Entry<String, Map<String, String>> encryptedData = clientModuleCallback.encryptData(dataToEncrypt);
+        Log.d("Datta","ClientModule encrypted data received: " + encryptedData);
+
+        decryptedModuleData(clientModuleCallback);
+    }
+
+    private static void decryptedModuleData(ClientModuleCallback clientModuleCallback) {
+        String encryptedData = "Encrypted data";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json");
+        headers.put("Header-key", "Header value");
+
+        // Using AbstractMap.SimpleEntry to represent Pair in Java
+        // Alternatively, you could create a custom data class/record for apiResponse
+        Map.Entry<String, Map<String, String>> apiResponse =
+                new AbstractMap.SimpleEntry<>(encryptedData, headers);
+
+        String decryptedData = clientModuleCallback.decryptedData(apiResponse);
+        Log.d("Datta","API decrypted data received: " + decryptedData);
     }
 
     public static synchronized void launchFeedbackSurvey(long surveyId){

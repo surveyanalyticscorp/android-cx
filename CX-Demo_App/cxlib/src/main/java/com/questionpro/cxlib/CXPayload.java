@@ -27,8 +27,8 @@ public class CXPayload {
             jsonObject.put("transactionLanguage", touchPoint.getTransactionLanguage());
             jsonObject.put("mobile", touchPoint.getMobile());
             jsonObject.put("segmentCode", touchPoint.getSegmentCode());
-            String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-            jsonObject.put("transactionDate", date);
+            //String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+            //jsonObject.put("transactionDate", date);
             if(null == touchPoint.getEmail()){
                 jsonObject.put("email", CXGlobalInfo.getInstance().getUUID()+"@questionpro.com");
             }else
@@ -36,6 +36,7 @@ public class CXPayload {
             //jsonObject.put("surveyID", touchPoint.getTouchPointID());
             jsonObject.put("showAsDialog",touchPoint.showAsDialog());
             jsonObject.put("themeColor", touchPoint.getThemeColor());
+            jsonObject.put("accessToken", touchPoint.getAccessToken());
             jsonObject.put("apiBaseUrl", touchPoint.getApiBaseUrl());
             jsonObject.put("port", touchPoint.getPort());
             jsonObject.put("customVariables", touchPoint.getCustomVariables());

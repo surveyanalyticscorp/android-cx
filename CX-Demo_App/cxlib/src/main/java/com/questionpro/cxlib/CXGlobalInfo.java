@@ -147,6 +147,7 @@ public class CXGlobalInfo {
             payloadObj.remove("dataCenter");
             payloadObj.remove("apiBaseUrl");
             payloadObj.remove("port");
+            payloadObj.remove("accessToken");
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";

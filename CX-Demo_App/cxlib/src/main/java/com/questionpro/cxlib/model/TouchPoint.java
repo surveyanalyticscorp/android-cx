@@ -18,6 +18,8 @@ public class TouchPoint implements Serializable{
     private final String apiBaseUrl;
     private final String port;
 
+    private String accessToken;
+
     private final Map<Integer, String> customVariables;
 
     /** Setting related variables */
@@ -37,6 +39,7 @@ public class TouchPoint implements Serializable{
         this.themeColor = builder.themeColor;
         this.apiBaseUrl = builder.apiBaseUrl;
         this.port = builder.port;
+        this.accessToken = builder.accessToken;
     }
 
     public boolean showAsDialog() {
@@ -80,6 +83,10 @@ public class TouchPoint implements Serializable{
     public String getApiBaseUrl(){
         return apiBaseUrl;
     }
+
+    public String getAccessToken(){
+        return accessToken;
+    }
     public String getPort(){
         return port;
     }
@@ -110,11 +117,13 @@ public class TouchPoint implements Serializable{
         private  boolean showAsDialog;
         private String themeColor = "";
 
-        private String apiBaseUrl = null;
+        private final String apiBaseUrl;
+        private final String accessToken;
         private String port = null;
 
-        public Builder(String apiBaseUrl){
+        public Builder(String apiBaseUrl, String accessToken){
             this.apiBaseUrl = apiBaseUrl;
+            this.accessToken = accessToken;
         }
 
         public Builder email(String email){
