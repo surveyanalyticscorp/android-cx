@@ -69,8 +69,9 @@ public class CXPayloadWorker {
                     }
                     Log.v(LOG_TAG, "Checking for payloads to send.");
                     String payload = CXGlobalInfo.getApiPayload((Activity)contextRef.get());
+                    String encryptedPayload = CXGlobalInfo.getInstance().getEncryptedPayload(payload);
                     //JSONObject payloadObj = new JSONObject(payload);
-                    CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
+                    CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), encryptedPayload);
                     if (response != null) {
                         if (response.isSuccessful()) {
                             JSONObject jsonObject = new JSONObject(response.getContent());

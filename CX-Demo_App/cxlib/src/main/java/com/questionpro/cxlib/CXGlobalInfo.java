@@ -10,6 +10,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.questionpro.cxlib.model.TouchPoint;
+import com.questionpro.cxlib.util.CXUtils;
+
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -48,7 +50,8 @@ public class CXGlobalInfo {
     }
 
     protected String getApiKey(){
-        return CXGlobalInfo.apiKey;
+        //return CXGlobalInfo.apiKey;
+        return getEncryptedPayload(CXGlobalInfo.apiKey);
     }
 
     protected void setAppPackage(String appPackage){
@@ -171,9 +174,21 @@ public class CXGlobalInfo {
                     }
                 }
                 payloadObj.remove("customVariables");
-                Log.d("Datta","playload: "+payloadObj);
             }
         }catch (Exception e){}
+    }
+
+    protected String getEncryptedPayload(String payload){
+        Map.Entry<String, Map<String, String>> encrypted = QuestionProCX.getInstance().getEncryptedData(payload);
+        String key = encrypted.getKey();
+        Log.d("Datta", "encrypted Key: "+key);
+        Map<String, String> headers = encrypted.getValue();
+        for (Map.Entry<String, String> innerEntry : headers.entrySet()) {
+            String innerKey = innerEntry.getKey();   // e.g., "email"
+            String innerValue = innerEntry.getValue(); // e.g., "john@example.com"
+            CXUtils.printLogs("  Inner Key: " + innerKey + ", Inner Value: " + innerValue);
+        }
+        return key;
     }
 
     /*public static boolean isInteractionPending(Activity activity){

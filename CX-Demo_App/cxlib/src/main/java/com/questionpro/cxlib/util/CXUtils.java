@@ -115,4 +115,8 @@ public class CXUtils {
         );
         return px;
     }
+
+    public static void printLogs(String message){
+        Log.d("Datta", message);
+    }
 }

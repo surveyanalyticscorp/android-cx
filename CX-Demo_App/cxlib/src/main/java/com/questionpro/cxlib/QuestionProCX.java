@@ -108,22 +108,22 @@ public class QuestionProCX {
         init(activity);
         CXGlobalInfo.getInstance().savePayLoad(touchPoint);
 
-        Log.d("Datta","ClientModule new access token received: " + getAccessToken());
+        //Log.d("Datta","ClientModule new access token received: " + getAccessToken());
 
-        Log.d("Datta","ClientModule encrypted data received: " + encryptedData("Encrypt this data and send back"));
+        //Log.d("Datta","ClientModule encrypted data received: " + getEncryptedData("Encrypt this data and send back"));
 
-        Log.d("Datta","API decrypted data received: " + decryptedModuleData());
+        //Log.d("Datta","API decrypted data received: " + getDecryptedModuleData());
     }
 
     protected String getAccessToken(){
         return clientModuleCallback.refreshToken();
     }
 
-    protected Map.Entry<String, Map<String, String>> encryptedData(String dataToEncrypt){
+    protected Map.Entry<String, Map<String, String>> getEncryptedData(String dataToEncrypt){
         return clientModuleCallback.encryptData(dataToEncrypt);
     }
 
-    protected String decryptedModuleData() {
+    protected String getDecryptedModuleData() {
         String encryptedData = "Encrypted data";
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");

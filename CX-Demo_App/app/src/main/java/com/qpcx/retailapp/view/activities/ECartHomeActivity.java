@@ -276,7 +276,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 			Thread.currentThread().interrupt();
 			e.printStackTrace();
 		}
-		String encryptedData = "Encrypted " + dataToEncrypt;
+		String encryptedData =  dataToEncrypt;
 		Log.d("Test app: "," data encryption ended... " + encryptedData);
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
