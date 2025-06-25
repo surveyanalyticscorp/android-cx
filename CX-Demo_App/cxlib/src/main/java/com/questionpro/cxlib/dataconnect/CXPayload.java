@@ -22,13 +22,15 @@ public class CXPayload {
 
     public static JSONObject getPayloadJSON(TouchPoint touchPoint) {
         try {
+            Locale locale = new Locale("en-US");
+
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("firstName", touchPoint.getFirstName());
             jsonObject.put("lastName", touchPoint.getLastName());
             jsonObject.put("transactionLanguage", touchPoint.getTransactionLanguage());
             jsonObject.put("mobile", touchPoint.getMobile());
             jsonObject.put("segmentCode", touchPoint.getSegmentCode());
-            String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+            String date = new SimpleDateFormat("MM/dd/yyyy", locale).format(new Date());
             jsonObject.put("transactionDate", date);
             if(null == touchPoint.getEmail()){
                 jsonObject.put("email", CXGlobalInfo.getInstance().getUUID()+"@questionpro.com");
