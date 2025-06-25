@@ -205,92 +205,117 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 		String accessToken = "initialAccessToken123";
 
-		ClientModule clientModule = new ClientModule(accessToken, new ClientModuleCallback() {
+		/*ClientModule clientModule = new ClientModule(accessToken, new ClientModuleCallback() {
 			@Override
 			public Map.Entry<String, Map<String, String>> encryptData(String dataToEncrypt) {
-				Log.d("Test app", " data encryption started... " + dataToEncrypt);
-				try {
-					Thread.sleep(1000); // Simulate network delay
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					e.printStackTrace();
-				}
-				String encryptedData = "Encrypted " + dataToEncrypt;
-				Log.d("Test app: "," data encryption ended... " + encryptedData);
-				Map<String, String> headers = new HashMap<>();
-				headers.put("Content-Type", "application/json");
-				headers.put("Header-key", "Header value");
-				// Using AbstractMap.SimpleEntry to represent Kotlin's Pair
-				return new AbstractMap.SimpleEntry<>(encryptedData, headers);
+				return getEncryptData(dataToEncrypt);
 			}
 
 			@Override
 			public String refreshToken() {
-				Log.d("Test app"," Fetching new token...");
-				try {
-					Thread.sleep(2000); // Simulate network delay
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					e.printStackTrace();
-				}
-				String newToken = "newlyGeneratedAccessToken123";
-				Log.d("Test app"," New token: " + newToken);
-				return newToken;
+				return getRefreshedToken();
 			}
 
 			@Override
 			public String decryptedData(Map.Entry<String, Map<String, String>> apiResponse) {
-				Log.d("Test app", " data decryption started... " + apiResponse.getKey()); // apiResponse.first
-				try {
-					Thread.sleep(1000); // Simulate network delay
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-					e.printStackTrace();
-				}
-				Map<String, String> headers = apiResponse.getValue(); // apiResponse.second
-				// Joining map entries for printing, similar to Kotlin's joinToString
-				/*String headerString = headers.entrySet().stream()
-						.map(entry -> entry.getKey() + ": " + entry.getValue())
-						.collect(Collectors.joining(", "));*/
+				return getDecryptedData(apiResponse);
+			}
+		});*/
+	}
 
-				StringBuilder headerStringBuilder = new StringBuilder();
-				Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
+	private void initialiseQpSdk(){
+		String accessToken = "Initial access token";
+		String apiBaseUrl = "https://api.questionpro.com";
 
-				while (iterator.hasNext()) {
-					Map.Entry<String, String> entry = iterator.next();
-					headerStringBuilder.append(entry.getKey()).append(": ").append(entry.getValue());
-					if (iterator.hasNext()) {
-						headerStringBuilder.append(", ");
-					}
-				}
-				String headerString = headerStringBuilder.toString();
+		HashMap<Integer, String> customVars = new HashMap<>();
+		customVars.put(4, "dark");
+		customVars.put(6, "Anmol");
 
-				Log.d("Test app"," Headers received: " + headerString);
-				String decryptedData = "Decrypted " + apiResponse.getKey(); // apiResponse.first
-				Log.d("Test app"," data decryption ended... " + decryptedData);
-				return decryptedData;
+		Activity activity =  ECartHomeActivity.this;
+		TouchPoint touchPoint = new TouchPoint.Builder(apiBaseUrl,accessToken)
+				.email("mobile.android@questionpro.com")
+				.customVariables(customVars)
+				.build();
 
+		QuestionProCX.init(activity, touchPoint, new ClientModuleCallback() {
+			@Override
+			public Map.Entry<String, Map<String, String>> encryptData(String dataToEncrypt) {
+				return getEncryptData(dataToEncrypt);
+			}
+
+			@Override
+			public String refreshToken() {
+				return getRefreshedToken();
+			}
+
+			@Override
+			public String decryptedData(Map.Entry<String, Map<String, String>> apiResponse) {
+				return getDecryptedData(apiResponse);
 			}
 		});
 	}
 
-	private void initialiseQpSdk(){
+	private String getRefreshedToken(){
+		Log.d("Test app"," Fetching new token...");
+		try {
+			Thread.sleep(500); // Simulate network delay
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			e.printStackTrace();
+		}
+		String newToken = "newlyGeneratedAccessToken123";
+		Log.d("Test app"," New token: " + newToken);
+		return newToken;
+	}
 
-		Activity activity =  ECartHomeActivity.this;
-		TouchPoint touchPoint = new TouchPoint.Builder("https://api.questionpro.com")
-				.email("mobile.android@questionpro.com")
-				.transactionLanguage("German")
-				/*.firstName("Datta")
-				.lastName("Kunde")
-				.segmentCode("S1")*/
-				//.showAsDialog(true)
-				/*.themeColor("#0000FF")
-				.transactionLanguage("French")
-				.customVariable1("123")
-				.customVariable2("Custom 2 value")
-				.customVariable3("900")*/
-				.build();
-		QuestionProCX.init(activity, touchPoint);
+	private Map.Entry<String, Map<String, String>> getEncryptData(String dataToEncrypt){
+		Log.d("Test app", " data encryption started... " + dataToEncrypt);
+		try {
+			Thread.sleep(500); // Simulate network delay
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			e.printStackTrace();
+		}
+		String encryptedData = "Encrypted " + dataToEncrypt;
+		Log.d("Test app: "," data encryption ended... " + encryptedData);
+		Map<String, String> headers = new HashMap<>();
+		headers.put("Content-Type", "application/json");
+		headers.put("Header-key", "Header value");
+		// Using AbstractMap.SimpleEntry to represent Kotlin's Pair
+		return new AbstractMap.SimpleEntry<>(encryptedData, headers);
+	}
+
+
+	private String getDecryptedData(Map.Entry<String, Map<String, String>> apiResponse) {
+		Log.d("Test app", " data decryption started... " + apiResponse.getKey()); // apiResponse.first
+		try {
+			Thread.sleep(500); // Simulate network delay
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			e.printStackTrace();
+		}
+		Map<String, String> headers = apiResponse.getValue(); // apiResponse.second
+		// Joining map entries for printing, similar to Kotlin's joinToString
+				/*String headerString = headers.entrySet().stream()
+						.map(entry -> entry.getKey() + ": " + entry.getValue())
+						.collect(Collectors.joining(", "));*/
+
+		StringBuilder headerStringBuilder = new StringBuilder();
+		Iterator<Map.Entry<String, String>> iterator = headers.entrySet().iterator();
+
+		while (iterator.hasNext()) {
+			Map.Entry<String, String> entry = iterator.next();
+			headerStringBuilder.append(entry.getKey()).append(": ").append(entry.getValue());
+			if (iterator.hasNext()) {
+				headerStringBuilder.append(", ");
+			}
+		}
+		String headerString = headerStringBuilder.toString();
+
+		Log.d("Test app"," Headers received: " + headerString);
+		String decryptedData = "Decrypted " + apiResponse.getKey(); // apiResponse.first
+		Log.d("Test app"," data decryption ended... " + decryptedData);
+		return decryptedData;
 	}
 
 	/*public AVLoadingIndicatorView getProgressBar() {

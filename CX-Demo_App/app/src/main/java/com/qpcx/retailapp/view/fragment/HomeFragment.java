@@ -74,17 +74,17 @@ public class HomeFragment extends Fragment {
 					@Override
 					public void onClick(View v) {
 
-						HashMap<Integer, String> customVars = new HashMap<>();
+						/*HashMap<Integer, String> customVars = new HashMap<>();
 						customVars.put(4, "light");
 						customVars.put(6, "Anmol");
 
-						TouchPoint touchPoint = new TouchPoint.Builder("https://api.questionpro.com")
+						TouchPoint touchPoint = new TouchPoint.Builder("https://api.questionpro.com","")
 								.email("mobile.android@questionpro.com")
 								.customVariables(customVars)
 								.themeColor("#FCFEFF")
 								.port("8081")
 								.build();
-						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);
+						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);*/
 
 
 						QuestionProCX.launchFeedbackSurvey(12174640);
@@ -95,16 +95,21 @@ public class HomeFragment extends Fragment {
 		view.findViewById(R.id.launch_survey).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				/*String accessToken = "Initial access token";
+				String apiBaseUrl = "";
+
 				HashMap<Integer, String> customVars = new HashMap<>();
 				customVars.put(4, "dark");
 				customVars.put(6, "Anmol");
-				TouchPoint touchPoint = new TouchPoint.Builder("")
+				TouchPoint touchPoint = new TouchPoint.Builder(apiBaseUrl, accessToken)
 						.showAsDialog(true)
+						.port("")
 						.email("mobile.android@questionpro.com")
 						.customVariables(customVars)
 						.themeColor("#282E3D")
 						.build();
-				QuestionProCX.init(getActivity(), touchPoint);
+				QuestionProCX.init(getActivity(), touchPoint);*/
+
 				QuestionProCX.launchFeedbackSurvey(12174902);//Device audit: 8282698
 			}
 		});
