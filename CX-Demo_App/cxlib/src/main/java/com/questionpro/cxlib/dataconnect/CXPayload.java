@@ -30,8 +30,8 @@ public class CXPayload {
             jsonObject.put("transactionLanguage", touchPoint.getTransactionLanguage());
             jsonObject.put("mobile", touchPoint.getMobile());
             jsonObject.put("segmentCode", touchPoint.getSegmentCode());
-            String date = new SimpleDateFormat("MM/dd/yyyy", locale).format(new Date());
-            jsonObject.put("transactionDate", date);
+            //String date = new SimpleDateFormat("MM/dd/yyyy", locale).format(new Date());
+            //jsonObject.put("transactionDate", date);
             if(null == touchPoint.getEmail()){
                 jsonObject.put("email", CXGlobalInfo.getInstance().getUUID()+"@questionpro.com");
             }else
