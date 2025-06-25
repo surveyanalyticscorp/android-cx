@@ -72,7 +72,6 @@ public class CXPayloadWorker {
                     //JSONObject payloadObj = new JSONObject(payload);
                     CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
                     if (response != null) {
-                        QuestionProCX questionProCX = new QuestionProCX();
                         if (response.isSuccessful()) {
                             JSONObject jsonObject = new JSONObject(response.getContent());
                             if(jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)){
@@ -86,10 +85,11 @@ public class CXPayloadWorker {
                                     //long surveyID = CXGlobalInfo.getSurveyIDFromPayload(payload);
                                     //CXGlobalInfo.storeInteraction(activity, surveyID, cxInteraction);
                                     if(!activity.isFinishing()){
-                                        QuestionProCX.launchFeedbackScreen(activity, cxInteraction);
+                                        //QuestionProCX.launchSurveyScreen(activity, cxInteraction);
+                                        QuestionProCX.getInstance().launchSurveyScreen(activity, cxInteraction);
                                     }
                                 }else{
-                                    questionProCX.onError(responseJson);
+                                    QuestionProCX.getInstance().onError(responseJson);
                                 }
                             }
                             //Log.d(LOG_TAG,"Payload submission successful" + response.getContent());
@@ -99,14 +99,14 @@ public class CXPayloadWorker {
                             try {
                                 JSONObject jsonObject = new JSONObject(response.getContent());
                                 if (jsonObject.has("response")) {
-                                    questionProCX.onError(jsonObject.getJSONObject("response"));
+                                    QuestionProCX.getInstance().onError(jsonObject.getJSONObject("response"));
                                 }
                             }catch (Exception e){
                                 JSONObject errorBody = new JSONObject();
                                 JSONObject error = new JSONObject();
                                 error.put("message", "QuestionPro API - "+response.getReason());
                                 errorBody.put("error", error);
-                                questionProCX.onError(errorBody);
+                                QuestionProCX.getInstance().onError(errorBody);
                             }
                         } else if (response.isRejectedTemporarily()) {
                             Log.d(LOG_TAG,"Unable to send JSON");

@@ -34,11 +34,23 @@ public class QuestionProCX {
 
     private static WeakReference<Activity> mActivity;
 
+    private static QuestionProCX mInstance = null;
+
+    private ClientModuleCallback clientModuleCallback;
+
 
     public QuestionProCX(){
     }
 
-    private static void init(Activity activity){
+    public static QuestionProCX getInstance(){
+        if(mInstance == null){
+            mInstance = new QuestionProCX();
+        }
+        return mInstance;
+    }
+
+
+    private void init(Activity activity){
         mActivity = new WeakReference<>(activity);
         final Context appContext = activity.getApplicationContext();
         try {
@@ -57,14 +69,14 @@ public class QuestionProCX {
         }
     }
 
-    private static void showProgress(){
+    private void showProgress(){
         progressDialog = new ProgressDialog(mActivity.get());
         progressDialog.setMessage("loading...");
         progressDialog.setCancelable(false);
         progressDialog.show();
     }
 
-    public void onError(JSONObject response) throws JSONException {
+    protected void onError(JSONObject response) throws JSONException {
         if(null != progressDialog && progressDialog.isShowing()){
             progressDialog.cancel();
         }
@@ -81,7 +93,7 @@ public class QuestionProCX {
         }
     }
 
-    public static void onStart(Activity activity){
+    private void onStart(Activity activity){
         //init(activity);
         ActivityLifecycleManager.activityStarted(activity);
         if (runningActivities == 0) {
@@ -91,21 +103,27 @@ public class QuestionProCX {
     }
 
 
-    public static synchronized void init(Activity activity, TouchPoint touchPoint, ClientModuleCallback clientModuleCallback){
+    public synchronized void init(Activity activity, TouchPoint touchPoint, ClientModuleCallback clientModuleCallback){
+        this.clientModuleCallback = clientModuleCallback;
         init(activity);
         CXGlobalInfo.getInstance().savePayLoad(touchPoint);
 
-        String newAccessToken = clientModuleCallback.refreshToken();
-        Log.d("Datta","ClientModule new access token received: " + newAccessToken);
+        Log.d("Datta","ClientModule new access token received: " + getAccessToken());
 
-        String dataToEncrypt = "Test Module data";
-        Map.Entry<String, Map<String, String>> encryptedData = clientModuleCallback.encryptData(dataToEncrypt);
-        Log.d("Datta","ClientModule encrypted data received: " + encryptedData);
+        Log.d("Datta","ClientModule encrypted data received: " + encryptedData("Encrypt this data and send back"));
 
-        decryptedModuleData(clientModuleCallback);
+        Log.d("Datta","API decrypted data received: " + decryptedModuleData());
     }
 
-    private static void decryptedModuleData(ClientModuleCallback clientModuleCallback) {
+    protected String getAccessToken(){
+        return clientModuleCallback.refreshToken();
+    }
+
+    protected Map.Entry<String, Map<String, String>> encryptedData(String dataToEncrypt){
+        return clientModuleCallback.encryptData(dataToEncrypt);
+    }
+
+    protected String decryptedModuleData() {
         String encryptedData = "Encrypted data";
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
@@ -116,11 +134,10 @@ public class QuestionProCX {
         Map.Entry<String, Map<String, String>> apiResponse =
                 new AbstractMap.SimpleEntry<>(encryptedData, headers);
 
-        String decryptedData = clientModuleCallback.decryptedData(apiResponse);
-        Log.d("Datta","API decrypted data received: " + decryptedData);
+        return clientModuleCallback.decryptedData(apiResponse);
     }
 
-    public static synchronized void launchFeedbackSurvey(long surveyId){
+    public synchronized void launchFeedbackSurvey(long surveyId){
         //showProgress();
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
         CXPayloadWorker.appWentToForeground(mActivity.get());
@@ -130,7 +147,7 @@ public class QuestionProCX {
         mActivity.get().startActivity(intent);*/
     }
 
-    public static void onStop(Activity activity){
+    private void onStop(Activity activity){
         try {
             ActivityLifecycleManager.activityStopped(activity);
             runningActivities--;
@@ -149,7 +166,7 @@ public class QuestionProCX {
 
         }
     }
-    public static synchronized  void launchFeedbackScreen(Activity activity, CXInteraction cxInteraction){
+    protected synchronized  void launchSurveyScreen(Activity activity, CXInteraction cxInteraction){
         try {
             if(progressDialog != null && progressDialog.isShowing())
                 progressDialog.cancel();

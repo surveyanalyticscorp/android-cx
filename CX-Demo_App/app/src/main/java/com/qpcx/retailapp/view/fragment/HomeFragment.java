@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment {
 						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);*/
 
 
-						QuestionProCX.launchFeedbackSurvey(12174640);
+						QuestionProCX.getInstance().launchFeedbackSurvey(12174640);
 					}
 				});
 
@@ -110,7 +110,7 @@ public class HomeFragment extends Fragment {
 						.build();
 				QuestionProCX.init(getActivity(), touchPoint);*/
 
-				QuestionProCX.launchFeedbackSurvey(12174902);//Device audit: 8282698
+				QuestionProCX.getInstance().launchFeedbackSurvey(12174902);//Device audit: 8282698
 			}
 		});
 

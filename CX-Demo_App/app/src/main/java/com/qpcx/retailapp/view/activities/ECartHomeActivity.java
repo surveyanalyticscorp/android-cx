@@ -132,7 +132,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 					@Override
 					public void onClick(View v) {
 
-						QuestionProCX.launchFeedbackSurvey(1602850877);//Device audit: 8282698
+						QuestionProCX.getInstance().launchFeedbackSurvey(1602850877);//Device audit: 8282698
 						Utils.vibrate(getApplicationContext());
 
 						Utils.switchContent(R.id.frag_container,
@@ -237,7 +237,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 				.customVariables(customVars)
 				.build();
 
-		QuestionProCX.init(activity, touchPoint, new ClientModuleCallback() {
+		QuestionProCX.getInstance().init(activity, touchPoint, new ClientModuleCallback() {
 			@Override
 			public Map.Entry<String, Map<String, String>> encryptData(String dataToEncrypt) {
 				return getEncryptData(dataToEncrypt);
