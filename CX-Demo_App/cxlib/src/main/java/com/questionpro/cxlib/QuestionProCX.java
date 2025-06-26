@@ -123,11 +123,10 @@ public class QuestionProCX {
         return clientModuleCallback.encryptData(dataToEncrypt);
     }
 
-    protected String getDecryptedModuleData() {
-        String encryptedData = "Encrypted data";
-        Map<String, String> headers = new HashMap<>();
+    protected String getDecryptedModuleData(String encryptedData, Map<String, String> headers) {
+        /*Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/json");
-        headers.put("Header-key", "Header value");
+        headers.put("Header-key", "Header value");*/
 
         // Using AbstractMap.SimpleEntry to represent Pair in Java
         // Alternatively, you could create a custom data class/record for apiResponse

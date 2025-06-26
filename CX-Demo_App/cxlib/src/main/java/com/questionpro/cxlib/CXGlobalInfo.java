@@ -49,11 +49,6 @@ public class CXGlobalInfo {
         CXGlobalInfo.apiKey = apiKey;
     }
 
-    protected String getApiKey(){
-        //return CXGlobalInfo.apiKey;
-        return getEncryptedPayload(CXGlobalInfo.apiKey);
-    }
-
     protected void setAppPackage(String appPackage){
         CXGlobalInfo.appPackage = appPackage;
     }
@@ -176,19 +171,6 @@ public class CXGlobalInfo {
                 payloadObj.remove("customVariables");
             }
         }catch (Exception e){}
-    }
-
-    protected String getEncryptedPayload(String payload){
-        Map.Entry<String, Map<String, String>> encrypted = QuestionProCX.getInstance().getEncryptedData(payload);
-        String key = encrypted.getKey();
-        Log.d("Datta", "encrypted Key: "+key);
-        Map<String, String> headers = encrypted.getValue();
-        for (Map.Entry<String, String> innerEntry : headers.entrySet()) {
-            String innerKey = innerEntry.getKey();   // e.g., "email"
-            String innerValue = innerEntry.getValue(); // e.g., "john@example.com"
-            CXUtils.printLogs("  Inner Key: " + innerKey + ", Inner Value: " + innerValue);
-        }
-        return key;
     }
 
     /*public static boolean isInteractionPending(Activity activity){

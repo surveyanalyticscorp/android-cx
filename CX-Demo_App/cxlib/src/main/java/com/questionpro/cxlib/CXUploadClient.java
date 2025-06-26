@@ -31,11 +31,14 @@ public class CXUploadClient {
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 30000;
     private static final String LOG_TAG = "CXUploadClient";
 
-    public static CXHttpResponse uploadforCX(Context context, String payload) {
+    protected static CXHttpResponse uploadApiCallForCX(Context context, String payload) {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
-            JSONObject payloadObj = new JSONObject(payload);
+            Map.Entry<String, Map<String, String>> encrypted = QuestionProCX.getInstance().getEncryptedData(payload);
+            String encryptedPayload = encrypted.getKey();
+            CXUtils.printLogs("Encrypted Payload: "+encryptedPayload);
+
             java.net.URL mURL = new URL(CXConstants.getUrl());
             Log.d("Datta","URL: "+mURL);
             if (!CXUtils.isNetworkConnectionPresent(context)) {
@@ -43,21 +46,20 @@ public class CXUploadClient {
                 return cxHttpResponse;
             }
             urlConnection = (HttpURLConnection) mURL.openConnection();
-            urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
-            urlConnection.setRequestProperty("api-key", CXGlobalInfo.getInstance().getApiKey());
+            /*urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
+            urlConnection.setRequestProperty("api-key", CXGlobalInfo.getInstance().getApiKey());*/
+            setRequestProperty(urlConnection, encrypted.getValue());
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
 
-            //if (Type.CUSTOMER_EXPERIENCE.toString().equals(CXGlobalInfo.getType(context))) {
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setFixedLengthStreamingMode(payload.length());
-                OutputStream os = urlConnection.getOutputStream();
-                os.write(payload.getBytes(StandardCharsets.UTF_8));
-                os.close();
-            //}
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setFixedLengthStreamingMode(encryptedPayload.length());
+            OutputStream os = urlConnection.getOutputStream();
+            os.write(encryptedPayload.getBytes(StandardCharsets.UTF_8));
+            os.close();
 
             int responseCode = urlConnection.getResponseCode();
             cxHttpResponse.setCode(responseCode);
@@ -99,7 +101,13 @@ public class CXUploadClient {
         return cxHttpResponse;
     }
 
-    public static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
+    private static void setRequestProperty(HttpURLConnection urlConnection, Map<String, String> headers){
+        for (Map.Entry<String, String> innerEntry : headers.entrySet()) {
+            urlConnection.setRequestProperty(innerEntry.getKey(), innerEntry.getValue());
+        }
+    }
+
+    private static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
         if (connection != null) {
             InputStream is = null;
                 is = new BufferedInputStream(connection.getInputStream());
@@ -112,7 +120,7 @@ public class CXUploadClient {
     }
 
 
-    public static String getErrorResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
+    private static String getErrorResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
         if (connection != null) {
             InputStream is = null;
 

@@ -69,12 +69,14 @@ public class CXPayloadWorker {
                     }
                     Log.v(LOG_TAG, "Checking for payloads to send.");
                     String payload = CXGlobalInfo.getApiPayload((Activity)contextRef.get());
-                    String encryptedPayload = CXGlobalInfo.getInstance().getEncryptedPayload(payload);
                     //JSONObject payloadObj = new JSONObject(payload);
-                    CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), encryptedPayload);
+                    CXHttpResponse response = CXUploadClient.uploadApiCallForCX(contextRef.get(), payload);
                     if (response != null) {
                         if (response.isSuccessful()) {
-                            JSONObject jsonObject = new JSONObject(response.getContent());
+                            String decryptedData = QuestionProCX.getInstance().getDecryptedModuleData(response.getContent(), response.getHeaders());
+                            CXUtils.printLogs("DecryptedData: "+ decryptedData);
+
+                            JSONObject jsonObject = new JSONObject(decryptedData);
                             if(jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)){
                                 JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
                                 responseJson.put(CXConstants.JSONResponseFields.IS_DIALOG,CXGlobalInfo.isShowDialog(contextRef.get()));

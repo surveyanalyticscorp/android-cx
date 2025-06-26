@@ -232,8 +232,9 @@ public class ECartHomeActivity extends AppCompatActivity {
 		customVars.put(6, "Anmol");
 
 		Activity activity =  ECartHomeActivity.this;
-		TouchPoint touchPoint = new TouchPoint.Builder(apiBaseUrl,accessToken)
+		TouchPoint touchPoint = new TouchPoint.Builder(apiBaseUrl, accessToken)
 				.email("mobile.android@questionpro.com")
+				.port("")
 				.customVariables(customVars)
 				.build();
 
@@ -269,7 +270,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 	}
 
 	private Map.Entry<String, Map<String, String>> getEncryptData(String dataToEncrypt){
-		Log.d("Test app", " data encryption started... " + dataToEncrypt);
+		//Log.d("Test app", " data encryption started... " + dataToEncrypt);
 		try {
 			Thread.sleep(500); // Simulate network delay
 		} catch (InterruptedException e) {
@@ -277,10 +278,11 @@ public class ECartHomeActivity extends AppCompatActivity {
 			e.printStackTrace();
 		}
 		String encryptedData =  dataToEncrypt;
-		Log.d("Test app: "," data encryption ended... " + encryptedData);
+		//Log.d("Test app: "," data encryption ended... " + encryptedData);
 		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type", "application/json");
-		headers.put("Header-key", "Header value");
+		headers.put("Content-Type", "application/json; charSet=UTF-8");
+		headers.put("api-key", "5e706b2b-dd69-4df5-bcf9-1fd9190854ad");
+		headers.put("access-token", "access_token");
 		// Using AbstractMap.SimpleEntry to represent Kotlin's Pair
 		return new AbstractMap.SimpleEntry<>(encryptedData, headers);
 	}
@@ -313,8 +315,8 @@ public class ECartHomeActivity extends AppCompatActivity {
 		String headerString = headerStringBuilder.toString();
 
 		Log.d("Test app"," Headers received: " + headerString);
-		String decryptedData = "Decrypted " + apiResponse.getKey(); // apiResponse.first
-		Log.d("Test app"," data decryption ended... " + decryptedData);
+		String decryptedData = apiResponse.getKey(); // apiResponse.first
+		Log.d("Test app"," data decryption ended: " + decryptedData);
 		return decryptedData;
 	}
 
