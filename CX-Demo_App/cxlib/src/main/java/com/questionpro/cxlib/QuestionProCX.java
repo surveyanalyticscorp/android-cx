@@ -8,10 +8,9 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.widget.Toast;
 
-import com.questionpro.cxlib.interfaces.ClientModuleCallback;
+import com.questionpro.cxlib.interfaces.QuestionProCallback;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.util.CXUtils;
 
@@ -20,7 +19,6 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.Map;
 
 
@@ -36,7 +34,7 @@ public class QuestionProCX {
 
     private static QuestionProCX mInstance = null;
 
-    private ClientModuleCallback clientModuleCallback;
+    private QuestionProCallback questionProCallback;
 
 
     public QuestionProCX(){
@@ -103,24 +101,22 @@ public class QuestionProCX {
     }
 
 
-    public synchronized void init(Activity activity, TouchPoint touchPoint, ClientModuleCallback clientModuleCallback){
-        this.clientModuleCallback = clientModuleCallback;
+    public synchronized void init(Activity activity, TouchPoint touchPoint, QuestionProCallback callback){
+        this.questionProCallback = callback;
         init(activity);
         CXGlobalInfo.getInstance().savePayLoad(touchPoint);
 
         //Log.d("Datta","ClientModule new access token received: " + getAccessToken());
-
         //Log.d("Datta","ClientModule encrypted data received: " + getEncryptedData("Encrypt this data and send back"));
-
         //Log.d("Datta","API decrypted data received: " + getDecryptedModuleData());
     }
 
     protected String getAccessToken(){
-        return clientModuleCallback.refreshToken();
+        return questionProCallback.refreshToken();
     }
 
     protected Map.Entry<String, Map<String, String>> getEncryptedData(String dataToEncrypt){
-        return clientModuleCallback.encryptData(dataToEncrypt);
+        return questionProCallback.encryptData(dataToEncrypt);
     }
 
     protected String getDecryptedModuleData(String encryptedData, Map<String, String> headers) {
@@ -133,7 +129,7 @@ public class QuestionProCX {
         Map.Entry<String, Map<String, String>> apiResponse =
                 new AbstractMap.SimpleEntry<>(encryptedData, headers);
 
-        return clientModuleCallback.decryptedData(apiResponse);
+        return questionProCallback.decryptedData(apiResponse);
     }
 
     public synchronized void launchFeedbackSurvey(long surveyId){

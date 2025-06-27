@@ -2,17 +2,17 @@ package com.questionpro.cxlib;
 
 import android.util.Log;
 
-import com.questionpro.cxlib.interfaces.ClientModuleCallback;
+import com.questionpro.cxlib.interfaces.QuestionProCallback;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClientModule{
+class ClientModule{
     private String accessToken; // Initial access token
-    private final ClientModuleCallback clientModuleCallback;
+    private final QuestionProCallback clientModuleCallback;
 
-    public ClientModule(String accessToken, ClientModuleCallback clientModuleCallback) {
+    public ClientModule(String accessToken, QuestionProCallback clientModuleCallback) {
         this.accessToken = accessToken;
         this.clientModuleCallback = clientModuleCallback;
         initModuleTest();
