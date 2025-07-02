@@ -85,10 +85,7 @@ public class CXPayloadWorker {
 
                                 if(!cxInteraction.url.equalsIgnoreCase("Empty") && URI.create(cxInteraction.url).isAbsolute()){
                                     Activity activity = (Activity) contextRef.get();
-                                    //long surveyID = CXGlobalInfo.getSurveyIDFromPayload(payload);
-                                    //CXGlobalInfo.storeInteraction(activity, surveyID, cxInteraction);
                                     if(!activity.isFinishing()){
-                                        //QuestionProCX.launchSurveyScreen(activity, cxInteraction);
                                         QuestionProCX.getInstance().launchSurveyScreen(activity, cxInteraction);
                                     }
                                 }else{
@@ -100,9 +97,14 @@ public class CXPayloadWorker {
                         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
                             Log.v("Rejected json:", response.getContent());
                             try {
-                                JSONObject jsonObject = new JSONObject(response.getContent());
-                                if (jsonObject.has("response")) {
-                                    QuestionProCX.getInstance().onError(jsonObject.getJSONObject("response"));
+                                if(response.getCode() == 401){
+                                    threadRunning.set(false);
+                                    QuestionProCX.getInstance().handleTokenExpiry();
+                                }else {
+                                    JSONObject jsonObject = new JSONObject(response.getContent());
+                                    if (jsonObject.has("response")) {
+                                        QuestionProCX.getInstance().onError(jsonObject.getJSONObject("response"));
+                                    }
                                 }
                             }catch (Exception e){
                                 JSONObject errorBody = new JSONObject();

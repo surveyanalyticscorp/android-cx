@@ -74,6 +74,11 @@ public class QuestionProCX {
         progressDialog.show();
     }
 
+    protected void handleTokenExpiry(){
+        questionProCallback.refreshToken();
+        QuestionProCX.getInstance().launchFeedbackSurvey(CXGlobalInfo.getSurveyIDFromPayload());
+    }
+
     protected void onError(JSONObject response) throws JSONException {
         if(null != progressDialog && progressDialog.isShowing()){
             progressDialog.cancel();
@@ -120,10 +125,6 @@ public class QuestionProCX {
     }
 
     protected String getDecryptedModuleData(String encryptedData, Map<String, String> headers) {
-        /*Map<String, String> headers = new HashMap<>();
-        headers.put("Content-Type", "application/json");
-        headers.put("Header-key", "Header value");*/
-
         // Using AbstractMap.SimpleEntry to represent Pair in Java
         // Alternatively, you could create a custom data class/record for apiResponse
         Map.Entry<String, Map<String, String>> apiResponse =
@@ -133,7 +134,7 @@ public class QuestionProCX {
     }
 
     public synchronized void launchFeedbackSurvey(long surveyId){
-        //showProgress();
+        showProgress();
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
         CXPayloadWorker.appWentToForeground(mActivity.get());
 
@@ -168,16 +169,6 @@ public class QuestionProCX {
             Intent intent = new Intent(activity, InteractionActivity.class);
             intent.putExtra(CXConstants.CX_INTERACTION_CONTENT, cxInteraction);
             activity.startActivity(intent);
-
-           /* Bundle args=new Bundle();
-            args.putSerializable(CXConstants.CX_INTERACTION_CONTENT, CXGlobalInfo.getInteraction(activity, touchPointID));
-            activity.getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(android.R.id.content, InteractionFragment.class, args)
-                    .addToBackStack(null)
-                    .commit();
-
-            CXGlobalInfo.clearInteraction(activity, touchPointID);*/
         } catch (Exception e) {
             e.printStackTrace();
         }

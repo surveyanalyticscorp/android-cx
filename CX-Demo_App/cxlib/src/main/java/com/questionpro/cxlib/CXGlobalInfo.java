@@ -78,6 +78,18 @@ public class CXGlobalInfo {
         }catch (Exception e){e.printStackTrace();}
     }
 
+    protected static long getSurveyIDFromPayload(){
+        try {
+            JSONObject jsonObject = new JSONObject(CXGlobalInfo.payload);
+            if(jsonObject.has(SURVEY_ID)){
+                return jsonObject.getLong(SURVEY_ID);
+            }
+        } catch (Exception e){
+            //eat it
+        }
+        return -1;
+    }
+
     /**
      * This function is used to get the type of Survey
      * @return
