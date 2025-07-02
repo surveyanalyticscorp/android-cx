@@ -27,13 +27,9 @@ import com.qpcx.retailapp.util.TinyDB;
 import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
-import com.questionpro.cxlib.ClientModule;
 import com.questionpro.cxlib.QuestionProCX;
-import com.questionpro.cxlib.interfaces.ClientModuleCallback;
-import com.questionpro.cxlib.model.DataCenter;
+import com.questionpro.cxlib.interfaces.QuestionProCallback;
 import com.questionpro.cxlib.model.TouchPoint;
-import com.questionpro.cxlib.model.Type;
-//import com.wang.avi.AVLoadingIndicatorView;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -228,17 +224,19 @@ public class ECartHomeActivity extends AppCompatActivity {
 		String apiBaseUrl = "https://api.questionpro.com";
 
 		HashMap<Integer, String> customVars = new HashMap<>();
-		customVars.put(4, "dark");
+		customVars.put(4, "Name");
 		customVars.put(6, "Anmol");
 
 		Activity activity =  ECartHomeActivity.this;
 		TouchPoint touchPoint = new TouchPoint.Builder(apiBaseUrl, accessToken)
-				.email("mobile.android@questionpro.com")
 				.port("")
+				.email("mobile.android@questionpro.com")
+				.transactionLanguage("Arebic")
+				.showAsDialog(true)
 				.customVariables(customVars)
 				.build();
 
-		QuestionProCX.getInstance().init(activity, touchPoint, new ClientModuleCallback() {
+		QuestionProCX.getInstance().init(activity, touchPoint, new QuestionProCallback() {
 			@Override
 			public Map.Entry<String, Map<String, String>> encryptData(String dataToEncrypt) {
 				return getEncryptData(dataToEncrypt);
@@ -258,12 +256,6 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 	private String getRefreshedToken(){
 		Log.d("Test app"," Fetching new token...");
-		try {
-			Thread.sleep(500); // Simulate network delay
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			e.printStackTrace();
-		}
 		String newToken = "newlyGeneratedAccessToken123";
 		Log.d("Test app"," New token: " + newToken);
 		return newToken;
@@ -271,12 +263,6 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 	private Map.Entry<String, Map<String, String>> getEncryptData(String dataToEncrypt){
 		//Log.d("Test app", " data encryption started... " + dataToEncrypt);
-		try {
-			Thread.sleep(500); // Simulate network delay
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			e.printStackTrace();
-		}
 		String encryptedData =  dataToEncrypt;
 		//Log.d("Test app: "," data encryption ended... " + encryptedData);
 		Map<String, String> headers = new HashMap<>();
@@ -290,12 +276,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 	private String getDecryptedData(Map.Entry<String, Map<String, String>> apiResponse) {
 		Log.d("Test app", " data decryption started... " + apiResponse.getKey()); // apiResponse.first
-		try {
-			Thread.sleep(500); // Simulate network delay
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			e.printStackTrace();
-		}
+
 		Map<String, String> headers = apiResponse.getValue(); // apiResponse.second
 		// Joining map entries for printing, similar to Kotlin's joinToString
 				/*String headerString = headers.entrySet().stream()
