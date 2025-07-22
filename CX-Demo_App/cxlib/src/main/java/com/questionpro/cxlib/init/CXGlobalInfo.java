@@ -13,8 +13,12 @@ import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CXGlobalInfo {
@@ -154,8 +158,38 @@ public class CXGlobalInfo {
             payloadObj.put("visitedUserId",new SharedPreferenceManager(activity).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);
+            CXGlobalInfo.setCustomVariable(payloadObj);
+
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";
+    }
+
+
+    private static void setCustomVariable(JSONObject requestObj){
+        try {
+            JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
+            if (payloadObj.has("customVariables")) {
+                //String inputString = "key1=value1,key2=value2,key3=value3";
+                String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
+
+                Map<String, String> myMap = new HashMap<>();
+                String[] pairs = inputString.split(",");
+                JSONArray customVars = new JSONArray();
+                for (String pair : pairs) {
+                    JSONObject customVar = new JSONObject();
+                    String[] keyValue = pair.split("=");
+                    if (keyValue.length == 2) {
+                        String key = "custom"+keyValue[0].trim();
+                        String value = keyValue[1].trim();
+                        //myMap.put(key, value);
+                        customVar.put("variableName",key);
+                        customVar.put("value",value);
+                        customVars.put(customVar);
+                    }
+                }
+                requestObj.put("data",customVars);
+            }
+        }catch (Exception e){}
     }
 }
