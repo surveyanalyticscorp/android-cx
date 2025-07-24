@@ -151,11 +151,11 @@ public class CXGlobalInfo {
         return "";
     }
 
-    public static String getInterceptApiPayload(Intercept intercept, Activity activity){
+    public static String getInterceptApiPayload(Intercept intercept, Context context){
         try {
             JSONObject payloadObj = new JSONObject();
             payloadObj.put("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
-            payloadObj.put("visitedUserId",new SharedPreferenceManager(activity).getVisitorsUUID());
+            payloadObj.put("visitedUserId",new SharedPreferenceManager(context).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);
             CXGlobalInfo.setCustomVariable(payloadObj);

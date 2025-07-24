@@ -1,6 +1,6 @@
 package com.questionpro.cxlib.dataconnect;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Looper;
 
 import java.net.URL;
@@ -24,22 +24,22 @@ import org.json.JSONObject;
 
 public class CXApiHandler {
 
-    private final Activity mActivity;
+
+    private final Context mContext;
     private final IQuestionProApiCallback mQuestionProApiCall;
 
-    public CXApiHandler(Activity activity, IQuestionProApiCallback call){
-        this.mActivity = activity;
+    public CXApiHandler(Context context, IQuestionProApiCallback call){
+        this.mContext = context;
         mQuestionProApiCall = call;
     }
 
     public void getInterceptSurvey(final Intercept intercept){
         ExecutorService myExecutor = Executors.newSingleThreadExecutor();
-        final Handler handler = new Handler(Looper.getMainLooper());
         myExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try{
-                    if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
+                    if (!CXUtils.isNetworkConnectionPresent(mContext)) {
                         mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
@@ -61,9 +61,8 @@ public class CXApiHandler {
         myExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                // Background Task (Simulating heavy work)
                 try {
-                    if (!CXUtils.isNetworkConnectionPresent(mActivity)) {
+                    if (!CXUtils.isNetworkConnectionPresent(mContext)) {
                         mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
@@ -98,7 +97,7 @@ public class CXApiHandler {
                     HashMap<String, String> headers = new HashMap<>();
                     headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
                     headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
-                    headers.put("visitor-id", new SharedPreferenceManager(mActivity).getVisitorsUUID());
+                    headers.put("visitor-id", new SharedPreferenceManager(mContext).getVisitorsUUID());
 
                     URL url = new URL(CXConstants.getFeedbackUrl());
 
@@ -114,7 +113,7 @@ public class CXApiHandler {
 
     private void getInterceptConfigurations(){
         try {
-            SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mActivity);
+            SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mContext);
 
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
@@ -123,7 +122,7 @@ public class CXApiHandler {
             java.net.URL url = new URL(CXConstants.getInterceptsUrl());
             CXHttpResponse response = CXUploadClient.getCxApi(url, headers);
 
-            if (response != null && response.isSuccessful()) {
+            if (response.isSuccessful()) {
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
                     JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
@@ -131,7 +130,7 @@ public class CXApiHandler {
                 }
                 sharedPreferenceManager.saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
                 mQuestionProApiCall.onApiCallbackSuccess(null, "SDK is Initialised");
-            }else if(response != null && response.isRejectedPermanently()){
+            }else if(response.isRejectedPermanently()){
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
             }else
@@ -144,13 +143,13 @@ public class CXApiHandler {
 
     private void getSurveyUrl(Intercept intercept){
         try {
-            String payload = CXGlobalInfo.getInterceptApiPayload(intercept, mActivity);
+            String payload = CXGlobalInfo.getInterceptApiPayload(intercept, mContext);
 
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
             headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
 
-            URL url = new URL(CXConstants.getSurveyUrl(mActivity));
+            URL url = new URL(CXConstants.getSurveyUrl(mContext));
 
             CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
 

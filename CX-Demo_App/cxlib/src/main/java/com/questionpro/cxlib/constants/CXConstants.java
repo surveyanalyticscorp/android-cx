@@ -25,6 +25,7 @@ public class CXConstants {
         try {
             String dataCenter = CXGlobalInfo.getDataCenter();
             return getBaseUrl(dataCenter) + CX_INTERCEPT_SURVEY_URL;
+            //return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
         }catch (Exception e){
             e.printStackTrace();
         }
