@@ -23,8 +23,8 @@ public class SharedPreferenceManager {
     private final String VISITORS_UUID = "visitors_uuid";
     private final String LAUNCHED_SURVEYS = "launched_surveys";
     private static String interceptStr;
-    public SharedPreferenceManager(Activity activity){
-        prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+    public SharedPreferenceManager(Context context){
+        prefs = context.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
     }
 
     public void saveIntercepts(String intercept){
@@ -95,8 +95,8 @@ public class SharedPreferenceManager {
         prefs.edit().putString(LAUNCHED_SURVEYS,json).apply();
     }
 
-    public long getLaunchedInterceptTime(Activity activity, int interceptId){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences("Intercepts", Context.MODE_PRIVATE);
+    public long getLaunchedInterceptTime(Context context, int interceptId){
+        SharedPreferences prefs = context.getSharedPreferences("Intercepts", Context.MODE_PRIVATE);
         String json = prefs.getString(LAUNCHED_SURVEYS, null);
 
         //Log.d("Datta", interceptId+ " Getting Saved time: " + json);

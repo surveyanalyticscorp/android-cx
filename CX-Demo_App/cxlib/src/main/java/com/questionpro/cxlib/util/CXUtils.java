@@ -37,9 +37,9 @@ public class CXUtils {
 
     private static final int SLEEP_TIME_THRESHOLD_IN_MIN = 12 * 60;
 
-    public static String getUniqueDeviceId(Activity activity) {
+    public static String getUniqueDeviceId(Context context) {
         @SuppressLint("HardwareIds")
-        String device_id = Settings.Secure.getString(activity.getContentResolver(), Settings.Secure.ANDROID_ID);
+        String device_id = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
         if ((device_id == null) || (device_id.equals("9774d56d682e549c")) || (device_id.length() < 15)) {
             device_id = new BigInteger(64, new SecureRandom()).toString(16);
         }
