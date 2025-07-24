@@ -35,6 +35,7 @@ import com.questionpro.cxlib.model.TouchPoint;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 
 public class ECartHomeActivity extends AppCompatActivity {
 
@@ -194,13 +195,20 @@ public class ECartHomeActivity extends AppCompatActivity {
 					}
 				});
 
-		initialiseQpSdk();
+		//initialiseQpSdk();
 	}
 
 	private void initialiseQpSdk(){
 		Activity activity =  ECartHomeActivity.this;
+		HashMap<Integer, String> cutVars= new HashMap<>();
+		cutVars.put(2, "Datta");
+		cutVars.put(3,"Kunde");
+		cutVars.put(4,"QuestionPro");
+		cutVars.put(5,"Custom values stored in it");
 
-		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US).build();
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+				.customVariables(cutVars)
+		.build();
 		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProCallback() {
 			@Override
 			public void onInitializationSuccess(String message) {
@@ -287,7 +295,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		//Log.d("Datta","ECartHomeActivity onDestroy....");
-		QuestionProCX.getInstance().clearSession();
+		//QuestionProCX.getInstance().clearSession();
 	}
 
 	@Override

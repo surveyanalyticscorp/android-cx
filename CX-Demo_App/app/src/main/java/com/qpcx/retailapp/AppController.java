@@ -1,14 +1,23 @@
 package com.qpcx.retailapp;
 
+import android.app.ActivityManager;
 import android.app.Application;
+import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.qpcx.retailapp.util.PreferenceHelper;
+import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.enums.DataCenter;
+import com.questionpro.cxlib.interfaces.IQuestionProCallback;
+import com.questionpro.cxlib.model.TouchPoint;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
+
+import java.util.HashMap;
 
 @ReportsCrashes(mailTo = "hiteshkumarsahu1990@gmail.com", customReportContent = {
 		ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
@@ -34,39 +43,52 @@ public class AppController extends Application {
 			ACRA.init(this);
 		}
 
-
-
+		Log.d("Datta","Application onCreate:"+getPackageName().equals(getProcessName(this)));
+		if (getPackageName().equals(getProcessName(this))) {
+			initialiseQpSdk(this);
+		}
 	}
 
-	// Fake Volley queue for fake network calls
+	public static String getProcessName(Context context) {
+		ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+		int pid = android.os.Process.myPid();
+		for (ActivityManager.RunningAppProcessInfo processInfo : am.getRunningAppProcesses()) {
+			if (processInfo.pid == pid) {
+				return processInfo.processName;
+			}
+		}
+		return null;
+	}
+
+	private void initialiseQpSdk(AppController appController){
+		HashMap<Integer, String> cutVars= new HashMap<>();
+		cutVars.put(2, "Datta");
+		cutVars.put(3,"Kunde");
+
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+				.customVariables(cutVars)
+				.build();
+		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProCallback() {
+			@Override
+			public void onInitializationSuccess(String message) {
+				Log.d("Datta", "onInitializationSuccess: "+message);
+			}
+
+			@Override
+			public void onInitializationFailure(String error) {
+				Log.d("Datta", "onInitializationFailure: "+error);
+			}
+
+			@Override
+			public void getSurveyUrl(String surveyUrl) {
+				Log.d("Datta", "getSurveyUrl: "+surveyUrl);
+			}
+		});
+
+		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
+	}
 
 	public static synchronized AppController getInstance() {
 		return mInstance;
 	}
-
-
-
-
-//	public RequestQueue getFakeRequestQueue() {
-//		if (mRequestQueue == null) {
-//			mRequestQueue = new FakeRequestQueue(getApplicationContext());
-//		}
-//		return mRequestQueue;
-//	}
-//
-//	public <T> void addToRequestQueue(Request<T> req, String tag) {
-//		req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-//		getFakeRequestQueue().add(req);
-//	}
-//
-//	public <T> void addToFakeRequestQueue(Request<T> req) {
-//		req.setTag(TAG);
-//		getFakeRequestQueue().add(req);
-//	}
-//
-//	public void cancelPendingRequests(Object tag) {
-//		if (mRequestQueue != null) {
-//			mRequestQueue.cancelAll(tag);
-//		}
-//	}
 }
