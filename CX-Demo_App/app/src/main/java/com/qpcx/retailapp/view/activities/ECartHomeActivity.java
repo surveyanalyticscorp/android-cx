@@ -29,6 +29,7 @@ import com.qpcx.retailapp.view.fragment.HomeFragment;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.enums.DataCenter;
+import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.model.TouchPoint;
 //import com.questionpro.cxlib.model.Type;
 //import com.wang.avi.AVLoadingIndicatorView;
@@ -196,6 +197,13 @@ public class ECartHomeActivity extends AppCompatActivity {
 				});
 
 		//initialiseQpSdk();
+
+		QuestionProCX.getInstance().gerSurveyUrl(new IQuestionProCallback(){
+			@Override
+			public void getSurveyUrl(String surveyUrl) {
+				Log.d("Datta","Survey url: "+surveyUrl);
+			}
+		});
 	}
 
 	private void initialiseQpSdk(){
@@ -209,7 +217,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
 				.customVariables(cutVars)
 		.build();
-		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProCallback() {
+		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProInitCallback() {
 			@Override
 			public void onInitializationSuccess(String message) {
 				Log.d("Datta", "onInitializationSuccess: "+message);
@@ -218,11 +226,6 @@ public class ECartHomeActivity extends AppCompatActivity {
 			@Override
 			public void onInitializationFailure(String error) {
 				Log.d("Datta", "onInitializationFailure: "+error);
-			}
-
-			@Override
-			public void getSurveyUrl(String surveyUrl) {
-				Log.d("Datta", "getSurveyUrl: "+surveyUrl);
 			}
 		});
 

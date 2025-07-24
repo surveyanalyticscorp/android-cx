@@ -9,7 +9,7 @@ import com.android.volley.RequestQueue;
 import com.qpcx.retailapp.util.PreferenceHelper;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.enums.DataCenter;
-import com.questionpro.cxlib.interfaces.IQuestionProCallback;
+import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.model.TouchPoint;
 
 import org.acra.ACRA;
@@ -68,7 +68,7 @@ public class AppController extends Application {
 		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
 				.customVariables(cutVars)
 				.build();
-		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProCallback() {
+		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
 			@Override
 			public void onInitializationSuccess(String message) {
 				Log.d("Datta", "onInitializationSuccess: "+message);
@@ -77,11 +77,6 @@ public class AppController extends Application {
 			@Override
 			public void onInitializationFailure(String error) {
 				Log.d("Datta", "onInitializationFailure: "+error);
-			}
-
-			@Override
-			public void getSurveyUrl(String surveyUrl) {
-				Log.d("Datta", "getSurveyUrl: "+surveyUrl);
 			}
 		});
 
