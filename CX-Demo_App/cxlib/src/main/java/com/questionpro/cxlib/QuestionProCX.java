@@ -16,9 +16,10 @@ import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.enums.InterceptCondition;
 import com.questionpro.cxlib.enums.InterceptRuleType;
 import com.questionpro.cxlib.enums.InterceptType;
-import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
+import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.interfaces.IQuestionProRulesCallback;
+import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
 import com.questionpro.cxlib.model.TouchPoint;
@@ -32,7 +33,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
@@ -51,6 +51,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private static QuestionProCX mInstance = null;
 
+    private IQuestionProInitCallback questionProInitCallback;
     private IQuestionProCallback questionProCallback;
 
     private SharedPreferenceManager preferenceManager = null;
@@ -78,9 +79,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
     }
 
-    public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProCallback callback){
+    public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
         appContext = context;
-        questionProCallback = callback;
+        questionProInitCallback = callback;
         try {
             CXUtils.printLog("Datta","Initialising the SDK");
             initialize();
@@ -88,6 +89,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }catch (Exception e){
             callback.onInitializationFailure(e.getMessage());
         }
+    }
+
+    public void gerSurveyUrl(IQuestionProCallback questionProCallback){
+        this.questionProCallback = questionProCallback;
     }
 
     /**
@@ -146,8 +151,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             }
         }else{
             CXUtils.printLog("Datta", "Initialization API response: "+surveyUrl);
-            if(questionProCallback != null) {
-                questionProCallback.onInitializationSuccess(surveyUrl);
+            if(questionProInitCallback != null) {
+                questionProInitCallback.onInitializationSuccess(surveyUrl);
             }
             setUpIntercept();
         }
@@ -156,8 +161,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     @Override
     public void OnApiCallbackFailed(JSONObject error) {
         CXUtils.printLog("Datta", "Error in initialization: "+error.toString());
-        if(questionProCallback != null) {
-            questionProCallback.onInitializationFailure(error.toString());
+        if(questionProInitCallback != null) {
+            questionProInitCallback.onInitializationFailure(error.toString());
         }
     }
 
