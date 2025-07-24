@@ -1,6 +1,7 @@
 package com.questionpro.cxlib;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +35,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -45,7 +47,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private static boolean isSessionAlive = false;
     private ProgressDialog progressDialog;
 
-    private WeakReference<Activity> mActivity;
+    private static Context appContext;
 
     private static QuestionProCX mInstance = null;
 
@@ -65,25 +67,24 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         return mInstance;
     }
 
-    public synchronized void init(Activity activity, TouchPoint touchPoint){
+    public synchronized void init(Context context, TouchPoint touchPoint){
         try {
-            initialize(activity);
+            appContext = context;
+            initialize();
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
-            new CXApiHandler(activity, this).getIntercept();
+            //new CXApiHandler(activity, this).getIntercept();
         }catch (Exception e){
             Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
         }
     }
 
-    public synchronized void init(Activity activity, TouchPoint touchPoint, IQuestionProCallback callback){
+    public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProCallback callback){
+        appContext = context;
         questionProCallback = callback;
         try {
             CXUtils.printLog("Datta","Initialising the SDK");
-            initialize(activity);
+            initialize();
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
-
-            new CXApiHandler(activity, this).getIntercept();
-            //callback.onSuccess("QuestionPro SDK initialise successfully!");
         }catch (Exception e){
             callback.onInitializationFailure(e.getMessage());
         }
@@ -104,30 +105,42 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         preferenceManager.resetPreferences();
     }
 
-    private void initialize(Activity activity) throws Exception{
-        mActivity = new WeakReference<>(activity);
-        isSessionAlive = true;
-        preferenceManager = new SharedPreferenceManager(activity);
+    protected void initialize() throws Exception{
+        //mActivity = new WeakReference<>(activity);
 
-        final Context appContext = activity.getApplicationContext();
+        preferenceManager = new SharedPreferenceManager(appContext);
+        if (appContext instanceof Application) {
+            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        } else if (appContext.getApplicationContext() instanceof Application) {
+            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        }
+
+        //final Context appContext = activity.getApplicationContext();
         ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
         Bundle metaData = ai.metaData;
 
         if (metaData != null) {
             String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-            CXUtils.printLog(LOG_TAG,"API key: "+apiKey);
+            CXUtils.printLog(LOG_TAG, "API key: " + apiKey);
             CXGlobalInfo.getInstance().setApiKey(apiKey);
             CXGlobalInfo.getInstance().setAppPackage(appContext.getPackageName());
-            CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(activity));
+            CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
             CXGlobalInfo.getInstance().setInitialized(true);
+        }
+        fetchInterceptSettings();
+    }
+
+    protected void fetchInterceptSettings(){
+        if(!isSessionAlive) {
+            isSessionAlive = true;
+            new CXApiHandler(appContext, this).getIntercept();
         }
     }
 
     @Override
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
-            //preferenceManager.saveInterceptIdForLaunchedSurvey(String.valueOf(intercept.id));
-            new CXApiHandler(mActivity.get(), this).submitFeedback(intercept, "MATCHED");
+            new CXApiHandler(appContext, this).submitFeedback(intercept, "MATCHED");
             if(questionProCallback != null) {
                 questionProCallback.getSurveyUrl(surveyUrl);
             }
@@ -210,7 +223,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public void onViewCountRuleSatisfied(int interceptId) {
         Set<String> interceptRules = new HashSet<>();
         if(interceptSatisfiedRules.containsKey(interceptId)) {
-            interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+            interceptRules.addAll(Objects.requireNonNull(interceptSatisfiedRules.get(interceptId)));
         }
         interceptRules.add(InterceptRuleType.VIEW_COUNT.name());
 
@@ -225,7 +238,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             CXUtils.printLog("Datta","Trigger the intercept as time is satisfied:"+interceptId);
             Set<String> interceptRules = new HashSet<>();
             if(interceptSatisfiedRules.containsKey(interceptId)) {
-                interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
+                interceptRules.addAll(Objects.requireNonNull(interceptSatisfiedRules.get(interceptId)));
             }
             interceptRules.add(InterceptRuleType.TIME_SPENT.name());
 
@@ -237,7 +250,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void checkAllRulesForIntercept(int interceptId){
         try {
-            long prevTime = preferenceManager.getLaunchedInterceptTime(mActivity.get(), interceptId);
+            long prevTime = preferenceManager.getLaunchedInterceptTime(appContext, interceptId);
             boolean isSleepTimeOverForIntercept = CXUtils.isSleepTimeOver(prevTime);
             Log.d("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
 
@@ -259,12 +272,12 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }catch (Exception e){}
     }
 
-    private void showProgress(){
+    /*private void showProgress(){
         progressDialog = new ProgressDialog(mActivity.get());
         progressDialog.setMessage("loading...");
         progressDialog.setCancelable(false);
         progressDialog.show();
-    }
+    }*/
 
     public void handleError(JSONObject response) throws JSONException {
         if(null != progressDialog && progressDialog.isShowing()){
@@ -272,13 +285,28 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
         if(response.has("error") && response.getJSONObject("error").has("message")) {
             final String errorMessage = "Error: " + response.getJSONObject("error").getString("message");
-            final Activity activity = mActivity.get();
+            /*final Activity activity = mActivity.get();
             if (activity != null) {
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(activity, errorMessage, Toast.LENGTH_LONG).show();
                     }
                 });
+            }*/
+            Toast.makeText(appContext, errorMessage, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private synchronized void launchFeedbackSurvey(Intercept intercept){
+        CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
+        if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
+            new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
+        }else {
+            if (runningActivities == 0 && isSessionAlive) {
+                Intent intent = new Intent(appContext, InteractionActivity.class);
+                intent.putExtra("INTERCEPT", intercept);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                appContext.startActivity(intent);
             }
         }
     }
@@ -292,20 +320,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             //CXPayloadWorker.appWentToForeground(activity);
         }
         runningActivities++;
-    }
-
-
-    private synchronized void launchFeedbackSurvey(Intercept intercept){
-        if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
-            new CXApiHandler(mActivity.get(), this).getInterceptSurvey(intercept);
-        }else {
-            CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
-            if (runningActivities == 0 && isSessionAlive) {
-                Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
-                intent.putExtra("INTERCEPT", intercept);
-                mActivity.get().startActivity(intent);
-            }
-        }
     }
 
     public void onStop(Activity activity){
@@ -324,6 +338,14 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
         } catch (Exception e) {
             Log.w(LOG_TAG,"Error stopping Apptentive Activity.", e);
+        }
+    }
+
+    public void cleanup() {
+        if (appContext instanceof Application) {
+            ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        } else if (appContext.getApplicationContext() instanceof Application) {
+            ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
         }
     }
 }
