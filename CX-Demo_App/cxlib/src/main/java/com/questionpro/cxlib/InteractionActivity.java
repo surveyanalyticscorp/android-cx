@@ -54,7 +54,6 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
             launchSurvey(interactionSerializable.url);
         }
         //getSurveyDetails();
-
     }
 
     private void init(){
@@ -102,7 +101,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
     public class WebAppInterface {
         @JavascriptInterface
         public void onMessage(String message) {
-            Log.d("Datta","Web interface: "+message);
+            //Log.d("Datta","Web interface: "+message);
             if(isValidWebUrl(message))
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(message)));
             else
@@ -121,28 +120,9 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         webView.loadUrl(url);
     }
 
-    /*private void getSurveyDetails(){
-        try {
-            customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
-            customProgressDialog.setMessage("Please wait.");
-            customProgressDialog.show();
-
-            Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
-            if (surveyIdSerializable != null) {
-                long surveyId = (Long) surveyIdSerializable;
-                CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-                new CXApiHandler(this).execute();
-            }else{
-                showErrorDialog("Survey Id is null");
-            }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-    }*/
-
     @Override
     public void onSuccess(final String surveyUrl) {
-        Log.d("Datta","Url: "+surveyUrl);
+        CXUtils.printLogs("Url: "+surveyUrl);
         if(surveyUrl==null || CXUtils.isEmpty(surveyUrl)){
             finish();
         } else{

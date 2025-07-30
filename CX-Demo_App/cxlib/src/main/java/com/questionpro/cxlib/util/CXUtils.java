@@ -117,6 +117,6 @@ public class CXUtils {
     }
 
     public static void printLogs(String message){
-        Log.d("Datta", message);
+        //Log.d("Datta", message);
     }
 }

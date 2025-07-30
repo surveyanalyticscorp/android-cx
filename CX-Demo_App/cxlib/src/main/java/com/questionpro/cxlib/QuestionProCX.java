@@ -56,7 +56,7 @@ public class QuestionProCX {
             Bundle metaData = ai.metaData;
             if (metaData != null) {
                 String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
-                Log.d(LOG_TAG,"API key: "+apiKey);
+                CXUtils.printLogs("API key: "+apiKey);
                 CXGlobalInfo.getInstance().setApiKey(apiKey);
                 CXGlobalInfo.getInstance().setAppPackage(appContext.getPackageName());
                 CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(activity));
@@ -134,7 +134,7 @@ public class QuestionProCX {
     }
 
     public synchronized void launchFeedbackSurvey(long surveyId){
-        showProgress();
+        //showProgress();
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
         CXPayloadWorker.appWentToForeground(mActivity.get());
 

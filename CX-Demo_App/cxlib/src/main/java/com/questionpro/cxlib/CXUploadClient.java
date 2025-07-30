@@ -40,9 +40,9 @@ public class CXUploadClient {
             CXUtils.printLogs("Encrypted Payload: "+encryptedPayload);
 
             java.net.URL mURL = new URL(CXConstants.getUrl());
-            Log.d("Datta","URL: "+mURL);
+            CXUtils.printLogs("URL: "+mURL);
             if (!CXUtils.isNetworkConnectionPresent(context)) {
-                Log.d(LOG_TAG,"Network unavailable.");
+                CXUtils.printLogs("Network unavailable.");
                 return cxHttpResponse;
             }
             urlConnection = (HttpURLConnection) mURL.openConnection();

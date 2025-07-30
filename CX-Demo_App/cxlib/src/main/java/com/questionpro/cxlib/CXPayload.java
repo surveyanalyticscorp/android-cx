@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.model.TouchPoint;
+import com.questionpro.cxlib.util.CXUtils;
 
 import java.text.SimpleDateFormat;
 
@@ -40,7 +41,7 @@ public class CXPayload {
             jsonObject.put("apiBaseUrl", touchPoint.getApiBaseUrl());
             jsonObject.put("port", touchPoint.getPort());
             jsonObject.put("customVariables", touchPoint.getCustomVariables());
-            Log.d("Datta", "Payload json: "+jsonObject.toString());
+            CXUtils.printLogs("Payload json: "+jsonObject.toString());
 
             return jsonObject;
         } catch (JSONException e) {
