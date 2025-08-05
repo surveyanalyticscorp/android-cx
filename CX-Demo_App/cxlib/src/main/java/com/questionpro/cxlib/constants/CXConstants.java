@@ -35,6 +35,7 @@ public class CXConstants {
     public static String getInterceptsUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
         return getBaseUrl(dataCenter) + GET_MOBILE_INTERCEPTS;
+        //return "https://cx-intercept-staging-api.questionpro.com" + GET_MOBILE_INTERCEPTS;
     }
 
     public static String getFeedbackUrl(){
