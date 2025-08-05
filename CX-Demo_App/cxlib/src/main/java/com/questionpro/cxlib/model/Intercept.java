@@ -13,6 +13,7 @@ public class Intercept implements Serializable {
     public int surveyId;
     public int ruleGroupId;
 
+    public InterceptSettings interceptSettings = new InterceptSettings();
     public ArrayList<InterceptRule> interceptRule = new ArrayList<>();
 
 
@@ -23,6 +24,9 @@ public class Intercept implements Serializable {
         intercept.ruleGroupId = interceptJson.getInt("ruleGroupId");
         intercept.type = interceptJson.getString("type");
         intercept.condition = interceptJson.getString("condition");
+        if(interceptJson.has("settings") && !interceptJson.isNull("settings")){
+            intercept.interceptSettings = InterceptSettings.fromJSON(interceptJson.getJSONObject("settings"));
+        }
         JSONArray interceptRule = interceptJson.getJSONArray("rules");
         for(int i = 0; i < interceptRule.length(); i++) {
             intercept.interceptRule.add(InterceptRule.fromJSON(interceptRule.getJSONObject(i)));
