@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
@@ -150,4 +151,22 @@ public class CXUtils {
     public static void printLog(String tag, String message){
         //Log.d(tag, message);
     }
+
+    public static String getAppLanguage(Context context) {
+        Locale locale;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = context.getResources().getConfiguration().getLocales().get(0);
+        } else {
+            locale = context.getResources().getConfiguration().locale;
+        }
+        CXUtils.printLog("Datta","App Language: "+locale.toLanguageTag());
+        //return locale.getLanguage(); // e.g., "en", "hi", "fr"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return locale.toLanguageTag();
+        } else {
+            return locale.getLanguage();
+        }
+    }
+
 }
