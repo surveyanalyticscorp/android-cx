@@ -168,8 +168,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void setUpIntercept(){
         try{
-            JSONObject interceptObj =new JSONObject(preferenceManager.getIntercepts());
-            JSONArray interceptArray = interceptObj.getJSONArray("intercepts");
+            JSONObject projectObj =new JSONObject(preferenceManager.getProject());
+            JSONArray interceptArray = projectObj.getJSONArray("intercepts");
             for(int i = 0; i < interceptArray.length(); i++){
                 JSONObject jsonObject = interceptArray.getJSONObject(i);
                 //setUpTimeSpendIntercept(obj);
@@ -184,7 +184,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     }
                 }
             }
-        }catch (Exception e){}
+        }catch (Exception e){e.printStackTrace();}
 
     }
 
@@ -308,10 +308,16 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
         }else {
             if (runningActivities == 0 && isSessionAlive) {
-                Intent intent = new Intent(appContext, InteractionActivity.class);
-                intent.putExtra("INTERCEPT", intercept);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                appContext.startActivity(intent);
+                try {
+                    Intent intent = new Intent(appContext, InteractionActivity.class);
+                    intent.putExtra("INTERCEPT", intercept);
+                    if (!(appContext instanceof Activity)) {
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    }
+                    appContext.startActivity(intent);
+                }catch (Exception e){
+                    Log.e("QuestionPro", "Failed to launch activity", e);
+                }
             }
         }
     }

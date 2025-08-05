@@ -63,7 +63,7 @@ public class MonitorAppEvents {
             int viewCountForTag = preferenceManager.updateViewCountForTag(tagName);
             //Log.d("Datta", "View count for tag name: "+tagName+" is: "+viewCountForTag);
             try {
-                JSONObject interceptObj = new JSONObject(preferenceManager.getIntercepts());
+                JSONObject interceptObj = new JSONObject(preferenceManager.getProject());
                 JSONArray interceptArray = interceptObj.getJSONArray("intercepts");
                 for (int i = 0; i < interceptArray.length(); i++) {
                     JSONObject jsonObject = interceptArray.getJSONObject(i);

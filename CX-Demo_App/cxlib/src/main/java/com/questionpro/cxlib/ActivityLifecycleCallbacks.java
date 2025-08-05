@@ -5,6 +5,8 @@ import android.app.Application;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.questionpro.cxlib.util.CXUtils;
+
 public class ActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks{
 
     private boolean isInForeground = false;
@@ -16,7 +18,7 @@ public class ActivityLifecycleCallbacks implements Application.ActivityLifecycle
         if (!isInForeground && activityStartCount > 0) {
             isInForeground = true;
             // App moved to foreground
-            Log.d("Datta","App moved to foreground...");
+            CXUtils.printLog("Datta","App moved to foreground...");
             try {
                 QuestionProCX.getInstance().fetchInterceptSettings();
             }catch (Exception e){}
@@ -31,7 +33,7 @@ public class ActivityLifecycleCallbacks implements Application.ActivityLifecycle
             isInForeground = false;
             // App moved to background
             QuestionProCX.getInstance().clearSession();
-            Log.d("Datta","App moved to background...");
+            CXUtils.printLog("Datta","App moved to background...");
         }
     }
 
