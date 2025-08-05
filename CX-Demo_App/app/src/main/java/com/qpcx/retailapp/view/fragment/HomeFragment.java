@@ -1,13 +1,13 @@
 package com.qpcx.retailapp.view.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.core.view.GravityCompat;
 import androidx.palette.graphics.Palette;
@@ -25,8 +25,9 @@ import android.widget.Toast;
 import com.qpcx.retailapp.R;
 import com.qpcx.retailapp.domain.api.ProductCategoryLoaderTask;
 import com.qpcx.retailapp.view.activities.ECartHomeActivity;
+import com.qpcx.retailapp.view.activities.ShoppingCartActivity;
 import com.questionpro.cxlib.QuestionProCX;
-import com.questionpro.cxlib.model.TouchPoint;
+//import com.questionpro.cxlib.model.Type;
 import com.twotoasters.jazzylistview.recyclerview.JazzyRecyclerViewScrollListener;
 
 @SuppressLint("ResourceAsColor")
@@ -60,21 +61,33 @@ public class HomeFragment extends Fragment {
 				.segmentCode("S1")
 				.showAsDialog(true)
 				.build();
-		QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);*/
+		QuestionProCX.getInstance().init((AppCompatActivity)getActivity(), touchPoint);*/
 
 		View view = inflater.inflate(R.layout.frag_product_category, container, false);
+		view.findViewById(R.id.search_item).setVisibility(View.GONE);
 		view.findViewById(R.id.search_item).setOnClickListener(
 				new OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						QuestionProCX.launchFeedbackSurvey(11543908);
+						/*TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+								.showAsDialog(true)
+								.build();
+						QuestionProCX.getInstance().init(getActivity(), touchPoint);*/
+						//QuestionProCX.getInstance().launchFeedbackSurvey(12844942);
 					}
 				});
 
 		view.findViewById(R.id.launch_survey).setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				QuestionProCX.launchFeedbackSurvey(11543913);
+				/*TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.US)
+						.showAsDialog(false)
+								.build();
+				QuestionProCX.init(getActivity(), touchPoint);
+				QuestionProCX.launchFeedbackSurvey(11543913);*/
+
+				Intent intent=new Intent(getActivity(), ShoppingCartActivity.class);
+				startActivity(intent);
 			}
 		});
 

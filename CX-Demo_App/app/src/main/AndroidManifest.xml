@@ -7,7 +7,7 @@
         android:smallScreens="true"
         android:anyDensity="true"/>
 
-    <uses-sdk android:targetSdkVersion="23" />
+    <uses-sdk android:targetSdkVersion="33" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -23,7 +23,7 @@
         android:theme="@style/MyTheme">
 
         <meta-data android:name="cx_manifest_api_key"
-            android:value="c3a95351-cacf-4f34-823c-99f5184fc5e9"/>
+            android:value="058d9ebc-c80e-4969-8196-f4feb7aae5e6"/>
 
         <!-- Single Activity Model-->
         <activity
@@ -43,6 +43,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".view.activities.ShoppingCartActivity"/>
 
         <!-- CX Activity -->
         <activity android:name="com.questionpro.cxlib.interaction.InteractionActivity"

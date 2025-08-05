@@ -6,7 +6,7 @@
 
     defaultConfig {
         applicationId "com.questionpro.retailshop"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 34
         versionName "1.6"
         versionCode 8

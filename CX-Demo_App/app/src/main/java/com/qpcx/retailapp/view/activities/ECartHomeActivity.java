@@ -2,11 +2,12 @@ package com.qpcx.retailapp.view.activities;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.graphics.Color;
 import android.os.Bundle;
 import com.google.android.material.navigation.NavigationView;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,13 +27,16 @@ import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
 import com.questionpro.cxlib.QuestionProCX;
-import com.questionpro.cxlib.model.DataCenter;
+import com.questionpro.cxlib.interfaces.IQuestionProCallback;
+import com.questionpro.cxlib.enums.DataCenter;
+import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.model.TouchPoint;
-import com.questionpro.cxlib.model.Type;
+//import com.questionpro.cxlib.model.Type;
 //import com.wang.avi.AVLoadingIndicatorView;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 
 public class ECartHomeActivity extends AppCompatActivity {
 
@@ -123,7 +127,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 					@Override
 					public void onClick(View v) {
 
-						QuestionProCX.launchFeedbackSurvey(1602850877);//Device audit: 8282698
+						//QuestionProCX.getInstance().launchFeedbackSurvey(1602850877);//Device audit: 8282698
 						Utils.vibrate(getApplicationContext());
 
 						Utils.switchContent(R.id.frag_container,
@@ -192,25 +196,42 @@ public class ECartHomeActivity extends AppCompatActivity {
 					}
 				});
 
-		initialiseQpSdk();
+		//initialiseQpSdk();
+
+		QuestionProCX.getInstance().gerSurveyUrl(new IQuestionProCallback(){
+			@Override
+			public void getSurveyUrl(String surveyUrl) {
+				Log.d("Datta","Survey url: "+surveyUrl);
+			}
+		});
 	}
 
 	private void initialiseQpSdk(){
 		Activity activity =  ECartHomeActivity.this;
-		TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.EU)
-				.email("mobile.android@questionpro.com")
-				/*.firstName("Datta")
-				.lastName("Kunde")
-				.segmentCode("S1")*/
-				.showAsDialog(true)
-				/*.themeColor("#0000FF")
-				.transactionLanguage("French")
-				.customVariable1("123")
-				.customVariable2("Custom 2 value")
-				.customVariable3("900")*/
-				.build();
-		QuestionProCX.init(activity, touchPoint);
+		HashMap<Integer, String> cutVars= new HashMap<>();
+		cutVars.put(2, "Datta");
+		cutVars.put(3,"Kunde");
+		cutVars.put(4,"QuestionPro");
+		cutVars.put(5,"Custom values stored in it");
+
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+				.customVariables(cutVars)
+		.build();
+		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProInitCallback() {
+			@Override
+			public void onInitializationSuccess(String message) {
+				Log.d("Datta", "onInitializationSuccess: "+message);
+			}
+
+			@Override
+			public void onInitializationFailure(String error) {
+				Log.d("Datta", "onInitializationFailure: "+error);
+			}
+		});
+
+		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
 	}
+
 
 	/*public AVLoadingIndicatorView getProgressBar() {
 		return progressBar;
@@ -260,7 +281,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-
+		//Log.d("Datta","ECartHomeActivity OnPause....");
 		// Store Shopping Cart in DB
 		new TinyDB(getApplicationContext()).putListObject(
 				PreferenceHelper.MY_CART_LIST_LOCAL, GlobaDataHolder
@@ -268,10 +289,23 @@ public class ECartHomeActivity extends AppCompatActivity {
 	}
 
 	@Override
+	protected void onStart() {
+		//Log.d("Datta","ECartHomeActivity onStart....");
+		super.onStart();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		//Log.d("Datta","ECartHomeActivity onDestroy....");
+		//QuestionProCX.getInstance().clearSession();
+	}
+
+	@Override
 	protected void onResume() {
 		super.onResume();
-
-		// Show Offline Error Message
+//		Log.d("Datta","ECartHomeActivity onResume....");
+		/// Show Offline Error Message
 		if (!Connectivity.isConnected(getApplicationContext())) {
 			final Dialog dialog = new Dialog(ECartHomeActivity.this);
 			dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

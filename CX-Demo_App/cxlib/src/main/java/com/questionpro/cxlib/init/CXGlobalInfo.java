@@ -4,14 +4,23 @@ import static com.questionpro.cxlib.constants.CXConstants.JSONUploadFields.SURVE
 
 import android.app.Activity;
 import android.content.Context;
-//import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
-import com.questionpro.cxlib.constants.CXConstants;
+import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.dataconnect.CXPayload;
+import com.questionpro.cxlib.model.Intercept;
+import com.questionpro.cxlib.model.InterceptSettings;
 import com.questionpro.cxlib.model.TouchPoint;
+import com.questionpro.cxlib.util.CXUtils;
+import com.questionpro.cxlib.util.SharedPreferenceManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CXGlobalInfo {
@@ -37,7 +46,7 @@ public class CXGlobalInfo {
     /**
      * This function is used to save the payload in preferences at the time of initialization.
      */
-    public void savePayLoad(TouchPoint touchPoint){
+    public void savePayLoad(TouchPoint touchPoint) throws JSONException {
         CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint).toString();
     }
 
@@ -83,17 +92,17 @@ public class CXGlobalInfo {
      * @param context
      * @return
      */
-    @NonNull
+    /*@NonNull
     public static String getType(Context context){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("type");
         }catch (Exception e){e.printStackTrace();}
         return "";
-    }
+    }*/
 
     @NonNull
-    public static String getDataCenter(Context context){
+    public static String getDataCenter(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("dataCenter");
@@ -133,8 +142,6 @@ public class CXGlobalInfo {
      */
     public static String getApiPayload(Activity activity){
         try {
-            //SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-            //JSONObject payloadObj = new JSONObject(prefs.getString(CXConstants.PREF_KEY_PAYLOAD, ""));
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
             payloadObj.put("isManualSurvey", true);
             payloadObj.remove("showAsDialog");
@@ -146,69 +153,54 @@ public class CXGlobalInfo {
         return "";
     }
 
-    /*public static boolean isInteractionPending(Activity activity){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return  prefs.contains(activity.getLocalClassName());
-    }*/
-
-    /*public static boolean isInteractionPending(Activity activity,long touchPointID){
-        //SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        //return  prefs.contains(touchPointID+"");
-        //return interactions.containsKey(touchPointID);
-    }*/
-
-    /*public static void clearInteraction(Activity activity){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(activity.getLocalClassName()).apply();
-    }*/
-
-    /*public static void clearInteraction(Activity activity, long touchPointID){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(touchPointID+"").apply();
-    }*/
-    /*public static void clearPayload(Activity activity){
-     *//*SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.remove(CXConstants.PREF_KEY_PAYLOAD).apply();*//*
-    }*/
-
-    /*public static void storeInteraction(Activity activity, String url){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(activity.getLocalClassName(), url);
-        ed.apply();
-    }*/
-    /*public static void storeInteraction(Activity activity, long surveyID, CXInteraction cxInteraction){
-        *//*SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor ed = prefs.edit();
-        ed.putString(touchPointID+"", CXInteraction.toJSON(cxInteraction).toString());
-        ed.apply();*//*
-        interactions.put(surveyID, CXInteraction.toJSON(cxInteraction).toString());
-    }*/
-    /*public static String getInteraction(Activity activity){
-        SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        return prefs.getString(activity.getLocalClassName(),"");
-    }*/
-    /*public static CXInteraction getInteraction(Activity activity, long surveyID) throws JSONException{
-        *//*SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
-        JSONObject jsonObject  = new JSONObject(prefs.getString(touchPointId+"",""));*//*
-        JSONObject jsonObject  = new JSONObject(interactions.get(surveyID));
-        return CXInteraction.fromJSON(jsonObject);
-    }*/
-
-    /*public static long getSurveyIDFromPayload(String payload){
+    public static String getInterceptApiPayload(Intercept intercept, Context context){
         try {
-            JSONObject jsonObject = new JSONObject(payload);
-            if(jsonObject.has(CXConstants.JSONUploadFields.SURVEY_ID)){
-                return jsonObject.getLong(CXConstants.JSONUploadFields.SURVEY_ID);
+            JSONObject payloadObj = new JSONObject();
+            payloadObj.put("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
+            payloadObj.put("visitedUserId",new SharedPreferenceManager(context).getVisitorsUUID());
+            payloadObj.put("interceptId",intercept.id);
+            payloadObj.put("surveyId",intercept.surveyId);
+            if(intercept.interceptSettings != null) {
+                InterceptSettings interceptSettings = intercept.interceptSettings;
+                if(interceptSettings.autoLanguageSelection){
+                    setAppLanguage(payloadObj, context);
+                }
             }
-        }
-        catch (Exception e){
-            //eat it
-        }
-        return -1;
-    }*/
+            CXGlobalInfo.setCustomVariable(payloadObj);
+
+            return payloadObj.toString();
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    private static void setAppLanguage(JSONObject requestObj, Context context) throws JSONException{
+        requestObj.put("surveyLanguage", CXUtils.getAppLanguage(context));
+    }
+
+    private static void setCustomVariable(JSONObject requestObj){
+        try {
+            JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
+            if (payloadObj.has("customVariables")) {
+                //String inputString = "key1=value1,key2=value2,key3=value3";
+                String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
+
+                Map<String, String> myMap = new HashMap<>();
+                String[] pairs = inputString.split(",");
+                JSONArray customVars = new JSONArray();
+                for (String pair : pairs) {
+                    JSONObject customVar = new JSONObject();
+                    String[] keyValue = pair.split("=");
+                    if (keyValue.length == 2) {
+                        String key = "custom"+keyValue[0].trim();
+                        String value = keyValue[1].trim();
+                        //myMap.put(key, value);
+                        customVar.put("variableName",key);
+                        customVar.put("value",value);
+                        customVars.put(customVar);
+                    }
+                }
+                requestObj.put("data",customVars);
+            }
+        }catch (Exception e){}
+    }
 }

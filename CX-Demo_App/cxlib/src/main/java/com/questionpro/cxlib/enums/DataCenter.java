@@ -1,4 +1,4 @@
-package com.questionpro.cxlib.model;
+package com.questionpro.cxlib.enums;
 
 public enum DataCenter{
     US,

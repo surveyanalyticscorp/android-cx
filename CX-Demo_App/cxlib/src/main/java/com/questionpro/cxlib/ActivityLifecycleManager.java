@@ -9,6 +9,8 @@ package com.questionpro.cxlib;
 import android.app.Activity;
 import android.content.Context;
 
+import com.questionpro.cxlib.interfaces.PersistentSessionQueue;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

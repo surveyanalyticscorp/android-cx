@@ -4,7 +4,9 @@
  * under which redistribution and use of this file is permitted.
  */
 
-package com.questionpro.cxlib;
+package com.questionpro.cxlib.interfaces;
+
+import com.questionpro.cxlib.SessionEvent;
 
 import java.util.List;
 

@@ -3,9 +3,9 @@ package com.questionpro.cxlib.dataconnect;
 import android.content.Context;
 import android.util.Log;
 
+import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.model.Type;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -35,37 +35,29 @@ public class CXUploadClient {
     public static final int DEFAULT_HTTP_SOCKET_TIMEOUT = 30000;
     private static final String LOG_TAG = "CXUploadClient";
 
-    public static CXHttpResponse uploadforCX(Context context, String payload) {
+    public static CXHttpResponse  uploadCXApi(URL url, HashMap<String, String> requestHeaders, String payload) {
         HttpURLConnection urlConnection = null;
         CXHttpResponse cxHttpResponse = new CXHttpResponse();
         try {
-            JSONObject payloadObj = new JSONObject(payload);
-            java.net.URL uRL = new URL(CXConstants.getUrl(context, payloadObj.getString("surveyID")));
-            if (!CXUtils.isNetworkConnectionPresent(context)) {
-                Log.d(LOG_TAG,"Network unavailable.");
-                return cxHttpResponse;
-            }
-            urlConnection = (HttpURLConnection) uRL.openConnection();
-            urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
-            urlConnection.setRequestProperty("api-key", CXGlobalInfo.getInstance().getApiKey());
+            urlConnection = (HttpURLConnection) url.openConnection();
+            setHeadersToHttpConnection(urlConnection,requestHeaders);
+
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
             urlConnection.setDoOutput(false);
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setFixedLengthStreamingMode(payload.length());
 
-            if (Type.CUSTOMER_EXPERIENCE.toString().equals(CXGlobalInfo.getType(context))) {
-                urlConnection.setRequestMethod("POST");
-                urlConnection.setFixedLengthStreamingMode(payload.length());
-                OutputStream os = urlConnection.getOutputStream();
-                os.write(payload.getBytes(StandardCharsets.UTF_8));
-                os.close();
-            }
+            OutputStream os = urlConnection.getOutputStream();
+            os.write(payload.getBytes(StandardCharsets.UTF_8));
+            os.close();
 
             int responseCode = urlConnection.getResponseCode();
             cxHttpResponse.setCode(responseCode);
             cxHttpResponse.setReason(urlConnection.getResponseMessage());
-            Log.d(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
+            CXUtils.printLog(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
 
             // Get the Http response header values
             Map<String, String> headers = new HashMap<String, String>();
@@ -78,7 +70,7 @@ public class CXUploadClient {
             // Read the response, if available
             if (responseCode >= 200 && responseCode < 300) {
                 cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
-                //Log.v("Response: ", cxHttpResponse.getContent());
+                CXUtils.printLog("Response: ", cxHttpResponse.getContent());
             } else {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w("Response: ", cxHttpResponse.getContent());
@@ -102,7 +94,45 @@ public class CXUploadClient {
         return cxHttpResponse;
     }
 
-    public static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
+    public static CXHttpResponse getCxApi(URL url, HashMap<String, String> requestHeaders) {
+        HttpURLConnection urlConnection = null;
+        CXHttpResponse cxHttpResponse = new CXHttpResponse();
+        try{
+            urlConnection = (HttpURLConnection) url.openConnection();
+            setHeadersToHttpConnection(urlConnection, requestHeaders);
+            urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
+            urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
+            urlConnection.setDoOutput(false);
+            urlConnection.setDoInput(true);
+            urlConnection.setUseCaches(false);
+
+            int responseCode = urlConnection.getResponseCode();
+            cxHttpResponse.setCode(responseCode);
+            cxHttpResponse.setReason(urlConnection.getResponseMessage());
+            //Log.d(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
+
+            // Get the Http response header values
+            Map<String, String> headers = new HashMap<String, String>();
+            Map<String, List<String>> map = urlConnection.getHeaderFields();
+            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+                headers.put(entry.getKey(), entry.getValue().toString());
+            }
+            cxHttpResponse.setHeaders(headers);
+            if (responseCode >= 200 && responseCode < 300) {
+                cxHttpResponse.setContent(getResponse(urlConnection, cxHttpResponse.isZipped()));
+                CXUtils.printLog("Get Api Response: ", cxHttpResponse.getContent());
+            } else {
+                cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
+                Log.w("Get Api Response: ", cxHttpResponse.getContent());
+            }
+        }catch (Exception e){
+
+        }
+
+        return cxHttpResponse;
+    }
+
+    private static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
         if (connection != null) {
             InputStream is = null;
                 is = new BufferedInputStream(connection.getInputStream());
@@ -129,5 +159,13 @@ public class CXUploadClient {
 
         }
         return null;
+    }
+
+    private static void setHeadersToHttpConnection(HttpURLConnection urlConnection, HashMap<String, String> headers){
+        urlConnection.setRequestProperty("Content-Type", "application/json; charSet=UTF-8");
+        for (String key : headers.keySet()) {
+            String value = headers.get(key);
+            urlConnection.setRequestProperty(key, value);
+        }
     }
 }
