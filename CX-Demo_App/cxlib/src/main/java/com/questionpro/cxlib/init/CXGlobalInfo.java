@@ -10,7 +10,9 @@ import androidx.annotation.NonNull;
 import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.Intercept;
+import com.questionpro.cxlib.model.InterceptSettings;
 import com.questionpro.cxlib.model.TouchPoint;
+import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONArray;
@@ -158,6 +160,12 @@ public class CXGlobalInfo {
             payloadObj.put("visitedUserId",new SharedPreferenceManager(context).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);
+            if(intercept.interceptSettings != null) {
+                InterceptSettings interceptSettings = intercept.interceptSettings;
+                if(interceptSettings.autoLanguageSelection){
+                    setAppLanguage(payloadObj, context);
+                }
+            }
             CXGlobalInfo.setCustomVariable(payloadObj);
 
             return payloadObj.toString();
@@ -165,6 +173,9 @@ public class CXGlobalInfo {
         return "";
     }
 
+    private static void setAppLanguage(JSONObject requestObj, Context context) throws JSONException{
+        requestObj.put("surveyLanguage", CXUtils.getAppLanguage(context));
+    }
 
     private static void setCustomVariable(JSONObject requestObj){
         try {
