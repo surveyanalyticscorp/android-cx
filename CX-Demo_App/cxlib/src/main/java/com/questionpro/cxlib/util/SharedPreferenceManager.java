@@ -27,13 +27,13 @@ public class SharedPreferenceManager {
         prefs = context.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public void saveIntercepts(String intercept){
+    public void saveProject(String intercept){
         prefs.edit().putString(INTERCEPT, intercept).apply();
     }
 
-    public String getIntercepts(){
+    public String getProject(){
         interceptStr = prefs.getString(INTERCEPT, "");
-        return prefs.getString(INTERCEPT, "");
+        return interceptStr;
     }
 
     public void saveVisitorsUUID(String uuid){
@@ -45,6 +45,9 @@ public class SharedPreferenceManager {
     }
 
     public Intercept getInterceptById(int interceptId) throws Exception{
+        if(CXUtils.isEmpty(interceptStr)){
+            interceptStr = prefs.getString(INTERCEPT, "");
+        }
         JSONArray interceptArray = new JSONObject(interceptStr).getJSONArray("intercepts");
         for(int i = 0; i < interceptArray.length(); i++){
             Intercept intercept = Intercept.fromJSON(interceptArray.getJSONObject(i));
