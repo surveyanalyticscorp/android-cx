@@ -1,27 +1,18 @@
 package com.questionpro.cxlib.dataconnect;
 
-import android.content.Context;
 import android.util.Log;
 
-import com.questionpro.cxlib.BuildConfig;
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.util.CXUtils;
 
-import org.json.JSONObject;
-
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
