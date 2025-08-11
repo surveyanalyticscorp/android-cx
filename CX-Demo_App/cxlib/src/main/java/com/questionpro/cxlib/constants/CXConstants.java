@@ -3,7 +3,7 @@ package com.questionpro.cxlib.constants;
 
 import android.content.Context;
 
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.enums.DataCenter;
 
 public class CXConstants {
@@ -21,10 +21,10 @@ public class CXConstants {
     public static final String CX_INTERACTION_CONTENT="cx_interaction_content";
 
 
-    public static String getSurveyUrl(Context context) {
+    public static String getInterceptSurveyUrl(Context context) {
         try {
             String dataCenter = CXGlobalInfo.getDataCenter();
-            return getBaseUrl(dataCenter) + CX_INTERCEPT_SURVEY_URL;
+            return getInterceptBaseUrl(dataCenter) + CX_INTERCEPT_SURVEY_URL;
             //return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
         }catch (Exception e){
             e.printStackTrace();
@@ -34,16 +34,26 @@ public class CXConstants {
 
     public static String getInterceptsUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
-        return getBaseUrl(dataCenter) + GET_MOBILE_INTERCEPTS;
+        return getInterceptBaseUrl(dataCenter) + GET_MOBILE_INTERCEPTS;
         //return "https://cx-intercept-staging-api.questionpro.com" + GET_MOBILE_INTERCEPTS;
+    }
+
+    public static String getSurveyUrl(long surveyId) {
+        try {
+            String dataCenter = CXGlobalInfo.getDataCenter();
+            return getBaseUrl(dataCenter) + SURVEYS_URL + surveyId;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public static String getFeedbackUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
-        return getBaseUrl(dataCenter) + SUBMIT_SURVEY_FEEDBACK;
+        return getInterceptBaseUrl(dataCenter) + SUBMIT_SURVEY_FEEDBACK;
     }
 
-    private static String getBaseUrl(String dataCenter){
+    private static String getInterceptBaseUrl(String dataCenter){
         if(DataCenter.EU.name().equalsIgnoreCase(dataCenter))
             return "https://intercept-api.questionpro.eu";
         if(DataCenter.CA.name().equalsIgnoreCase(dataCenter))
@@ -60,6 +70,25 @@ public class CXConstants {
             return "https://intercept-api.questionpro.com";
 
         return "https://intercept-api.questionpro.com";
+    }
+
+    private static String getBaseUrl(String dataCenter){
+        if(DataCenter.EU.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.eu";
+        if(DataCenter.CA.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.ca";
+        if(DataCenter.SG.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.sg";
+        if(DataCenter.AU.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.au";
+        if(DataCenter.AE.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionpro.ae";
+        if(DataCenter.SA.name().equalsIgnoreCase(dataCenter))
+            return "https://api.surveyanalytics.com";
+        if(DataCenter.KSA.name().equalsIgnoreCase(dataCenter))
+            return "https://api.questionprosa.com";
+
+        return "https://api.questionpro.com";
     }
 
     public static class JSONUploadFields{
