@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -20,8 +19,9 @@ import androidx.fragment.app.FragmentActivity;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.R;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
+import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.InterceptType;
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
@@ -51,28 +51,40 @@ public class InteractionActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferenceManager = new SharedPreferenceManager(this);
 
-        Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
-        if (surveyIdSerializable != null) {
-            intercept = (Intercept) surveyIdSerializable;
-            CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
-
+        if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
+            Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
+            if (surveyIdSerializable != null) {
+                intercept = (Intercept) surveyIdSerializable;
+                CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
+                if(intercept.type.equals(InterceptType.PROMPT.name())) {
+                    setContentView(R.layout.cx_webview_dialog);
+                } else {
+                    setContentView(R.layout.cx_webview_fullscreen);
+                }
+                init();
+                getInterceptSurveyDetails();
+            }else{
+                showErrorDialog("Survey Id is null");
+            }
+        }else{
+            setContentView(R.layout.cx_webview_dialog);
             init();
 
-            getSurveyDetails();
-        }else{
-            showErrorDialog("Survey Id is null");
+            Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
+            if (surveyIdSerializable != null) {
+                long surveyId = (Long) surveyIdSerializable;
+                CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
+
+                getSurveyDetails(surveyId);
+            }else{
+                showErrorDialog("Survey Id is null");
+            }
         }
-        preferenceManager = new SharedPreferenceManager(this);
     }
 
     private void init(){
-        if(intercept.type.equals(InterceptType.PROMPT.name())) {
-            setContentView(R.layout.cx_webview_dialog);
-           
-        } else {
-            setContentView(R.layout.cx_webview_fullscreen);
-        }
         ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,16 +114,8 @@ public class InteractionActivity extends FragmentActivity implements
         webView.getSettings().setTextZoom(90);
 
     }
-    
-    private void launchSurvey(String url){
-        preferenceManager.saveInterceptIdForLaunchedSurvey(this,
-                intercept.id, CXUtils.getCurrentLocalTimeInMillis());
-        new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, "LAUNCHED");
 
-        webView.loadUrl(url);
-    }
-
-    private void getSurveyDetails(){
+    private void getInterceptSurveyDetails(){
         try {
             customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
             customProgressDialog.setMessage("Please wait.");
@@ -119,6 +123,19 @@ public class InteractionActivity extends FragmentActivity implements
             customProgressDialog.show();
 
             new CXApiHandler(this, this).getInterceptSurvey(intercept);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void getSurveyDetails(long surveyId){
+        try {
+            customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
+            customProgressDialog.setMessage("Please wait.");
+            customProgressDialog.setCancelable(false);
+            customProgressDialog.show();
+
+            new CXApiHandler(this, this).getSurvey(surveyId);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -159,7 +176,27 @@ public class InteractionActivity extends FragmentActivity implements
                     }
                 });
             }
+        }else{
+            CXUtils.printLog("Datta", "Survey url: " + surveyUrl);
+            if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
+                finish();
+            } else {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.loadUrl(surveyUrl);
+                    }
+                });
+            }
         }
+    }
+
+    private void launchSurvey(String url){
+        preferenceManager.saveInterceptIdForLaunchedSurvey(this,
+                intercept.id, CXUtils.getCurrentLocalTimeInMillis());
+        new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, "LAUNCHED");
+
+        webView.loadUrl(url);
     }
 
     private void showErrorDialog(String errorMsg){
