@@ -1,4 +1,4 @@
-package com.questionpro.cxlib.init;
+package com.questionpro.cxlib;
 
 import static com.questionpro.cxlib.constants.CXConstants.JSONUploadFields.SURVEY_ID;
 
@@ -7,7 +7,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
@@ -87,25 +86,19 @@ public class CXGlobalInfo {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    /**
-     * This function is used to get the type of Survey
-     * @param context
-     * @return
-     */
-    /*@NonNull
-    public static String getType(Context context){
-        try{
-            JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("type");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
-    }*/
-
     @NonNull
     public static String getDataCenter(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("dataCenter");
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    public static String getConfigType(){
+        try{
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
+            return payloadObj.getString("configType");
         }catch (Exception e){e.printStackTrace();}
         return "";
     }
@@ -140,7 +133,7 @@ public class CXGlobalInfo {
      * Get the payload in the form string at the time of fetching survey url.
      * Have to remove unwanted key from the stored object.
      */
-    public static String getApiPayload(Activity activity){
+    public static String getApiPayload(long surveyId){
         try {
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
             payloadObj.put("isManualSurvey", true);
