@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.dataconnect.CXApiHandler;
+import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.InterceptCondition;
 import com.questionpro.cxlib.enums.InterceptRuleType;
 import com.questionpro.cxlib.enums.InterceptType;
@@ -23,7 +24,6 @@ import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
 import com.questionpro.cxlib.model.TouchPoint;
-import com.questionpro.cxlib.init.CXGlobalInfo;
 import com.questionpro.cxlib.interaction.InteractionActivity;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.DateTimeUtils;
@@ -71,8 +71,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public synchronized void init(Context context, TouchPoint touchPoint){
         try {
             appContext = context;
-            initialize();
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+            initialize();
             //new CXApiHandler(activity, this).getIntercept();
         }catch (Exception e){
             Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
@@ -84,10 +84,25 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         questionProInitCallback = callback;
         try {
             CXUtils.printLog("Datta","Initialising the SDK");
-            initialize();
             CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+            initialize();
         }catch (Exception e){
             callback.onInitializationFailure(e.getMessage());
+        }
+    }
+
+    public static synchronized void launchFeedbackSurvey(long surveyId){
+        if (runningActivities == 0) {
+            try {
+                Intent intent = new Intent(appContext, InteractionActivity.class);
+                intent.putExtra("SURVEY_ID", surveyId);
+                if (!(appContext instanceof Activity)) {
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                }
+                appContext.startActivity(intent);
+            }catch (Exception e){
+                Log.e("QuestionPro", "Failed to launch activity", e);
+            }
         }
     }
 
@@ -114,11 +129,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         //mActivity = new WeakReference<>(activity);
 
         preferenceManager = new SharedPreferenceManager(appContext);
-        if (appContext instanceof Application) {
-            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-        } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-        }
 
         //final Context appContext = activity.getApplicationContext();
         ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
@@ -132,7 +142,19 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
             CXGlobalInfo.getInstance().setInitialized(true);
         }
-        fetchInterceptSettings();
+
+        if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
+            if (appContext instanceof Application) {
+                ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            } else if (appContext.getApplicationContext() instanceof Application) {
+                ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            }
+            fetchInterceptSettings();
+        }else{
+            if(questionProInitCallback != null){
+                questionProInitCallback.onInitializationSuccess("QuestionPro SDK initialised for Survey");
+            }
+        }
     }
 
     protected void fetchInterceptSettings(){
