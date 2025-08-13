@@ -27,6 +27,7 @@ import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
 import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.enums.DataCenter;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
@@ -214,7 +215,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 		cutVars.put(4,"QuestionPro");
 		cutVars.put(5,"Custom values stored in it");
 
-		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+		TouchPoint touchPoint = new TouchPoint.Builder(ConfigType.INTERCEPT, DataCenter.US)
 				.customVariables(cutVars)
 		.build();
 		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProInitCallback() {
