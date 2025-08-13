@@ -2,13 +2,9 @@ package com.questionpro.cxlib;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
-import com.questionpro.cxlib.enums.InterceptRuleType;
-import com.questionpro.cxlib.interfaces.IQuestionProRulesCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
-import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

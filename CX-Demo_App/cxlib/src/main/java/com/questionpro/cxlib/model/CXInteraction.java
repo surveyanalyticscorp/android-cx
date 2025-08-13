@@ -1,8 +1,6 @@
 package com.questionpro.cxlib.model;
 
-import android.util.Log;
-
-import com.questionpro.cxlib.constants.CXConstants;
+import com.questionpro.cxlib.CXConstants;
 
 import org.json.JSONObject;
 

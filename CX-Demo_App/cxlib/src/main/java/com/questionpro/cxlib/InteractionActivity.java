@@ -1,4 +1,4 @@
-package com.questionpro.cxlib.interaction;
+package com.questionpro.cxlib;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -16,16 +16,10 @@ import android.widget.ProgressBar;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.questionpro.cxlib.QuestionProCX;
-import com.questionpro.cxlib.R;
-import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.enums.ConfigType;
-import com.questionpro.cxlib.enums.InterceptType;
-import com.questionpro.cxlib.CXGlobalInfo;
-import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
+import com.questionpro.cxlib.interaction.MyWebChromeClient;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
-import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONObject;
 

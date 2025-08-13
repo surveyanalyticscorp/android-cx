@@ -1,8 +1,7 @@
 package com.questionpro.cxlib;
 
-import static com.questionpro.cxlib.constants.CXConstants.JSONUploadFields.SURVEY_ID;
+import static com.questionpro.cxlib.CXConstants.JSONUploadFields.SURVEY_ID;
 
-import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -12,7 +11,6 @@ import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.util.CXUtils;
-import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;

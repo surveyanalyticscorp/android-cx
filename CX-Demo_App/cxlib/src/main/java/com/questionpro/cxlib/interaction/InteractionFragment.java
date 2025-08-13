@@ -1,14 +1,10 @@
 package com.questionpro.cxlib.interaction;
 
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
@@ -21,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.questionpro.cxlib.R;
-import com.questionpro.cxlib.constants.CXConstants;
+import com.questionpro.cxlib.CXConstants;
 import com.questionpro.cxlib.model.CXInteraction;
 import com.questionpro.cxlib.util.CXUtils;
 
@@ -56,7 +52,7 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         //int someInt = requireArguments().getInt("some_int");
         //cxInteraction =(CXInteraction) requireArguments().getSerializableExtra(CXConstants.CX_INTERACTION_CONTENT);
-        cxInteraction = (CXInteraction) requireArguments().getSerializable(CXConstants.CX_INTERACTION_CONTENT);
+        //cxInteraction = (CXInteraction) requireArguments().getSerializable(CXConstants.CX_INTERACTION_CONTENT);
         url = cxInteraction.url;
 
         try {

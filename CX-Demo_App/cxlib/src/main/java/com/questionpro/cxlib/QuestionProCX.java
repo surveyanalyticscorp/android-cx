@@ -11,23 +11,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.dataconnect.CXApiHandler;
 import com.questionpro.cxlib.enums.ConfigType;
-import com.questionpro.cxlib.enums.InterceptCondition;
-import com.questionpro.cxlib.enums.InterceptRuleType;
-import com.questionpro.cxlib.enums.InterceptType;
-import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
+
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
-import com.questionpro.cxlib.interfaces.IQuestionProRulesCallback;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
 import com.questionpro.cxlib.model.TouchPoint;
-import com.questionpro.cxlib.interaction.InteractionActivity;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.DateTimeUtils;
-import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,7 +49,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private SharedPreferenceManager preferenceManager = null;
 
     private static final HashMap<Integer, Set<String>> interceptSatisfiedRules = new HashMap<>();
-
     public QuestionProCX(){
     }
 

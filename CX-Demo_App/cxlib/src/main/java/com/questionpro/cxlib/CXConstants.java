@@ -1,9 +1,8 @@
-package com.questionpro.cxlib.constants;
+package com.questionpro.cxlib;
 
 
 import android.content.Context;
 
-import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.enums.DataCenter;
 
 public class CXConstants {
@@ -13,15 +12,15 @@ public class CXConstants {
     private static final String GET_MOBILE_INTERCEPTS = "/api/v1/visitor/mobile";
     private static final String CX_INTERCEPT_SURVEY_URL = "/api/v1/data-mapping/mobile/survey-url";
     private static final String SUBMIT_SURVEY_FEEDBACK = "/api/v1/visitor/mobile/survey-feedback";
-    public static final String PREF_NAME="questionpro_cx";
+    protected static final String PREF_NAME="questionpro_cx";
     //public static final String PREF_KEY_API_KEY="cx_pref_api_key";
-    public static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
-    public static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
+    protected static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
+    protected static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
     //public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
-    public static final String CX_INTERACTION_CONTENT="cx_interaction_content";
+    protected static final String CX_INTERACTION_CONTENT="cx_interaction_content";
 
 
-    public static String getInterceptSurveyUrl(Context context) {
+    protected static String getInterceptSurveyUrl(Context context) {
         try {
             String dataCenter = CXGlobalInfo.getDataCenter();
             return getInterceptBaseUrl(dataCenter) + CX_INTERCEPT_SURVEY_URL;
@@ -32,13 +31,13 @@ public class CXConstants {
         return "";
     }
 
-    public static String getInterceptsUrl(){
+    protected static String getInterceptsUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
         return getInterceptBaseUrl(dataCenter) + GET_MOBILE_INTERCEPTS;
         //return "https://cx-intercept-staging-api.questionpro.com" + GET_MOBILE_INTERCEPTS;
     }
 
-    public static String getSurveyUrl(long surveyId) {
+    protected static String getSurveyUrl(long surveyId) {
         try {
             String dataCenter = CXGlobalInfo.getDataCenter();
             return getBaseUrl(dataCenter) + SURVEYS_URL + surveyId;
@@ -48,7 +47,7 @@ public class CXConstants {
         return "";
     }
 
-    public static String getFeedbackUrl(){
+    protected static String getFeedbackUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
         return getInterceptBaseUrl(dataCenter) + SUBMIT_SURVEY_FEEDBACK;
     }
