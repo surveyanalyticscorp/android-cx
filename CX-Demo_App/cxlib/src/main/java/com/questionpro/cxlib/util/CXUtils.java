@@ -36,7 +36,7 @@ public class CXUtils {
     public static final String PSEUDO_ISO8601_DATE_FORMAT = "yyyy-MM-dd HH:mm:ssZ"; // 2011-01-01 11:59:59-0800
     public static final String PSEUDO_ISO8601_DATE_FORMAT_MILLIS = "yyyy-MM-dd HH:mm:ss.SSSZ"; // 2011-01-01 11:59:59.123-0800 or 2011-01-01 11:59:59.23-0800
 
-    private static final int SLEEP_TIME_THRESHOLD_IN_MIN = 6 * 60;
+    private static final int SLEEP_TIME_THRESHOLD_IN_MIN = 2;
 
     public static String getUniqueDeviceId(Context context) {
         @SuppressLint("HardwareIds")

@@ -46,8 +46,8 @@ public class CXGlobalInfo {
     /**
      * This function is used to save the payload in preferences at the time of initialization.
      */
-    public void savePayLoad(TouchPoint touchPoint) throws JSONException {
-        CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint).toString();
+    public void savePayLoad(TouchPoint touchPoint, Context context) throws JSONException {
+        CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint, context).toString();
     }
 
     public void setApiKey(String apiKey){
@@ -66,7 +66,10 @@ public class CXGlobalInfo {
         CXGlobalInfo.UUID = uuid;
     }
 
-    public String getUUID(){
+    public String getUUID(Context appContext){
+        if(CXGlobalInfo.UUID == null){
+            CXGlobalInfo.UUID = CXUtils.getUniqueDeviceId(appContext);
+        }
         return CXGlobalInfo.UUID;
     }
 
@@ -87,11 +90,6 @@ public class CXGlobalInfo {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    /**
-     * This function is used to get the type of Survey
-     * @param context
-     * @return
-     */
     /*@NonNull
     public static String getType(Context context){
         try{

@@ -71,9 +71,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public synchronized void init(Context context, TouchPoint touchPoint){
         try {
             appContext = context;
+            CXGlobalInfo.getInstance().savePayLoad(touchPoint, context);
             initialize();
-            CXGlobalInfo.getInstance().savePayLoad(touchPoint);
-            //new CXApiHandler(activity, this).getIntercept();
         }catch (Exception e){
             Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
         }
@@ -84,8 +83,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         questionProInitCallback = callback;
         try {
             CXUtils.printLog("Datta","Initialising the SDK");
+            CXGlobalInfo.getInstance().savePayLoad(touchPoint, context);
             initialize();
-            CXGlobalInfo.getInstance().savePayLoad(touchPoint);
         }catch (Exception e){
             callback.onInitializationFailure(e.getMessage());
         }
@@ -257,7 +256,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         try {
             long prevTime = preferenceManager.getLaunchedInterceptTime(appContext, interceptId);
             boolean isSleepTimeOverForIntercept = CXUtils.isSleepTimeOver(prevTime);
-            Log.d("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
+            CXUtils.printLog("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
 
             if(isSleepTimeOverForIntercept) {
                 Intercept intercept = preferenceManager.getInterceptById(interceptId);
