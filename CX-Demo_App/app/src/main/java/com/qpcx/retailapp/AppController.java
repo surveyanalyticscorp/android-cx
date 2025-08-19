@@ -1,5 +1,7 @@
 package com.qpcx.retailapp;
 
+import static com.google.common.io.Resources.getResource;
+
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
@@ -19,10 +21,13 @@ import org.acra.annotation.ReportsCrashes;
 
 import java.util.HashMap;
 
-@ReportsCrashes(mailTo = "hiteshkumarsahu1990@gmail.com", customReportContent = {
-		ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
-		ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,
-		ReportField.CUSTOM_DATA, ReportField.STACK_TRACE, ReportField.LOGCAT}, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text)
+@ReportsCrashes(mailTo = "dattakunde@questionpro.com",
+		customReportContent = {
+			ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
+			ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,
+			ReportField.CUSTOM_DATA, ReportField.STACK_TRACE, ReportField.LOGCAT
+		},
+		mode = ReportingInteractionMode.TOAST)
 
 public class AppController extends Application {
 
@@ -41,6 +46,7 @@ public class AppController extends Application {
 		if (PreferenceHelper.getPrefernceHelperInstace().getBoolean(
 				this, PreferenceHelper.SUBMIT_LOGS, true)) {
 			ACRA.init(this);
+			ACRA.getConfig().setResToastText(R.string.crash_toast_text);
 		}
 
 		Log.d("Datta","Application onCreate:"+getPackageName().equals(getProcessName(this)));

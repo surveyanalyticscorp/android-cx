@@ -34,7 +34,6 @@ import com.twotoasters.jazzylistview.recyclerview.JazzyRecyclerViewScrollListene
 public class HomeFragment extends Fragment {
 	CollapsingToolbarLayout collapsingToolbar;
 	RecyclerView recyclerView;
-	int mutedColor = R.attr.colorPrimary;
 	//CategoryListAdapter simpleRecyclerAdapter;
 
 	/** The double back to exit pressed once. */
@@ -120,7 +119,7 @@ public class HomeFragment extends Fragment {
 			@Override
 			public void onGenerated(Palette palette) {
 
-				mutedColor = palette.getMutedColor(R.color.primary_500);
+				int mutedColor = palette.getMutedColor(R.color.primary_500);
 				collapsingToolbar.setContentScrimColor(mutedColor);
 				collapsingToolbar.setStatusBarScrimColor(R.color.black_trans80);
 			}
