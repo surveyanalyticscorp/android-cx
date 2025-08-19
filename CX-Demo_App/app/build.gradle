@@ -1,13 +1,14 @@
     apply plugin: 'com.android.application'
 
     android {
-        compileSdkVersion 33
-    buildToolsVersion "30.0.2"
+        namespace 'com.qpcx.retailapp'
+        compileSdkVersion 35
+        buildToolsVersion "30.0.2"
 
     defaultConfig {
         applicationId "com.questionpro.retailshop"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionName "1.6"
         versionCode 8
     }
