@@ -9,8 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import android.os.Handler;
 
-
-import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.init.CXGlobalInfo;
@@ -96,7 +94,7 @@ public class CXApiHandler {
 
                     HashMap<String, String> headers = new HashMap<>();
                     headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
-                    headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+                    headers.put("package-name", mContext.getPackageName());
                     headers.put("visitor-id", new SharedPreferenceManager(mContext).getVisitorsUUID());
 
                     URL url = new URL(CXConstants.getFeedbackUrl());
@@ -117,7 +115,7 @@ public class CXApiHandler {
 
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
-            headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+            headers.put("package-name", mContext.getPackageName());
 
             java.net.URL url = new URL(CXConstants.getInterceptsUrl());
             CXHttpResponse response = CXUploadClient.getCxApi(url, headers);
@@ -147,7 +145,7 @@ public class CXApiHandler {
 
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
-            headers.put("package-name", BuildConfig.LIBRARY_PACKAGE_NAME);
+            headers.put("package-name", mContext.getPackageName());
 
             URL url = new URL(CXConstants.getSurveyUrl(mContext));
 

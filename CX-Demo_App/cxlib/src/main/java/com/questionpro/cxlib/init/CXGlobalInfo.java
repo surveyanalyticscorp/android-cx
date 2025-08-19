@@ -7,7 +7,6 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
@@ -156,7 +155,7 @@ public class CXGlobalInfo {
     public static String getInterceptApiPayload(Intercept intercept, Context context){
         try {
             JSONObject payloadObj = new JSONObject();
-            payloadObj.put("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
+            payloadObj.put("packageName", context.getPackageName());
             payloadObj.put("visitedUserId",new SharedPreferenceManager(context).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);
