@@ -46,7 +46,7 @@
         <activity android:name=".view.activities.ShoppingCartActivity"/>
 
         <!-- CX Activity -->
-        <activity android:name="com.questionpro.cxlib.interaction.InteractionActivity"
+        <activity android:name="com.questionpro.cxlib.InteractionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden"
             android:windowSoftInputMode="adjustResize" >

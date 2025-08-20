@@ -10,6 +10,7 @@ import android.util.Log;
 import com.android.volley.RequestQueue;
 import com.qpcx.retailapp.util.PreferenceHelper;
 import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.DataCenter;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.model.TouchPoint;
@@ -71,7 +72,7 @@ public class AppController extends Application {
 		cutVars.put(2, "Datta");
 		cutVars.put(3,"Kunde");
 
-		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+		TouchPoint touchPoint = new TouchPoint.Builder(ConfigType.INTERCEPT, DataCenter.US)
 				.customVariables(cutVars)
 				.build();
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {

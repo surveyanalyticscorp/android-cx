@@ -1,6 +1,8 @@
-package com.questionpro.cxlib.interfaces;
+package com.questionpro.cxlib;
 
-public interface IQuestionProRulesCallback {
+/*
+interface IQuestionProRulesCallback {
     void onTimeSpendSatisfied(int  interceptId);
     void onViewCountRuleSatisfied(int interceptId);
 }
+*/

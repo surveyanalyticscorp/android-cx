@@ -4,16 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import com.questionpro.cxlib.QuestionProCX;
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.model.CXInteraction;
+import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.util.CXUtils;
 
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
-import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -71,7 +65,7 @@ public class CXPayloadWorker {
                         return;
                     }
                     Log.v(LOG_TAG, "Checking for payloads to send.");
-                    String payload = CXGlobalInfo.getApiPayload((Activity)contextRef.get());
+                    //String payload = CXGlobalInfo.getApiPayload((Activity)contextRef.get());
                     //JSONObject payloadObj = new JSONObject(payload);
                     /*CXHttpResponse response = CXUploadClient.uploadforCX(contextRef.get(), payload);
                     if (response != null) {
