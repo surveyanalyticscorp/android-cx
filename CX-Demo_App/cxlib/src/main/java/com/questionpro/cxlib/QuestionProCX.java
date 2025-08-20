@@ -272,7 +272,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             boolean isSleepTimeOverForIntercept = CXUtils.isSleepTimeOver(prevTime);
             Log.d("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
 
-            if(isSleepTimeOverForIntercept) {
+            if(true) {
                 Intercept intercept = preferenceManager.getInterceptById(interceptId);
 
                 Set<String> temp = interceptSatisfiedRules.get(interceptId);

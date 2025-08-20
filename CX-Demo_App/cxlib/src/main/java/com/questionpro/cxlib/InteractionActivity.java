@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -48,37 +49,44 @@ public class InteractionActivity extends FragmentActivity implements
         preferenceManager = new SharedPreferenceManager(this);
 
         if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
-            Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
-            if (surveyIdSerializable != null) {
-                intercept = (Intercept) surveyIdSerializable;
-                CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
-                if(intercept.type.equals(InterceptType.PROMPT.name())) {
-                    setContentView(R.layout.cx_webview_dialog);
-                } else {
-                    setContentView(R.layout.cx_webview_fullscreen);
-                }
-                init();
-                getInterceptSurveyDetails();
-            }else{
-                showErrorDialog("Survey Id is null");
-            }
+            initIntercept();
         }else{
-            setContentView(R.layout.cx_webview_dialog);
-            init();
-
-            Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
-            if (surveyIdSerializable != null) {
-                long surveyId = (Long) surveyIdSerializable;
-                CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-
-                getSurveyDetails(surveyId);
-            }else{
-                showErrorDialog("Survey Id is null");
-            }
+            initSurveys();
         }
     }
 
-    private void init(){
+    private void initIntercept(){
+        Serializable surveyIdSerializable = getIntent().getSerializableExtra("INTERCEPT");
+        if (surveyIdSerializable != null) {
+            intercept = (Intercept) surveyIdSerializable;
+            CXGlobalInfo.updateCXPayloadWithSurveyId(intercept.surveyId);
+            if(intercept.type.equals(InterceptType.PROMPT.name())) {
+                setContentView(R.layout.cx_webview_dialog);
+            } else {
+                setContentView(R.layout.cx_webview_fullscreen);
+            }
+            setupWebview();
+            getInterceptSurveyDetails();
+        }else{
+            showErrorDialog("Survey Id is null");
+        }
+    }
+
+    private void initSurveys(){
+        setContentView(R.layout.cx_webview_dialog);
+        setupWebview();
+
+        Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
+        if (surveyIdSerializable != null) {
+            long surveyId = (Long) surveyIdSerializable;
+            CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
+
+            getSurveyDetails(surveyId);
+        }else{
+            showErrorDialog("Survey Id is null");
+        }
+    }
+    private void setupWebview(){
         ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +114,6 @@ public class InteractionActivity extends FragmentActivity implements
         /*int density = (int)getResources().getDisplayMetrics().density;
         webView.getSettings().setTextZoom(100 * density);*/
         webView.getSettings().setTextZoom(90);
-
     }
 
     private void getInterceptSurveyDetails(){
@@ -158,8 +165,8 @@ public class InteractionActivity extends FragmentActivity implements
 
     @Override
     public void onApiCallbackSuccess(Intercept intercept, final String surveyUrl) {
+        CXUtils.printLog("Datta", "Survey url: " + surveyUrl);
         if(intercept != null && !intercept.type.equals(InterceptType.SURVEY_URL.name())) {
-            CXUtils.printLog("Datta", "Url: " + surveyUrl);
             if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
                 finish();
             } else {
@@ -171,7 +178,6 @@ public class InteractionActivity extends FragmentActivity implements
                 });
             }
         }else{
-            CXUtils.printLog("Datta", "Survey url: " + surveyUrl);
             if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
                 finish();
             } else {
