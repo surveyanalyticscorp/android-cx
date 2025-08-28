@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class InterceptSettings implements Serializable {
     boolean allowMultipleResponse;
     public boolean autoLanguageSelection;
-    int triggerDelayInSeconds;
+    public int triggerDelayInSeconds;
 
     public static InterceptSettings fromJSON(JSONObject settingsJson) throws Exception{
         InterceptSettings settings = new InterceptSettings();

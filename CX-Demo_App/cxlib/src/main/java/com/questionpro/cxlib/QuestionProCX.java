@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -59,30 +61,45 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         return mInstance;
     }
 
-    public synchronized void init(Context context, TouchPoint touchPoint){
+    /*public synchronized void init(Context context, TouchPoint touchPoint){
         try {
             appContext = context;
-            CXGlobalInfo.getInstance().savePayLoad(touchPoint);
-            initialize();
-            //new CXApiHandler(activity, this).getIntercept();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+                        initialize();
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }, 5000);
         }catch (Exception e){
             Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
         }
-    }
+    }*/
 
     public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
         appContext = context;
         questionProInitCallback = callback;
-        try {
-            CXUtils.printLog("Datta","Initialising the SDK");
-            CXGlobalInfo.getInstance().savePayLoad(touchPoint);
-            initialize();
-        }catch (Exception e){
-            callback.onInitializationFailure(e.getMessage());
-        }
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    CXUtils.printLog("Datta","Initialising the SDK");
+                    CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+                    initialize();
+                }catch (Exception e){
+                    callback.onInitializationFailure(e.getMessage());
+                }
+            }
+        }, 5000);
     }
 
-    public static synchronized void launchFeedbackSurvey(long surveyId){
+    public synchronized void launchFeedbackSurvey(long surveyId){
         if (runningActivities == 0) {
             try {
                 Intent intent = new Intent(appContext, InteractionActivity.class);
@@ -109,7 +126,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     public void clearSession(){
-        CXUtils.printLog("Datta","Clearing session.");
+        Log.i("QuestionPro","Clearing session.");
         isSessionAlive = false;
         MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
@@ -319,19 +336,25 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
-        }else {
-            if (runningActivities == 0 && isSessionAlive) {
-                try {
-                    Intent intent = new Intent(appContext, InteractionActivity.class);
-                    intent.putExtra("INTERCEPT", intercept);
-                    if (!(appContext instanceof Activity)) {
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } else if (runningActivities == 0 && isSessionAlive) {
+            int triggerDelay = intercept.interceptSettings.triggerDelayInSeconds * 1000;
+            //Log.d("Datta","triggerDelay: "+triggerDelay);
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    //Log.d("Datta","Trigger Delay satisfied....");
+                    try {
+                        Intent intent = new Intent(appContext, InteractionActivity.class);
+                        intent.putExtra("INTERCEPT", intercept);
+                        if (!(appContext instanceof Activity)) {
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        }
+                        appContext.startActivity(intent);
+                    }catch (Exception e){
+                        Log.e("QuestionPro", "Failed to launch activity", e);
                     }
-                    appContext.startActivity(intent);
-                }catch (Exception e){
-                    Log.e("QuestionPro", "Failed to launch activity", e);
                 }
-            }
+            }, triggerDelay);
         }
     }
 
