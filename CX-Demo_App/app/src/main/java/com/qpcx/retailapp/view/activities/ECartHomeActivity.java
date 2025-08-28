@@ -193,32 +193,6 @@ public class ECartHomeActivity extends AppCompatActivity {
 		});
 	}
 
-	private void initialiseQpSdk(){
-		Activity activity =  ECartHomeActivity.this;
-		HashMap<Integer, String> cutVars= new HashMap<>();
-		cutVars.put(2, "Datta");
-		cutVars.put(3,"Kunde");
-		cutVars.put(4,"QuestionPro");
-		cutVars.put(5,"Custom values stored in it");
-
-		TouchPoint touchPoint = new TouchPoint.Builder(ConfigType.INTERCEPT, DataCenter.US)
-				.customVariables(cutVars)
-		.build();
-		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProInitCallback() {
-			@Override
-			public void onInitializationSuccess(String message) {
-				Log.d("Datta", "onInitializationSuccess: "+message);
-			}
-
-			@Override
-			public void onInitializationFailure(String error) {
-				Log.d("Datta", "onInitializationFailure: "+error);
-			}
-		});
-
-		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
-	}
-
 
 	/*public AVLoadingIndicatorView getProgressBar() {
 		return progressBar;

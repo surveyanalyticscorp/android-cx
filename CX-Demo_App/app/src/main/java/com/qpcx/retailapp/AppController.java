@@ -46,8 +46,8 @@ public class AppController extends Application {
 		// The following line triggers the initialization of ACRA for crash Log Reposrting
 		if (PreferenceHelper.getPrefernceHelperInstace().getBoolean(
 				this, PreferenceHelper.SUBMIT_LOGS, true)) {
-			ACRA.init(this);
-			ACRA.getConfig().setResToastText(R.string.crash_toast_text);
+			//ACRA.init(this);
+			//ACRA.getConfig().setResToastText(R.string.crash_toast_text);
 		}
 
 		Log.d("Datta","Application onCreate:"+getPackageName().equals(getProcessName(this)));

@@ -29,8 +29,8 @@ public class ShoppingCartActivity extends AppCompatActivity {
             public void onClick(View v) {
                 TouchPoint touchPoint = new TouchPoint.Builder(ConfigType.INTERCEPT, DataCenter.US).build();
                 //QuestionProCX.getInstance().init(ShoppingCartActivity.this, touchPoint);
-                QuestionProCX.getInstance().launchFeedbackSurvey(13026667);
-                //QuestionProCX.getInstance().setScreenVisited("screen1");
+                //QuestionProCX.getInstance().launchFeedbackSurvey(13026667);
+                QuestionProCX.getInstance().setScreenVisited("screen1");
             }
         });
 
