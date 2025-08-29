@@ -96,10 +96,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     callback.onInitializationFailure(e.getMessage());
                 }
             }
-        }, 5000);
+        }, 3000);
     }
 
-    public synchronized void launchFeedbackSurvey(long surveyId){
+    private synchronized void launchFeedbackSurvey(long surveyId){
         if (runningActivities == 0) {
             try {
                 Intent intent = new Intent(appContext, InteractionActivity.class);
@@ -151,7 +151,14 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             CXGlobalInfo.getInstance().setInitialized(true);
         }
 
-        if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
+        if (appContext instanceof Application) {
+            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        } else if (appContext.getApplicationContext() instanceof Application) {
+            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        }
+        fetchInterceptSettings();
+
+        /*if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
             if (appContext instanceof Application) {
                 ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
             } else if (appContext.getApplicationContext() instanceof Application) {
@@ -162,7 +169,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             if(questionProInitCallback != null){
                 questionProInitCallback.onInitializationSuccess("QuestionPro SDK initialised for Survey");
             }
-        }
+        }*/
     }
 
     protected void fetchInterceptSettings(){
@@ -287,22 +294,17 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         try {
             long prevTime = preferenceManager.getLaunchedInterceptTime(appContext, interceptId);
             boolean isSleepTimeOverForIntercept = CXUtils.isSleepTimeOver(prevTime);
-            Log.d("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
+            //Log.d("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
 
-            if(true) {
-                Intercept intercept = preferenceManager.getInterceptById(interceptId);
+            Intercept intercept = preferenceManager.getInterceptById(interceptId);
+            Set<String> temp = interceptSatisfiedRules.get(interceptId);
+            assert temp != null;
+            CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
 
-                Set<String> temp = interceptSatisfiedRules.get(interceptId);
-                assert temp != null;
-                CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
-
-                if (intercept.condition.equals(InterceptCondition.OR.name())) {
-                    launchFeedbackSurvey(intercept);
-                } else if (intercept.interceptRule.size() == temp.size()) {
-                    launchFeedbackSurvey(intercept);
-                }
-            }else{
-                CXUtils.printLog("Datta","The survey was already answered for ongoing session: "+interceptId);
+            if (intercept.condition.equals(InterceptCondition.OR.name())) {
+                launchFeedbackSurvey(intercept);
+            } else if (intercept.interceptRule.size() == temp.size()) {
+                launchFeedbackSurvey(intercept);
             }
         }catch (Exception e){}
     }

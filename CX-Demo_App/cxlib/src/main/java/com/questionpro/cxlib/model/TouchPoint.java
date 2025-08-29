@@ -113,7 +113,7 @@ public class TouchPoint implements Serializable{
 
         private Map<Integer, String> customVariables;
 
-        public Builder(ConfigType configType, DataCenter dataCenter){
+        public Builder(DataCenter dataCenter){
             this.dataCenter = dataCenter;
             this.configType = configType;
         }

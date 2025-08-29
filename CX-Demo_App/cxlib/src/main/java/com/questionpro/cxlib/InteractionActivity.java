@@ -48,11 +48,12 @@ public class InteractionActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         preferenceManager = new SharedPreferenceManager(this);
 
-        if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
+        /*if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
             initIntercept();
         }else{
             initSurveys();
-        }
+        }*/
+        initIntercept();
     }
 
     private void initIntercept(){
