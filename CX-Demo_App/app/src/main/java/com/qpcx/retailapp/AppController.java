@@ -72,7 +72,7 @@ public class AppController extends Application {
 		cutVars.put(2, "Datta");
 		cutVars.put(3,"Kunde");
 
-		TouchPoint touchPoint = new TouchPoint.Builder(ConfigType.INTERCEPT, DataCenter.US)
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
 				.customVariables(cutVars)
 				.build();
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
