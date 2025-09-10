@@ -340,11 +340,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
         } else if (runningActivities == 0 && isSessionAlive) {
             int triggerDelay = intercept.interceptSettings.triggerDelayInSeconds * 1000;
-            //Log.d("Datta","triggerDelay: "+triggerDelay);
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    //Log.d("Datta","Trigger Delay satisfied....");
                     try {
                         Intent intent = new Intent(appContext, InteractionActivity.class);
                         intent.putExtra("INTERCEPT", intercept);
