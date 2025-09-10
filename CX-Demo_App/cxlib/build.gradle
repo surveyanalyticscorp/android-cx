@@ -1,12 +1,17 @@
-apply plugin: 'com.android.library'
+//apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
 
 android {
-    compileSdkVersion 33
+    namespace 'com.questionpro.cxlib'
+    compileSdkVersion 35
     buildToolsVersion '30.0.2'
 
     defaultConfig {
-        minSdkVersion 19
-        targetSdkVersion 34
+        minSdkVersion 21
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
     }
@@ -16,37 +21,55 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    publishing {
+        singleVariant("release")
+    }
 }
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'questionpro-cx-android'
+afterEvaluate {
+    publishing {
+        publications {
+            create("release", MavenPublication) {
+                from components.release
 
-    publishedGroupId = 'com.questionpro.cx'
-    libraryName = 'cxlib'
-    artifact = 'cxlib'
+                groupId = "com.github.surveyanalyticscorp"
+                artifactId = "cxlib"
+                version = "2.1.0"
 
-    libraryDescription = 'SDK for in app feedback'
+                pom {
+                    name.set("QuestionPro CX SDK")
+                    description.set("SDK for in-app feedback collection")
+                    url.set("https://github.com/surveyanalyticscorp/android-cx")
 
-    siteUrl = 'www.questionpro.com'
-    gitUrl = 'https://github.com/surveyanalyticscorp/mobilecx/tree/master/CX-Android/cxlib'
-
-    libraryVersion = '1.2.6'
-
-    developerId = 'Datta_qp'
-    developerName = 'Datta Kunde'
-    developerEmail = 'datta.kunde@questionpro.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
+                    licenses {
+                        license {
+                            name.set("The Apache Software License, Version 2.0")
+                            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set("Datta_qp")
+                            name.set("Datta Kunde")
+                            email.set("datta.kunde@questionpro.com")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:github.com/surveyanalyticscorp/android-cx.git")
+                        developerConnection.set("scm:git:ssh://github.com/surveyanalyticscorp/android-cx.git")
+                        url.set("https://github.com/surveyanalyticscorp/android-cx")
+                    }
+                }
+            }
+        }
+    }
 }
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
