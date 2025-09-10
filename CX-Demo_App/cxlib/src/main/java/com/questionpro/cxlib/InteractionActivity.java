@@ -46,7 +46,7 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        QuestionProCX.registerInteractionActivity(this);
         init();
 
         CXInteraction interactionSerializable = (CXInteraction)getIntent().getSerializableExtra(CXConstants.CX_INTERACTION_CONTENT);
@@ -229,5 +229,11 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
         if(!CXGlobalInfo.isShowDialog(this)){
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        QuestionProCX.unregisterInteractionActivity();
     }
 }

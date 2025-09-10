@@ -14,6 +14,8 @@ import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.Looper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,6 +89,7 @@ public class HomeFragment extends Fragment {
 
 
 						QuestionProCX.getInstance().launchFeedbackSurvey(12174640);
+						closeSurveyWindow();
 					}
 				});
 
@@ -229,4 +232,12 @@ public class HomeFragment extends Fragment {
 
 	}
 
+	private void closeSurveyWindow(){
+		new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+			@Override
+			public void run() {
+				QuestionProCX.getInstance().closeSurveyWindow();
+			}
+		}, 15000);
+	}
 }

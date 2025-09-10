@@ -31,6 +31,7 @@ public class QuestionProCX {
     private static ProgressDialog progressDialog;
 
     private static WeakReference<Activity> mActivity;
+    private static WeakReference<InteractionActivity> interactionActivityRef;
 
     private static QuestionProCX mInstance = null;
 
@@ -64,6 +65,17 @@ public class QuestionProCX {
             }
         }catch (Exception e){
             Log.e(LOG_TAG,"Unexpected error while reading application info."+ e.getMessage());
+        }
+    }
+
+    protected static void registerInteractionActivity(InteractionActivity activity) {
+        interactionActivityRef = new WeakReference<>(activity);
+    }
+
+    protected static void unregisterInteractionActivity() {
+        if (interactionActivityRef != null) {
+            interactionActivityRef.clear();
+            interactionActivityRef = null;
         }
     }
 
@@ -137,10 +149,15 @@ public class QuestionProCX {
         //showProgress();
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
         CXPayloadWorker.appWentToForeground(mActivity.get());
+    }
 
-        /*Intent intent = new Intent(mActivity.get(), InteractionActivity.class);
-        intent.putExtra("SURVEY_ID", surveyId);
-        mActivity.get().startActivity(intent);*/
+    public void closeSurveyWindow(){
+        if (interactionActivityRef != null) {
+            InteractionActivity activity = interactionActivityRef.get();
+            if (activity != null && !activity.isFinishing()) {
+                activity.finish();
+            }
+        }
     }
 
     private void onStop(Activity activity){
