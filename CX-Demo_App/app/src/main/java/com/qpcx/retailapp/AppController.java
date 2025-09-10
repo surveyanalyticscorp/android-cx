@@ -13,7 +13,7 @@ import org.acra.annotation.ReportsCrashes;
 @ReportsCrashes(mailTo = "datta.kunde@questionpro.com", customReportContent = {
 		ReportField.APP_VERSION_CODE, ReportField.APP_VERSION_NAME,
 		ReportField.ANDROID_VERSION, ReportField.PHONE_MODEL,
-		ReportField.CUSTOM_DATA, ReportField.STACK_TRACE, ReportField.LOGCAT }, mode = ReportingInteractionMode.TOAST, resToastText = R.string.crash_toast_text)
+		ReportField.CUSTOM_DATA, ReportField.STACK_TRACE, ReportField.LOGCAT }, mode = ReportingInteractionMode.TOAST)
 
 public class AppController extends Application {
 

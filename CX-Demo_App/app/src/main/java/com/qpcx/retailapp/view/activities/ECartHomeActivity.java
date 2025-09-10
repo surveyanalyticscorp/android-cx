@@ -144,52 +144,37 @@ public class ECartHomeActivity extends AppCompatActivity {
 				.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
 					@Override
 					public boolean onNavigationItemSelected(MenuItem menuItem) {
-
 						menuItem.setChecked(true);
-						switch (menuItem.getItemId()) {
-						case R.id.home:
-
+						if(menuItem.getItemId() == R.id.home){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.HOME_FRAGMENT,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-
-							return true;
-
-						case R.id.my_cart:
-
+						}else if(menuItem.getItemId() == R.id.my_cart){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.SHOPPING_LIST_TAG,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-							return true;
-
-						case R.id.contact_us:
-
+						}else if(menuItem.getItemId() == R.id.contact_us){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.CONTACT_US_FRAGMENT,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-							return true;
-
-						case R.id.settings:
-
+						} else if(menuItem.getItemId() == R.id.settings){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.SETTINGS_FRAGMENT_TAG,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-							return true;
-						default:
-							return true;
 						}
+						return true;
 					}
 				});
 
@@ -228,8 +213,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
-		switch (item.getItemId()) {
-		case R.id.action_settings:
+		if(item.getItemId() == R.id.action_settings){
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

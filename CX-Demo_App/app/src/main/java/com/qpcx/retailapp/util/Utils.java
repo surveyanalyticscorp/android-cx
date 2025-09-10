@@ -48,7 +48,7 @@ public class Utils {
 
 	private static final String PREFERENCES_FILE = "materialsample_settings";
 
-	public static int getToolbarHeight(Context context) {
+	/*public static int getToolbarHeight(Context context) {
 		int height = (int) context.getResources().getDimension(
 				R.dimen.abc_action_bar_default_height_material);
 		return height;
@@ -58,7 +58,7 @@ public class Utils {
 		int height = (int) context.getResources().getDimension(
 				R.dimen.statusbar_size);
 		return height;
-	}
+	}*/
 
 	public static Drawable tintMyDrawable(Drawable drawable, int color) {
 		drawable = DrawableCompat.wrap(drawable);

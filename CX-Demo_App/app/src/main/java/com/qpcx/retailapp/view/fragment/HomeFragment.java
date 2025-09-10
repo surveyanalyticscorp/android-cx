@@ -39,7 +39,7 @@ import java.util.Map;
 public class HomeFragment extends Fragment {
 	CollapsingToolbarLayout collapsingToolbar;
 	RecyclerView recyclerView;
-	int mutedColor = R.attr.colorPrimary;
+
 	//CategoryListAdapter simpleRecyclerAdapter;
 
 	/** The double back to exit pressed once. */
@@ -79,7 +79,7 @@ public class HomeFragment extends Fragment {
 						customVars.put(6, "Anmol");
 
 						TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.KSA)
-								.email("mobile.android@questionpro.com")
+								.email("mobile.android+1@questionpro.com")
 								.customVariables(customVars)
 								.themeColor("#FCFEFF")
 								.transactionLanguage("Arabic")
@@ -87,7 +87,7 @@ public class HomeFragment extends Fragment {
 						QuestionProCX.init((AppCompatActivity)getActivity(), touchPoint);
 
 
-						QuestionProCX.launchFeedbackSurvey(9826);
+						QuestionProCX.launchFeedbackSurvey(10871);
 					}
 				});
 
@@ -100,12 +100,12 @@ public class HomeFragment extends Fragment {
 				customVars.put(6, "Anmol");
 				TouchPoint touchPoint = new TouchPoint.Builder(Type.CUSTOMER_EXPERIENCE, DataCenter.KSA)
 						.showAsDialog(true)
-						.email("mobile.android@questionpro.com")
+						.email("mobile.sample@noreply.com")
 						.customVariables(customVars)
 						.themeColor("#282E3D")
 						.build();
 				QuestionProCX.init(getActivity(), touchPoint);
-				QuestionProCX.launchFeedbackSurvey(9833);//Device audit: 8282698
+				QuestionProCX.launchFeedbackSurvey(10871);//Device audit: 8282698
 			}
 		});
 
@@ -138,7 +138,7 @@ public class HomeFragment extends Fragment {
 			@Override
 			public void onGenerated(Palette palette) {
 
-				mutedColor = palette.getMutedColor(R.color.primary_500);
+				int mutedColor = palette.getMutedColor(R.color.primary_500);
 				collapsingToolbar.setContentScrimColor(mutedColor);
 				collapsingToolbar.setStatusBarScrimColor(R.color.black_trans80);
 			}
