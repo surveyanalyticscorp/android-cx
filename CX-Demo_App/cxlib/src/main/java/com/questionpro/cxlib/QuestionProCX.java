@@ -292,29 +292,26 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void checkAllRulesForIntercept(int interceptId){
         try {
-            long prevTime = preferenceManager.getLaunchedInterceptTime(appContext, interceptId);
-            boolean isSleepTimeOverForIntercept = CXUtils.isSleepTimeOver(prevTime);
-            //Log.d("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
-
             Intercept intercept = preferenceManager.getInterceptById(interceptId);
-            Set<String> temp = interceptSatisfiedRules.get(interceptId);
-            assert temp != null;
-            CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
+            if(shouldSurveyLaunch(intercept)) {
+                Set<String> temp = interceptSatisfiedRules.get(interceptId);
+                assert temp != null;
+                CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
 
-            if (intercept.condition.equals(InterceptCondition.OR.name())) {
-                launchFeedbackSurvey(intercept);
-            } else if (intercept.interceptRule.size() == temp.size()) {
-                launchFeedbackSurvey(intercept);
+                if (intercept.condition.equals(InterceptCondition.OR.name())) {
+                    launchFeedbackSurvey(intercept);
+                } else if (intercept.interceptRule.size() == temp.size()) {
+                    launchFeedbackSurvey(intercept);
+                }
             }
         }catch (Exception e){}
     }
 
-    /*private void showProgress(){
-        progressDialog = new ProgressDialog(mActivity.get());
-        progressDialog.setMessage("loading...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-    }*/
+    private boolean shouldSurveyLaunch(Intercept intercept){
+        boolean doesSurveyAlreadyLaunched = preferenceManager.isSurveyAlreadyLaunched(appContext, intercept.id);
+        boolean allowMultipleResponse = intercept.interceptSettings.allowMultipleResponse;
+        return allowMultipleResponse || !doesSurveyAlreadyLaunched;
+    }
 
     public void handleError(JSONObject response) throws JSONException {
         if(null != progressDialog && progressDialog.isShowing()){

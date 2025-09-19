@@ -100,7 +100,6 @@ class SharedPreferenceManager {
     long getLaunchedInterceptTime(Context context, int interceptId){
         SharedPreferences prefs = context.getSharedPreferences("Intercepts", Context.MODE_PRIVATE);
         String json = prefs.getString(LAUNCHED_SURVEYS, null);
-
         //Log.d("Datta", interceptId+ " Getting Saved time: " + json);
         try {
             if (json != null) {
@@ -108,8 +107,6 @@ class SharedPreferenceManager {
                 Type type = new TypeToken<Map<Integer, Long>>() {
                 }.getType();
                 Map<Integer, Long> myMap = gson.fromJson(json, type);
-
-
                 if (myMap.containsKey(interceptId))
                     return myMap.get(interceptId);
             }
@@ -117,6 +114,23 @@ class SharedPreferenceManager {
             return 0;
         }
         return 0;
+    }
+
+    boolean isSurveyAlreadyLaunched(Context context, int interceptId){
+        SharedPreferences prefs = context.getSharedPreferences("Intercepts", Context.MODE_PRIVATE);
+        String json = prefs.getString(LAUNCHED_SURVEYS, null);
+        try {
+            if (json != null) {
+                Gson gson = new Gson();
+                Type type = new TypeToken<Map<Integer, Long>>() {
+                }.getType();
+                Map<Integer, Long> myMap = gson.fromJson(json, type);
+                return myMap.containsKey(interceptId);
+            }
+        }catch (Exception e){
+            return false;
+        }
+        return false;
     }
 
     void resetPreferences(){
