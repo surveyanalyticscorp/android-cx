@@ -23,7 +23,7 @@ class SharedPreferenceManager {
     private final String LAUNCHED_SURVEYS = "launched_surveys";
     private static String interceptStr;
     protected SharedPreferenceManager(Context context){
-        prefs = context.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+        prefs = context.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
     }
 
     void saveProject(String intercept){

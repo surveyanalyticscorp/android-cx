@@ -36,8 +36,6 @@ public class CXGlobalInfo {
         return ourInstance;
     }
 
-    private CXGlobalInfo() {
-    }
 
 
     /**
