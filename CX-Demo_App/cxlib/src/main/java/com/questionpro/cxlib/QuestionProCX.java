@@ -54,37 +54,33 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public QuestionProCX(){
     }
 
-    public static QuestionProCX getInstance(){
+    public synchronized static QuestionProCX getInstance(){
         if(mInstance == null){
             mInstance = new QuestionProCX();
         }
         return mInstance;
     }
 
-    /*public synchronized void init(Context context, TouchPoint touchPoint){
-        try {
-            appContext = context;
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        CXGlobalInfo.getInstance().savePayLoad(touchPoint);
-                        initialize();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }, 5000);
-        }catch (Exception e){
-            Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
-        }
-    }*/
-
+    /**
+     * Initializes the SDK
+     */
     public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
         appContext = context;
         questionProInitCallback = callback;
+
+        if (appContext instanceof Application) {
+            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        } else if (appContext.getApplicationContext() instanceof Application) {
+            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        }
+
+        if(touchPoint == null){
+            if(callback != null) {
+                callback.onInitializationFailure("TouchPoint object is null.");
+            }
+            return;
+        }
+
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -114,7 +110,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
     }
 
-    public void gerSurveyUrl(IQuestionProCallback questionProCallback){
+    /**
+     * Returns the survey URL via callback
+     */
+    public void getSurveyUrl(IQuestionProCallback questionProCallback){
         this.questionProCallback = questionProCallback;
     }
 
@@ -122,10 +121,16 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
+        if(preferenceManager == null){
+            preferenceManager = new SharedPreferenceManager(appContext);
+        }
         MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, preferenceManager, QuestionProCX.this);
     }
 
-    public void clearSession(){
+    /**
+     * Clears the session and resets preferences
+     */
+    protected void clearSession(){
         Log.i("QuestionPro","Clearing session.");
         isSessionAlive = false;
         MonitorAppEvents.getInstance().stopAllTimers();
@@ -151,25 +156,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             CXGlobalInfo.getInstance().setInitialized(true);
         }
 
-        if (appContext instanceof Application) {
-            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-        } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-        }
         fetchInterceptSettings();
-
-        /*if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
-            if (appContext instanceof Application) {
-                ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-            } else if (appContext.getApplicationContext() instanceof Application) {
-                ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-            }
-            fetchInterceptSettings();
-        }else{
-            if(questionProInitCallback != null){
-                questionProInitCallback.onInitializationSuccess("QuestionPro SDK initialised for Survey");
-            }
-        }*/
     }
 
     protected void fetchInterceptSettings(){
@@ -313,23 +300,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         return allowMultipleResponse || !doesSurveyAlreadyLaunched;
     }
 
-    public void handleError(JSONObject response) throws JSONException {
-        if(null != progressDialog && progressDialog.isShowing()){
-            progressDialog.cancel();
-        }
-        if(response.has("error") && response.getJSONObject("error").has("message")) {
-            final String errorMessage = "Error: " + response.getJSONObject("error").getString("message");
-            /*final Activity activity = mActivity.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(activity, errorMessage, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }*/
-            Toast.makeText(appContext, errorMessage, Toast.LENGTH_LONG).show();
-        }
-    }
 
     private synchronized void launchFeedbackSurvey(Intercept intercept){
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
