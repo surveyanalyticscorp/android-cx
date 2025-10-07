@@ -32,7 +32,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 //TouchPoint touchPoint = new TouchPoint.Builder(ConfigType.INTERCEPT, DataCenter.US).build();
                 //QuestionProCX.getInstance().init(ShoppingCartActivity.this, touchPoint);
                 //QuestionProCX.getInstance().launchFeedbackSurvey(13026667);
-                QuestionProCX.getInstance().setScreenVisited("screen1");
+                QuestionProCX.getInstance().setScreenVisited("Launch_Survey");
             }
         });
 
@@ -45,7 +45,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
             }
         });
 
-        QuestionProCX.getInstance().gerSurveyUrl(new IQuestionProCallback() {
+        QuestionProCX.getInstance().getSurveyUrl(new IQuestionProCallback() {
             @Override
             public void getSurveyUrl(String surveyUrl) {
                 Log.d("Datta","Survey URL: "+surveyUrl);

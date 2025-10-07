@@ -185,7 +185,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 		//initialiseQpSdk();
 
-		QuestionProCX.getInstance().gerSurveyUrl(new IQuestionProCallback(){
+		QuestionProCX.getInstance().getSurveyUrl(new IQuestionProCallback(){
 			@Override
 			public void getSurveyUrl(String surveyUrl) {
 				Log.d("Datta","Survey url: "+surveyUrl);
