@@ -11,13 +11,12 @@ import com.questionpro.cxlib.util.CXUtils;
 
 public class ActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks{
 
-    private boolean isInForeground = false;
+    private boolean isInForeground = true;
     private int activityStartCount = 0;
 
     @Override
     public void onActivityStarted(Activity activity) {
-        activityStartCount++;
-        if (!isInForeground && activityStartCount > 0) {
+        if (!isInForeground && activityStartCount == 0) {
             isInForeground = true;
             // App moved to foreground
             CXUtils.printLog("Datta","App moved to foreground...");
@@ -28,14 +27,19 @@ public class ActivityLifecycleCallbacks implements Application.ActivityLifecycle
                         QuestionProCX.getInstance().fetchInterceptSettings();
                     }catch (Exception e){e.printStackTrace();}
                 }
-            }, 2000);
+            }, 3000);
         }
+        activityStartCount++;
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
         activityStartCount--;
-        if (activityStartCount == -1) {
+        if (activityStartCount < 0) {
+            activityStartCount = 0; // Safety check
+        }
+
+        if (activityStartCount == 0) {
             isInForeground = false;
             // App moved to background
             CXUtils.printLog("Datta","App moved to background...");
