@@ -127,6 +127,14 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, preferenceManager, QuestionProCX.this);
     }
 
+    public void closeSurveyWindow(){
+        if (runningActivities > 0) {
+            if (InteractionActivity.currentActivity != null && !InteractionActivity.currentActivity.isFinishing()) {
+                InteractionActivity.currentActivity.finish();
+            }
+        }
+    }
+
     /**
      * Clears the session and resets preferences
      */

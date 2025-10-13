@@ -41,6 +41,8 @@ public class InteractionActivity extends FragmentActivity implements
     private Intercept intercept;
 
     private SharedPreferenceManager preferenceManager;
+    protected static InteractionActivity currentActivity = null;
+
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -217,22 +219,25 @@ public class InteractionActivity extends FragmentActivity implements
 
     @Override
     public void onUpdateProgress(int progressValue) {
-        if(progressBar != null){
-            progressBar.setProgress(progressValue);
-            if(progressValue >= 20){
-                if(null != customProgressDialog && customProgressDialog.isShowing()){
-                    customProgressDialog.dismiss();
+        try {
+            if (progressBar != null) {
+                progressBar.setProgress(progressValue);
+                if (progressValue >= 20) {
+                    if (null != customProgressDialog && customProgressDialog.isShowing()) {
+                        customProgressDialog.dismiss();
+                    }
+                }
+                if (progressValue == 100) {
+                    progressBar.setVisibility(View.GONE);
                 }
             }
-            if(progressValue == 100){
-                progressBar.setVisibility(View.GONE);
-            }
-        }
+        }catch (Exception e){e.printStackTrace();}
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        currentActivity = this;
         QuestionProCX.getInstance().onStart(this);
     }
 
@@ -240,6 +245,9 @@ public class InteractionActivity extends FragmentActivity implements
     protected void onStop() {
         super.onStop();
         QuestionProCX.getInstance().onStop(this);
+        if (currentActivity == this) {
+            currentActivity = null;
+        }
     }
 
     private static final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
