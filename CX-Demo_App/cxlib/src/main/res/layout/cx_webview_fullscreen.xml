@@ -3,11 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="0dp">
+    android:fitsSystemWindows="true"
+    tools:ignore="MissingConstraints">
 
     <include
         android:id="@+id/topBar"
-        layout="@layout/screen_header"/>
+        layout="@layout/screen_header"
+        android:fitsSystemWindows="true" />
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -22,6 +24,7 @@
         android:layout_below="@+id/progressBar"
         android:id="@+id/surveyWebView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true" >
     </WebView>
 </RelativeLayout>

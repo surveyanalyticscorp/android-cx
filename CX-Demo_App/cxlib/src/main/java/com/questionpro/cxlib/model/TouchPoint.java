@@ -2,6 +2,7 @@ package com.questionpro.cxlib.model;
 
 import androidx.annotation.NonNull;
 
+import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.DataCenter;
 
 import java.io.Serializable;
@@ -21,6 +22,7 @@ public class TouchPoint implements Serializable{
     private final boolean showAsDialog;
     private final String themeColor;
     private final DataCenter dataCenter;
+    private final ConfigType configType;
 
     private final Map<Integer, String> customVariables;
 
@@ -36,6 +38,7 @@ public class TouchPoint implements Serializable{
         this.customVariables = builder.customVariables;
         this.themeColor = builder.themeColor;
         this.dataCenter = builder.dataCenter;
+        this.configType = builder.configType;
     }
 
     public boolean showAsDialog() {
@@ -79,6 +82,7 @@ public class TouchPoint implements Serializable{
     public DataCenter getDataCenter(){
         return dataCenter;
     }
+    public ConfigType getConfigType(){return configType;}
 
     @NonNull
     @Override
@@ -105,11 +109,13 @@ public class TouchPoint implements Serializable{
         private  boolean showAsDialog;
         private String themeColor = "";
         private DataCenter dataCenter = null;
+        private ConfigType configType;
 
         private Map<Integer, String> customVariables;
 
-        public Builder( DataCenter dataCenter){
+        public Builder(DataCenter dataCenter){
             this.dataCenter = dataCenter;
+            this.configType = configType;
         }
 
         private Builder email(String email){

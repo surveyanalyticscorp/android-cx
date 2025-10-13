@@ -4,11 +4,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
-import com.questionpro.cxlib.enums.InterceptRuleType;
-import com.questionpro.cxlib.interfaces.IQuestionProRulesCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
-import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -59,11 +56,12 @@ public class MonitorAppEvents {
     }
 
     protected void setTagNameCheckRules(String tagName, SharedPreferenceManager preferenceManager, final IQuestionProRulesCallback rulesCallback){
-        if(preferenceManager != null) {
-            int viewCountForTag = preferenceManager.updateViewCountForTag(tagName);
-            //Log.d("Datta", "View count for tag name: "+tagName+" is: "+viewCountForTag);
-            try {
-                JSONObject interceptObj = new JSONObject(preferenceManager.getProject());
+        int viewCountForTag = preferenceManager.updateViewCountForTag(tagName);
+        //Log.d("Datta", "View count for tag name: "+tagName+" is: "+viewCountForTag);
+        try {
+            String projectJson = preferenceManager.getProject();
+            if (projectJson != null && !projectJson.trim().isEmpty()) {
+                JSONObject interceptObj = new JSONObject(projectJson);
                 JSONArray interceptArray = interceptObj.getJSONArray("intercepts");
                 for (int i = 0; i < interceptArray.length(); i++) {
                     JSONObject jsonObject = interceptArray.getJSONObject(i);
@@ -72,18 +70,18 @@ public class MonitorAppEvents {
                     for (InterceptRule rule : intercept.interceptRule) {
                         if (rule.name.equals(InterceptRuleType.VIEW_COUNT.name()) &&
                                 rule.key.equals(tagName) &&
-                                Integer.parseInt(rule.value) == viewCountForTag) {
+                                Integer.parseInt(rule.value) <= viewCountForTag) {
                             //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
                             rulesCallback.onViewCountRuleSatisfied(intercept.id);
                             preferenceManager.resetViewCountForTag(tagName);
                         }
                     }
                 }
-            } catch (Exception ignored) {
-
+            }else{
+                Log.e("QuestionProCX", "Project JSON is null or empty.");
             }
-        }else{
-            // handle the else case
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
     }
 }

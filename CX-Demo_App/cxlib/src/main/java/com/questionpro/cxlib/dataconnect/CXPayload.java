@@ -1,10 +1,6 @@
 package com.questionpro.cxlib.dataconnect;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.init.CXGlobalInfo;
+import com.questionpro.cxlib.CXGlobalInfo;
 import com.questionpro.cxlib.model.TouchPoint;
 
 import java.text.SimpleDateFormat;
@@ -21,25 +17,26 @@ import java.util.Locale;
  */
 public class CXPayload {
 
-    public static JSONObject getPayloadJSON(TouchPoint touchPoint, Context context) throws JSONException{
+    public static JSONObject getPayloadJSON(TouchPoint touchPoint) throws JSONException{
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("firstName", touchPoint.getFirstName());
         jsonObject.put("lastName", touchPoint.getLastName());
         jsonObject.put("transactionLanguage", touchPoint.getTransactionLanguage());
         jsonObject.put("mobile", touchPoint.getMobile());
         jsonObject.put("segmentCode", touchPoint.getSegmentCode());
-        String date = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date());
+        String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         jsonObject.put("transactionDate", date);
         if(null == touchPoint.getEmail()){
-            jsonObject.put("email", CXGlobalInfo.getInstance().getUUID(context)+"@questionpro.com");
+            jsonObject.put("email", CXGlobalInfo.getInstance().getUUID()+"@questionpro.com");
         }else
             jsonObject.put("email", touchPoint.getEmail());
         //jsonObject.put("surveyID", touchPoint.getTouchPointID());
         jsonObject.put("showAsDialog",touchPoint.showAsDialog());
         jsonObject.put("themeColor", touchPoint.getThemeColor());
         jsonObject.put("dataCenter", touchPoint.getDataCenter());
+        jsonObject.put("configType", touchPoint.getConfigType());
         jsonObject.put("customVariables", touchPoint.getCustomVariables());
-        Log.d("Datta", "Payload json: "+jsonObject.toString());
+        //Log.d("Datta", "Payload json: "+jsonObject.toString());
 
         return jsonObject;
     }

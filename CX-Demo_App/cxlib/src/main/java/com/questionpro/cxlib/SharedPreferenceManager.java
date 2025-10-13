@@ -1,14 +1,13 @@
-package com.questionpro.cxlib.util;
+package com.questionpro.cxlib;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.questionpro.cxlib.constants.CXConstants;
 import com.questionpro.cxlib.model.Intercept;
+import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,34 +16,34 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SharedPreferenceManager {
+class SharedPreferenceManager {
     private SharedPreferences prefs;
     private final String INTERCEPT = "Intercepts";
     private final String VISITORS_UUID = "visitors_uuid";
     private final String LAUNCHED_SURVEYS = "launched_surveys";
     private static String interceptStr;
-    public SharedPreferenceManager(Context context){
-        prefs = context.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+    protected SharedPreferenceManager(Context context){
+        prefs = context.getApplicationContext().getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public void saveProject(String intercept){
+    void saveProject(String intercept){
         prefs.edit().putString(INTERCEPT, intercept).apply();
     }
 
-    public String getProject(){
+    String getProject(){
         interceptStr = prefs.getString(INTERCEPT, "");
         return interceptStr;
     }
 
-    public void saveVisitorsUUID(String uuid){
+    void saveVisitorsUUID(String uuid){
         prefs.edit().putString(VISITORS_UUID, uuid).apply();
     }
 
-    public String getVisitorsUUID(){
+    String getVisitorsUUID(){
         return prefs.getString(VISITORS_UUID, "");
     }
 
-    public Intercept getInterceptById(int interceptId) throws Exception{
+    Intercept getInterceptById(int interceptId) throws Exception{
         if(CXUtils.isEmpty(interceptStr)){
             interceptStr = prefs.getString(INTERCEPT, "");
         }
@@ -56,7 +55,7 @@ public class SharedPreferenceManager {
         }
         return null;
     }
-    public int getInterceptSurveyId(int interceptId) throws Exception{
+    int getInterceptSurveyId(int interceptId) throws Exception{
         if(CXUtils.isEmpty(interceptStr)) {
             interceptStr = prefs.getString(INTERCEPT, "");
         }
@@ -69,20 +68,20 @@ public class SharedPreferenceManager {
         return -1;
     }
 
-    public int updateViewCountForTag(String tag){
+    int updateViewCountForTag(String tag){
         int updatedViewCount = getViewCountForTag(tag) + 1;
         prefs.edit().putInt(tag, updatedViewCount).apply();
         return updatedViewCount;
     }
 
-    public void resetViewCountForTag(String tag){
+    void resetViewCountForTag(String tag){
         prefs.edit().putInt(tag, 0).apply();
     }
     private int getViewCountForTag(String tag){
         return prefs.getInt(tag,0);
     }
 
-    public void saveInterceptIdForLaunchedSurvey(Activity activity, int interceptId, long time){
+    void saveInterceptIdForLaunchedSurvey(Activity activity, int interceptId, long time){
         Map<Integer, Long> myMap = new HashMap<>();
         SharedPreferences prefs = activity.getApplicationContext().getSharedPreferences("Intercepts", Context.MODE_PRIVATE);
         String storedIntercepts = prefs.getString(LAUNCHED_SURVEYS, null);
@@ -98,10 +97,9 @@ public class SharedPreferenceManager {
         prefs.edit().putString(LAUNCHED_SURVEYS,json).apply();
     }
 
-    public long getLaunchedInterceptTime(Context context, int interceptId){
+    long getLaunchedInterceptTime(Context context, int interceptId){
         SharedPreferences prefs = context.getSharedPreferences("Intercepts", Context.MODE_PRIVATE);
         String json = prefs.getString(LAUNCHED_SURVEYS, null);
-
         //Log.d("Datta", interceptId+ " Getting Saved time: " + json);
         try {
             if (json != null) {
@@ -109,8 +107,6 @@ public class SharedPreferenceManager {
                 Type type = new TypeToken<Map<Integer, Long>>() {
                 }.getType();
                 Map<Integer, Long> myMap = gson.fromJson(json, type);
-
-
                 if (myMap.containsKey(interceptId))
                     return myMap.get(interceptId);
             }
@@ -120,7 +116,24 @@ public class SharedPreferenceManager {
         return 0;
     }
 
-    public void resetPreferences(){
+    boolean isSurveyAlreadyLaunched(Context context, int interceptId){
+        SharedPreferences prefs = context.getSharedPreferences("Intercepts", Context.MODE_PRIVATE);
+        String json = prefs.getString(LAUNCHED_SURVEYS, null);
+        try {
+            if (json != null) {
+                Gson gson = new Gson();
+                Type type = new TypeToken<Map<Integer, Long>>() {
+                }.getType();
+                Map<Integer, Long> myMap = gson.fromJson(json, type);
+                return myMap.containsKey(interceptId);
+            }
+        }catch (Exception e){
+            return false;
+        }
+        return false;
+    }
+
+    void resetPreferences(){
         prefs.edit().clear().apply();
     }
 }

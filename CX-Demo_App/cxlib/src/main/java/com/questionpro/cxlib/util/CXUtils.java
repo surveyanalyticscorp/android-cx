@@ -160,7 +160,7 @@ public class CXUtils {
         } else {
             locale = context.getResources().getConfiguration().locale;
         }
-        CXUtils.printLog("Datta","App Language: "+locale.toLanguageTag());
+        //CXUtils.printLog("Datta","App Language: "+locale.toLanguageTag());
         //return locale.getLanguage(); // e.g., "en", "hi", "fr"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return locale.toLanguageTag();

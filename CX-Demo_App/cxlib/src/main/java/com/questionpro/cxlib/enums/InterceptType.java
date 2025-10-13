@@ -1,7 +1,7 @@
 package com.questionpro.cxlib.enums;
 
-public enum InterceptType {
+/*enum InterceptType {
     PROMPT,
     EMBED,
     SURVEY_URL
-}
+}*/

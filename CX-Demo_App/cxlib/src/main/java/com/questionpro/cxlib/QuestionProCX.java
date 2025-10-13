@@ -8,26 +8,20 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.questionpro.cxlib.constants.CXConstants;
-import com.questionpro.cxlib.dataconnect.CXApiHandler;
-import com.questionpro.cxlib.enums.InterceptCondition;
-import com.questionpro.cxlib.enums.InterceptRuleType;
-import com.questionpro.cxlib.enums.InterceptType;
-import com.questionpro.cxlib.interfaces.IQuestionProApiCallback;
+import com.questionpro.cxlib.enums.ConfigType;
+
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
-import com.questionpro.cxlib.interfaces.IQuestionProRulesCallback;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
 import com.questionpro.cxlib.model.TouchPoint;
-import com.questionpro.cxlib.init.CXGlobalInfo;
-import com.questionpro.cxlib.interaction.InteractionActivity;
 import com.questionpro.cxlib.util.CXUtils;
 import com.questionpro.cxlib.util.DateTimeUtils;
-import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,40 +51,69 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private SharedPreferenceManager preferenceManager = null;
 
     private static final HashMap<Integer, Set<String>> interceptSatisfiedRules = new HashMap<>();
-
     public QuestionProCX(){
     }
 
-    public static QuestionProCX getInstance(){
+    public synchronized static QuestionProCX getInstance(){
         if(mInstance == null){
             mInstance = new QuestionProCX();
         }
         return mInstance;
     }
 
-    public synchronized void init(Context context, TouchPoint touchPoint){
-        try {
-            appContext = context;
-            CXGlobalInfo.getInstance().savePayLoad(touchPoint, context);
-            initialize();
-        }catch (Exception e){
-            Log.e(LOG_TAG, "Error in initialization: "+e.getMessage());
-        }
-    }
-
+    /**
+     * Initializes the SDK
+     */
     public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
         appContext = context;
         questionProInitCallback = callback;
-        try {
-            CXUtils.printLog("Datta","Initialising the SDK");
-            CXGlobalInfo.getInstance().savePayLoad(touchPoint, context);
-            initialize();
-        }catch (Exception e){
-            callback.onInitializationFailure(e.getMessage());
+
+        if (appContext instanceof Application) {
+            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        } else if (appContext.getApplicationContext() instanceof Application) {
+            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+        }
+
+        if(touchPoint == null){
+            if(callback != null) {
+                callback.onInitializationFailure("TouchPoint object is null.");
+            }
+            return;
+        }
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    CXUtils.printLog("Datta","Initialising the SDK");
+                    CXGlobalInfo.getInstance().savePayLoad(touchPoint);
+                    initialize();
+                }catch (Exception e){
+                    callback.onInitializationFailure(e.getMessage());
+                }
+            }
+        }, 3000);
+    }
+
+    private synchronized void launchFeedbackSurvey(long surveyId){
+        if (runningActivities == 0) {
+            try {
+                Intent intent = new Intent(appContext, InteractionActivity.class);
+                intent.putExtra("SURVEY_ID", surveyId);
+                if (!(appContext instanceof Activity)) {
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                }
+                appContext.startActivity(intent);
+            }catch (Exception e){
+                Log.e("QuestionPro", "Failed to launch activity", e);
+            }
         }
     }
 
-    public void gerSurveyUrl(IQuestionProCallback questionProCallback){
+    /**
+     * Returns the survey URL via callback
+     */
+    public void getSurveyUrl(IQuestionProCallback questionProCallback){
         this.questionProCallback = questionProCallback;
     }
 
@@ -98,11 +121,25 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
+        if(preferenceManager == null){
+            preferenceManager = new SharedPreferenceManager(appContext);
+        }
         MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, preferenceManager, QuestionProCX.this);
     }
 
-    public void clearSession(){
-        CXUtils.printLog("Datta","Clearing session.");
+    public void closeSurveyWindow(){
+        if (runningActivities > 0) {
+            if (InteractionActivity.currentActivity != null && !InteractionActivity.currentActivity.isFinishing()) {
+                InteractionActivity.currentActivity.finish();
+            }
+        }
+    }
+
+    /**
+     * Clears the session and resets preferences
+     */
+    protected void clearSession(){
+        Log.i("QuestionPro","Clearing session.");
         isSessionAlive = false;
         MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
@@ -113,11 +150,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         //mActivity = new WeakReference<>(activity);
 
         preferenceManager = new SharedPreferenceManager(appContext);
-        if (appContext instanceof Application) {
-            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-        } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
-        }
 
         //final Context appContext = activity.getApplicationContext();
         ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
@@ -131,6 +163,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
             CXGlobalInfo.getInstance().setInitialized(true);
         }
+
         fetchInterceptSettings();
     }
 
@@ -254,13 +287,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void checkAllRulesForIntercept(int interceptId){
         try {
-            long prevTime = preferenceManager.getLaunchedInterceptTime(appContext, interceptId);
-            boolean isSleepTimeOverForIntercept = CXUtils.isSleepTimeOver(prevTime);
-            CXUtils.printLog("Datta","Does sleep time over for "+interceptId+" Intercept "+isSleepTimeOverForIntercept);
-
-            if(isSleepTimeOverForIntercept) {
-                Intercept intercept = preferenceManager.getInterceptById(interceptId);
-
+            Intercept intercept = preferenceManager.getInterceptById(interceptId);
+            if(shouldSurveyLaunch(intercept)) {
                 Set<String> temp = interceptSatisfiedRules.get(interceptId);
                 assert temp != null;
                 CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
@@ -270,54 +298,38 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 } else if (intercept.interceptRule.size() == temp.size()) {
                     launchFeedbackSurvey(intercept);
                 }
-            }else{
-                CXUtils.printLog("Datta","The survey was already answered for ongoing session: "+interceptId);
             }
         }catch (Exception e){}
     }
 
-    /*private void showProgress(){
-        progressDialog = new ProgressDialog(mActivity.get());
-        progressDialog.setMessage("loading...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-    }*/
-
-    public void handleError(JSONObject response) throws JSONException {
-        if(null != progressDialog && progressDialog.isShowing()){
-            progressDialog.cancel();
-        }
-        if(response.has("error") && response.getJSONObject("error").has("message")) {
-            final String errorMessage = "Error: " + response.getJSONObject("error").getString("message");
-            /*final Activity activity = mActivity.get();
-            if (activity != null) {
-                activity.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(activity, errorMessage, Toast.LENGTH_LONG).show();
-                    }
-                });
-            }*/
-            Toast.makeText(appContext, errorMessage, Toast.LENGTH_LONG).show();
-        }
+    private boolean shouldSurveyLaunch(Intercept intercept){
+        boolean doesSurveyAlreadyLaunched = preferenceManager.isSurveyAlreadyLaunched(appContext, intercept.id);
+        boolean allowMultipleResponse = intercept.interceptSettings.allowMultipleResponse;
+        return allowMultipleResponse || !doesSurveyAlreadyLaunched;
     }
+
 
     private synchronized void launchFeedbackSurvey(Intercept intercept){
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
-        }else {
-            if (runningActivities == 0 && isSessionAlive) {
-                try {
-                    Intent intent = new Intent(appContext, InteractionActivity.class);
-                    intent.putExtra("INTERCEPT", intercept);
-                    if (!(appContext instanceof Activity)) {
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } else if (runningActivities == 0 && isSessionAlive) {
+            int triggerDelay = intercept.interceptSettings.triggerDelayInSeconds * 1000;
+            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Intent intent = new Intent(appContext, InteractionActivity.class);
+                        intent.putExtra("INTERCEPT", intercept);
+                        if (!(appContext instanceof Activity)) {
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        }
+                        appContext.startActivity(intent);
+                    }catch (Exception e){
+                        Log.e("QuestionPro", "Failed to launch activity", e);
                     }
-                    appContext.startActivity(intent);
-                }catch (Exception e){
-                    Log.e("QuestionPro", "Failed to launch activity", e);
                 }
-            }
+            }, triggerDelay);
         }
     }
 

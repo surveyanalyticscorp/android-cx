@@ -1,19 +1,16 @@
-package com.questionpro.cxlib.init;
+package com.questionpro.cxlib;
 
-import static com.questionpro.cxlib.constants.CXConstants.JSONUploadFields.SURVEY_ID;
+import static com.questionpro.cxlib.CXConstants.JSONUploadFields.SURVEY_ID;
 
-import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import com.questionpro.cxlib.BuildConfig;
 import com.questionpro.cxlib.dataconnect.CXPayload;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
 import com.questionpro.cxlib.model.TouchPoint;
 import com.questionpro.cxlib.util.CXUtils;
-import com.questionpro.cxlib.util.SharedPreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,15 +36,13 @@ public class CXGlobalInfo {
         return ourInstance;
     }
 
-    private CXGlobalInfo() {
-    }
 
 
     /**
      * This function is used to save the payload in preferences at the time of initialization.
      */
-    public void savePayLoad(TouchPoint touchPoint, Context context) throws JSONException {
-        CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint, context).toString();
+    public void savePayLoad(TouchPoint touchPoint) throws JSONException {
+        CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint).toString();
     }
 
     public void setApiKey(String apiKey){
@@ -66,10 +61,7 @@ public class CXGlobalInfo {
         CXGlobalInfo.UUID = uuid;
     }
 
-    public String getUUID(Context appContext){
-        if(CXGlobalInfo.UUID == null){
-            CXGlobalInfo.UUID = CXUtils.getUniqueDeviceId(appContext);
-        }
+    public String getUUID(){
         return CXGlobalInfo.UUID;
     }
 
@@ -90,20 +82,19 @@ public class CXGlobalInfo {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    /*@NonNull
-    public static String getType(Context context){
-        try{
-            JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("type");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
-    }*/
-
     @NonNull
     public static String getDataCenter(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
             return payloadObj.getString("dataCenter");
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    public static String getConfigType(){
+        try{
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
+            return payloadObj.getString("configType");
         }catch (Exception e){e.printStackTrace();}
         return "";
     }
@@ -138,7 +129,7 @@ public class CXGlobalInfo {
      * Get the payload in the form string at the time of fetching survey url.
      * Have to remove unwanted key from the stored object.
      */
-    public static String getApiPayload(Activity activity){
+    public static String getApiPayload(long surveyId){
         try {
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
             payloadObj.put("isManualSurvey", true);
@@ -154,7 +145,7 @@ public class CXGlobalInfo {
     public static String getInterceptApiPayload(Intercept intercept, Context context){
         try {
             JSONObject payloadObj = new JSONObject();
-            payloadObj.put("packageName", BuildConfig.LIBRARY_PACKAGE_NAME);
+            payloadObj.put("packageName", context.getPackageName());
             payloadObj.put("visitedUserId",new SharedPreferenceManager(context).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);

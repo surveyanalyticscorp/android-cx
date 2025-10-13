@@ -27,6 +27,7 @@ import com.qpcx.retailapp.util.Utils;
 import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
 import com.questionpro.cxlib.QuestionProCX;
+import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.enums.DataCenter;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
@@ -149,87 +150,47 @@ public class ECartHomeActivity extends AppCompatActivity {
 					public boolean onNavigationItemSelected(MenuItem menuItem) {
 
 						menuItem.setChecked(true);
-						switch (menuItem.getItemId()) {
-						case R.id.home:
-
+						if(menuItem.getItemId() == R.id.home){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.HOME_FRAGMENT,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-
-							return true;
-
-						case R.id.my_cart:
-
+						}else if(menuItem.getItemId() == R.id.my_cart){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.SHOPPING_LIST_TAG,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-							return true;
-
-						case R.id.contact_us:
-
+						}else if(menuItem.getItemId() == R.id.contact_us){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.CONTACT_US_FRAGMENT,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-							return true;
-
-						case R.id.settings:
-
+						} else if(menuItem.getItemId() == R.id.settings){
 							mDrawerLayout.closeDrawers();
 
 							Utils.switchContent(R.id.frag_container,
 									Utils.SETTINGS_FRAGMENT_TAG,
 									ECartHomeActivity.this,
 									AnimationType.SLIDE_LEFT);
-							return true;
-						default:
-							return true;
 						}
+						return true;
 					}
 				});
 
 		//initialiseQpSdk();
 
-		QuestionProCX.getInstance().gerSurveyUrl(new IQuestionProCallback(){
+		QuestionProCX.getInstance().getSurveyUrl(new IQuestionProCallback(){
 			@Override
 			public void getSurveyUrl(String surveyUrl) {
 				Log.d("Datta","Survey url: "+surveyUrl);
 			}
 		});
-	}
-
-	private void initialiseQpSdk(){
-		Activity activity =  ECartHomeActivity.this;
-		HashMap<Integer, String> cutVars= new HashMap<>();
-		cutVars.put(2, "Datta");
-		cutVars.put(3,"Kunde");
-		cutVars.put(4,"QuestionPro");
-		cutVars.put(5,"Custom values stored in it");
-
-		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
-				.customVariables(cutVars)
-		.build();
-		QuestionProCX.getInstance().init(activity, touchPoint, new IQuestionProInitCallback() {
-			@Override
-			public void onInitializationSuccess(String message) {
-				Log.d("Datta", "onInitializationSuccess: "+message);
-			}
-
-			@Override
-			public void onInitializationFailure(String error) {
-				Log.d("Datta", "onInitializationFailure: "+error);
-			}
-		});
-
-		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
 	}
 
 
@@ -245,9 +206,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
-		switch (item.getItemId()) {
-		case R.id.action_settings:
+		if(item.getItemId() == R.id.action_settings){
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.qpcx.retailapp">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <supports-screens android:largeScreens="true"
         android:normalScreens="true"
@@ -47,7 +46,7 @@
         <activity android:name=".view.activities.ShoppingCartActivity"/>
 
         <!-- CX Activity -->
-        <activity android:name="com.questionpro.cxlib.interaction.InteractionActivity"
+        <activity android:name="com.questionpro.cxlib.InteractionActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:configChanges="keyboardHidden"
             android:windowSoftInputMode="adjustResize" >
