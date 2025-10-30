@@ -127,6 +127,13 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, preferenceManager, QuestionProCX.this);
     }
 
+    public void setDataMappings(HashMap<Integer, String> customDataMappings){
+        if(preferenceManager == null){
+            preferenceManager = new SharedPreferenceManager(appContext);
+        }
+        preferenceManager.saveCustomDataMappings(customDataMappings);
+    }
+
     public void closeSurveyWindow(){
         if (runningActivities > 0) {
             if (InteractionActivity.currentActivity != null && !InteractionActivity.currentActivity.isFinishing()) {

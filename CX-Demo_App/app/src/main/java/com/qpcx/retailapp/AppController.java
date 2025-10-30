@@ -73,7 +73,6 @@ public class AppController extends Application {
 		cutVars.put(3,"Kunde");
 
 		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
-				.customVariables(cutVars)
 				.build();
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
 			@Override
@@ -87,6 +86,7 @@ public class AppController extends Application {
 			}
 		});
 
+		QuestionProCX.getInstance().setDataMappings(cutVars);
 		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
 	}
 

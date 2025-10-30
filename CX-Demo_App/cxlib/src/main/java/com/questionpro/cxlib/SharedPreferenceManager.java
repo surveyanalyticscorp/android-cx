@@ -133,6 +133,16 @@ class SharedPreferenceManager {
         return false;
     }
 
+    void saveCustomDataMappings(HashMap<Integer, String> customDataMappings){
+        Gson gson = new Gson();
+        String json = gson.toJson(customDataMappings);
+        prefs.edit().putString(CXConstants.CUSTOM_DATA_MAPPINGS, json).apply();
+    }
+
+    String getCustomDataMappings(){
+        return prefs.getString(CXConstants.CUSTOM_DATA_MAPPINGS, null);
+    }
+
     void resetPreferences(){
         prefs.edit().clear().apply();
     }

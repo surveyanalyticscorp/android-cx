@@ -146,7 +146,7 @@ public class TouchPoint implements Serializable{
             return this;
          }
 
-        public Builder customVariables(HashMap<Integer, String> customVars){
+        private Builder customVariables(HashMap<Integer, String> customVars){
             this.customVariables = customVars;
             return this;
         }
