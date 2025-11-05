@@ -3,10 +3,12 @@ package com.questionpro.cxlib;
 import static com.questionpro.cxlib.CXConstants.JSONUploadFields.SURVEY_ID;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.questionpro.cxlib.dataconnect.CXPayload;
+import com.questionpro.cxlib.model.DataMapping;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
 import com.questionpro.cxlib.model.TouchPoint;
@@ -16,6 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -155,7 +158,7 @@ public class CXGlobalInfo {
                     setAppLanguage(payloadObj, context);
                 }
             }
-            CXGlobalInfo.setCustomVariable(payloadObj);
+            CXGlobalInfo.setCustomVariable(payloadObj, intercept, context);
 
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
@@ -166,30 +169,23 @@ public class CXGlobalInfo {
         requestObj.put("surveyLanguage", CXUtils.getAppLanguage(context));
     }
 
-    private static void setCustomVariable(JSONObject requestObj){
+    private static void setCustomVariable(JSONObject requestObj, Intercept intercept, Context context){
+            //JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
         try {
-            JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
-            if (payloadObj.has("customVariables")) {
-                //String inputString = "key1=value1,key2=value2,key3=value3";
-                String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
-
-                Map<String, String> myMap = new HashMap<>();
-                String[] pairs = inputString.split(",");
-                JSONArray customVars = new JSONArray();
-                for (String pair : pairs) {
+            ArrayList<DataMapping> dataMappings = intercept.dataMappings;
+            String dataMappingPref = SharedPreferenceManager.getInstance(context).getCustomDataMappings();
+            JSONObject dataMappingArray = new JSONObject(dataMappingPref);
+            JSONArray customVars = new JSONArray();
+            for (DataMapping dataMapping : dataMappings) {
+                if(dataMappingArray.has(dataMapping.displayName.trim())){
                     JSONObject customVar = new JSONObject();
-                    String[] keyValue = pair.split("=");
-                    if (keyValue.length == 2) {
-                        String key = "custom"+keyValue[0].trim();
-                        String value = keyValue[1].trim();
-                        //myMap.put(key, value);
-                        customVar.put("variableName",key);
-                        customVar.put("value",value);
-                        customVars.put(customVar);
-                    }
+                    String value = dataMappingArray.getString(dataMapping.displayName.trim());
+                    customVar.put("variableName",dataMapping.variable);
+                    customVar.put("value",value);
+                    customVars.put(customVar);
                 }
-                requestObj.put("data",customVars);
             }
-        }catch (Exception e){}
+            requestObj.put("data",customVars);
+        }catch (Exception e){e.printStackTrace();}
     }
 }

@@ -70,6 +70,9 @@ class SharedPreferenceManager {
         }
         return null;
     }
+
+
+
     int getInterceptSurveyId(int interceptId) throws Exception{
         JSONArray interceptArray = new JSONObject(getProject()).getJSONArray("intercepts");
         for(int i = 0; i < interceptArray.length(); i++){
@@ -93,7 +96,7 @@ class SharedPreferenceManager {
         return getPrefs().getInt(tag,0);
     }
 
-    void saveCustomDataMappings(HashMap<Integer, String> customDataMappings){
+    void saveCustomDataMappings(HashMap<String, String> customDataMappings){
         Gson gson = new Gson();
         String json = gson.toJson(customDataMappings);
         getPrefs().edit().putString(CXConstants.CUSTOM_DATA_MAPPINGS, json).apply();

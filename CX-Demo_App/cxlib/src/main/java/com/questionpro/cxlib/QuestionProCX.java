@@ -119,16 +119,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
-        /*if(preferenceManager == null){
-            preferenceManager = new SharedPreferenceManager(appContext);
-        }*/
         MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
     }
 
-    public void setDataMappings(HashMap<Integer, String> customDataMappings){
-        /*if(preferenceManager == null){
-            preferenceManager = new SharedPreferenceManager(appContext);
-        }*/
+    public void setDataMappings(HashMap<String, String> customDataMappings){
         SharedPreferenceManager.getInstance(appContext).saveCustomDataMappings(customDataMappings);
     }
 

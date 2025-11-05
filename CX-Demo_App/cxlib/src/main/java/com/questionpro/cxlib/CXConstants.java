@@ -13,8 +13,7 @@ public class CXConstants {
     private static final String SUBMIT_SURVEY_FEEDBACK = "/api/v1/visitor/mobile/survey-feedback";
     //public static final String PREF_KEY_API_KEY="cx_pref_api_key";
     protected static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
-    protected static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
-    //public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
+
     protected static final String CX_INTERACTION_CONTENT="cx_interaction_content";
     public static final String CUSTOM_DATA_MAPPINGS = "customDataMappings";
 
