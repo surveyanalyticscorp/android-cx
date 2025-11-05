@@ -80,6 +80,6 @@ public class SharedPreferencesPersistentSessionQueue implements PersistentSessio
 	}
 
 	private SharedPreferences getPrefs() {
-		return appContext.getSharedPreferences(CXConstants.PREF_NAME, Context.MODE_PRIVATE);
+		return appContext.getSharedPreferences(SharedPreferenceManager.PREF_NAME, Context.MODE_PRIVATE);
 	}
 }

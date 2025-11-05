@@ -40,7 +40,7 @@ public class InteractionActivity extends FragmentActivity implements
     private WebView webView;
     private Intercept intercept;
 
-    private SharedPreferenceManager preferenceManager;
+    //private SharedPreferenceManager preferenceManager;
     protected static InteractionActivity currentActivity = null;
 
 
@@ -48,7 +48,7 @@ public class InteractionActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        preferenceManager = new SharedPreferenceManager(this);
+        //preferenceManager = new SharedPreferenceManager(this);
 
         /*if(CXGlobalInfo.getConfigType().equals(ConfigType.INTERCEPT.name())) {
             initIntercept();
@@ -195,7 +195,7 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     private void launchSurvey(String url){
-        preferenceManager.saveInterceptIdForLaunchedSurvey(this,
+        SharedPreferenceManager.getInstance(this).saveInterceptIdForLaunchedSurvey(
                 intercept.id, CXUtils.getCurrentLocalTimeInMillis());
         new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, "LAUNCHED");
 

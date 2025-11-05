@@ -146,7 +146,7 @@ public class CXGlobalInfo {
         try {
             JSONObject payloadObj = new JSONObject();
             payloadObj.put("packageName", context.getPackageName());
-            payloadObj.put("visitedUserId",new SharedPreferenceManager(context).getVisitorsUUID());
+            payloadObj.put("visitedUserId",SharedPreferenceManager.getInstance(context).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);
             if(intercept.interceptSettings != null) {

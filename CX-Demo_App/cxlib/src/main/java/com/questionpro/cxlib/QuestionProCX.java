@@ -48,8 +48,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private IQuestionProInitCallback questionProInitCallback;
     private IQuestionProCallback questionProCallback;
 
-    private SharedPreferenceManager preferenceManager = null;
-
     private static final HashMap<Integer, Set<String>> interceptSatisfiedRules = new HashMap<>();
     public QuestionProCX(){
     }
@@ -121,17 +119,17 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
-        if(preferenceManager == null){
+        /*if(preferenceManager == null){
             preferenceManager = new SharedPreferenceManager(appContext);
-        }
-        MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, preferenceManager, QuestionProCX.this);
+        }*/
+        MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
     }
 
     public void setDataMappings(HashMap<Integer, String> customDataMappings){
-        if(preferenceManager == null){
+        /*if(preferenceManager == null){
             preferenceManager = new SharedPreferenceManager(appContext);
-        }
-        preferenceManager.saveCustomDataMappings(customDataMappings);
+        }*/
+        SharedPreferenceManager.getInstance(appContext).saveCustomDataMappings(customDataMappings);
     }
 
     public void closeSurveyWindow(){
@@ -150,13 +148,14 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         isSessionAlive = false;
         MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
-        preferenceManager.resetPreferences();
+        SharedPreferenceManager.getInstance(appContext).resetPreferences();
     }
 
     protected void initialize() throws Exception{
         //mActivity = new WeakReference<>(activity);
 
-        preferenceManager = new SharedPreferenceManager(appContext);
+        //preferenceManager = new SharedPreferenceManager(appContext);
+        SharedPreferenceManager.getInstance(appContext).getPrefs().getAll();
 
         //final Context appContext = activity.getApplicationContext();
         ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
@@ -207,7 +206,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void setUpIntercept(){
         try{
-            JSONObject projectObj =new JSONObject(preferenceManager.getProject());
+            JSONObject projectObj =new JSONObject(SharedPreferenceManager.getInstance(appContext).getProject());
             JSONArray interceptArray = projectObj.getJSONArray("intercepts");
             for(int i = 0; i < interceptArray.length(); i++){
                 JSONObject jsonObject = interceptArray.getJSONObject(i);
@@ -278,7 +277,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     @Override
     public void onTimeSpendSatisfied(int interceptId) {
         try {
-            int surveyId = preferenceManager.getInterceptSurveyId(interceptId);
             CXUtils.printLog("Datta","Trigger the intercept as time is satisfied:"+interceptId);
             Set<String> interceptRules = new HashSet<>();
             if(interceptSatisfiedRules.containsKey(interceptId)) {
@@ -294,7 +292,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void checkAllRulesForIntercept(int interceptId){
         try {
-            Intercept intercept = preferenceManager.getInterceptById(interceptId);
+            Intercept intercept = SharedPreferenceManager.getInstance(appContext).getInterceptById(interceptId);
+            /** TODO add check if intercept is null**/
             if(shouldSurveyLaunch(intercept)) {
                 Set<String> temp = interceptSatisfiedRules.get(interceptId);
                 assert temp != null;
@@ -310,7 +309,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     private boolean shouldSurveyLaunch(Intercept intercept){
-        boolean doesSurveyAlreadyLaunched = preferenceManager.isSurveyAlreadyLaunched(appContext, intercept.id);
+        boolean doesSurveyAlreadyLaunched = SharedPreferenceManager.getInstance(appContext).isSurveyAlreadyLaunched(intercept.id);
         boolean allowMultipleResponse = intercept.interceptSettings.allowMultipleResponse;
         return allowMultipleResponse || !doesSurveyAlreadyLaunched;
     }
