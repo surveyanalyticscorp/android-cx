@@ -27,7 +27,7 @@ public class ActivityLifecycleCallbacks implements Application.ActivityLifecycle
                         QuestionProCX.getInstance().fetchInterceptSettings();
                     }catch (Exception e){e.printStackTrace();}
                 }
-            }, 3000);
+            }, 1500);
         }
         activityStartCount++;
     }

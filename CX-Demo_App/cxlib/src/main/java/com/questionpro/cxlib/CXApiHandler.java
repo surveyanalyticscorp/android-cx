@@ -144,8 +144,8 @@ class CXApiHandler {
             if (response.isSuccessful()) {
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
-                    JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
-                    SharedPreferenceManager.getInstance(mContext).saveProject(responseJson.toString());
+                    JSONObject projectJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
+                    SharedPreferenceManager.getInstance(mContext).saveProject(projectJson.toString());
                 }
                 SharedPreferenceManager.getInstance(mContext).saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
                 mQuestionProApiCall.onApiCallbackSuccess(null, "SDK is Initialised");

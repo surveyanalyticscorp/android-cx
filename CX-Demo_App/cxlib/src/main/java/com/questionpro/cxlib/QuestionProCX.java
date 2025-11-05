@@ -154,9 +154,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     protected void initialize() throws Exception{
         //mActivity = new WeakReference<>(activity);
 
-        //preferenceManager = new SharedPreferenceManager(appContext);
-        SharedPreferenceManager.getInstance(appContext).getPrefs().getAll();
-
         //final Context appContext = activity.getApplicationContext();
         ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
         Bundle metaData = ai.metaData;
