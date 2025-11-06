@@ -79,7 +79,8 @@ public class MonitorAppEvents {
                     }
                 }
             }else{
-                Log.e("QuestionProCX", "Project JSON is null or empty.");
+                Log.w("QuestionProCX", "Project JSON is null or empty. Fetching the intercept settings...");
+                QuestionProCX.getInstance().refreshInterceptSettings(tagName);
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();

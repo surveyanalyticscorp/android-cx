@@ -171,6 +171,20 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
     }
 
+    protected void refreshInterceptSettings(final String tagName){
+        new CXApiHandler(appContext, new IQuestionProApiCallback() {
+            @Override
+            public void OnApiCallbackFailed(JSONObject error) {
+                Log.e("QuestionPro", "Error in fetching intercept settings: "+error.toString());
+            }
+
+            @Override
+            public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
+                setScreenVisited(tagName);
+            }
+        }).getIntercept();
+    }
+
     @Override
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
@@ -197,24 +211,29 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void setUpIntercept(){
         try{
-            JSONObject projectObj =new JSONObject(SharedPreferenceManager.getInstance(appContext).getProject());
-            JSONArray interceptArray = projectObj.getJSONArray("intercepts");
-            for(int i = 0; i < interceptArray.length(); i++){
-                JSONObject jsonObject = interceptArray.getJSONObject(i);
-                //setUpTimeSpendIntercept(obj);
-                Intercept intercept = Intercept.fromJSON(jsonObject);
-                for(InterceptRule rule: intercept.interceptRule){
-                    if(rule.name.equals(InterceptRuleType.TIME_SPENT.name())){
-                        MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
-                    } else if(rule.name.equals(InterceptRuleType.DAY.name())){
-                        checkDayRule(rule, intercept.id);
-                    } else if(rule.name.equals(InterceptRuleType.DATE.name())){
-                        checkDateRule(rule, intercept.id);
+            String projectJson = SharedPreferenceManager.getInstance(appContext).getProject();
+            if (projectJson != null && !projectJson.trim().isEmpty()) {
+                JSONObject projectObj = new JSONObject(projectJson);
+                JSONArray interceptArray = projectObj.getJSONArray("intercepts");
+                for (int i = 0; i < interceptArray.length(); i++) {
+                    JSONObject jsonObject = interceptArray.getJSONObject(i);
+                    //setUpTimeSpendIntercept(obj);
+                    Intercept intercept = Intercept.fromJSON(jsonObject);
+                    for (InterceptRule rule : intercept.interceptRule) {
+                        if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
+                            MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
+                        } else if (rule.name.equals(InterceptRuleType.DAY.name())) {
+                            checkDayRule(rule, intercept.id);
+                        } else if (rule.name.equals(InterceptRuleType.DATE.name())) {
+                            checkDateRule(rule, intercept.id);
+                        }
                     }
                 }
+            }else{
+                Log.w("QuestionProCX", "Project JSON is null or empty. Fetching the intercept settings...");
+                fetchInterceptSettings();
             }
         }catch (Exception e){e.printStackTrace();}
-
     }
 
     private void checkDateRule(InterceptRule rule, int interceptId){
