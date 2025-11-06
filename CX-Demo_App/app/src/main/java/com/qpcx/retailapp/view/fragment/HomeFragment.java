@@ -30,6 +30,8 @@ import com.questionpro.cxlib.QuestionProCX;
 //import com.questionpro.cxlib.model.Type;
 import com.twotoasters.jazzylistview.recyclerview.JazzyRecyclerViewScrollListener;
 
+import java.util.HashMap;
+
 @SuppressLint("ResourceAsColor")
 public class HomeFragment extends Fragment {
 	CollapsingToolbarLayout collapsingToolbar;
@@ -54,13 +56,11 @@ public class HomeFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		/*TouchPoint touchPoint = new TouchPoint.Builder(8092755,"datta.kunde@questionpro.com")
-				.firstName("QuestionPro")
-				.lastName("Qp")
-				.segmentCode("S1")
-				.showAsDialog(true)
-				.build();
-		QuestionProCX.getInstance().init((AppCompatActivity)getActivity(), touchPoint);*/
+		HashMap<String, String> cutVars= new HashMap<>();
+		cutVars.put("First Name", "Datta11");
+		cutVars.put("Last Name","Kunde12");
+
+		//QuestionProCX.getInstance().setDataMappings(cutVars);
 
 		View view = inflater.inflate(R.layout.frag_product_category, container, false);
 		view.findViewById(R.id.search_item).setVisibility(View.GONE);

@@ -68,11 +68,7 @@ public class AppController extends Application {
 	}
 
 	private void initialiseQpSdk(AppController appController){
-		HashMap<Integer, String> cutVars= new HashMap<>();
-		cutVars.put(2, "Datta");
-		cutVars.put(3,"Kunde");
-
-		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.EU)
 				.build();
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
 			@Override
@@ -86,7 +82,6 @@ public class AppController extends Application {
 			}
 		});
 
-		QuestionProCX.getInstance().setDataMappings(cutVars);
 		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
 	}
 
