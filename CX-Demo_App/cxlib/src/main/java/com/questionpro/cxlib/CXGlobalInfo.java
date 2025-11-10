@@ -170,12 +170,15 @@ public class CXGlobalInfo {
     }
 
     private static void setCustomVariable(JSONObject requestObj, Intercept intercept, Context context){
-            //JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
         try {
+            JSONArray customVars = setCustomVariablesFromPayload(requestObj);
             ArrayList<DataMapping> dataMappings = intercept.dataMappings;
             String dataMappingPref = SharedPreferenceManager.getInstance(context).getCustomDataMappings();
+            if(CXUtils.isEmpty(dataMappingPref) || dataMappings.isEmpty()){
+                requestObj.put("data",customVars);
+                return;
+            }
             JSONObject dataMappingArray = new JSONObject(dataMappingPref);
-            JSONArray customVars = new JSONArray();
             for (DataMapping dataMapping : dataMappings) {
                 if(dataMappingArray.has(dataMapping.displayName.trim())){
                     JSONObject customVar = new JSONObject();
@@ -187,5 +190,34 @@ public class CXGlobalInfo {
             }
             requestObj.put("data",customVars);
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    private static JSONArray setCustomVariablesFromPayload(JSONObject requestObj){
+        try{
+            JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
+            if (payloadObj.has("customVariables")) {
+                String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
+                String[] pairs = inputString.split(",");
+                return getCustomVars(pairs);
+            }
+        }catch (Exception e){e.printStackTrace();}
+        return new JSONArray();
+    }
+
+    @NonNull
+    private static JSONArray getCustomVars(String[] pairs) throws JSONException {
+        JSONArray customVars = new JSONArray();
+        for (String pair : pairs) {
+            JSONObject customVar = new JSONObject();
+            String[] keyValue = pair.split("=");
+            if (keyValue.length == 2) {
+                String key = "custom"+keyValue[0].trim();
+                String value = keyValue[1].trim();
+                customVar.put("variableName",key);
+                customVar.put("value",value);
+                customVars.put(customVar);
+            }
+        }
+        return customVars;
     }
 }

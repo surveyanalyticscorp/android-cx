@@ -122,7 +122,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
     }
 
-    private void setDataMappings(HashMap<String, String> customDataMappings){
+    public void setDataMappings(HashMap<String, String> customDataMappings){
         SharedPreferenceManager.getInstance(appContext).saveCustomDataMappings(customDataMappings);
     }
 

@@ -37,6 +37,9 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 //QuestionProCX.getInstance().init(ShoppingCartActivity.this, touchPoint);
                 //QuestionProCX.getInstance().launchFeedbackSurvey(13026667);
 
+                HashMap<String, String> cutVars= new HashMap<>();
+                cutVars.put("Phone Number","12345678922");
+                QuestionProCX.getInstance().setDataMappings(cutVars);
                 QuestionProCX.getInstance().setScreenVisited("book_cab");
             }
         });

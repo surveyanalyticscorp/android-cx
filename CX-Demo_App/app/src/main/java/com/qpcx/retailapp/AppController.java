@@ -68,8 +68,14 @@ public class AppController extends Application {
 	}
 
 	private void initialiseQpSdk(AppController appController){
-		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.EU)
+		HashMap<Integer, String> customVars = new HashMap<>();
+		customVars.put(1, "Custom Value 1");
+		customVars.put(2, "Custom Value 2");
+
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+				.customVariables(customVars)
 				.build();
+
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
 			@Override
 			public void onInitializationSuccess(String message) {
