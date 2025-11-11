@@ -149,7 +149,7 @@ public class CXUtils {
     }
 
     public static void printLog(String tag, String message){
-        //Log.d(tag, message);
+        Log.d(tag, message);
     }
 
     public static String getAppLanguage(Context context) {
