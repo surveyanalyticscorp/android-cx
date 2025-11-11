@@ -12,7 +12,7 @@ import com.questionpro.cxlib.util.CXUtils;
 public class ActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks{
 
     private boolean isInForeground = true;
-    private int activityStartCount = 0;
+    private int activityStartCount = 1;
 
     @Override
     public void onActivityStarted(Activity activity) {

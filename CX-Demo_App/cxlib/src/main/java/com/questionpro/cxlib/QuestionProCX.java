@@ -333,7 +333,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
-        } else if (isViewCountRuleSatisfied(intercept) || (runningActivities == 0 && isSessionAlive)) {
+        } else if (runningActivities == 0 && isSessionAlive) {
             int triggerDelay = intercept.interceptSettings.triggerDelayInSeconds * 1000;
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
