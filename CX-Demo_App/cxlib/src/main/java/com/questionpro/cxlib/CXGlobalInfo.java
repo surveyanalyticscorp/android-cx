@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -178,11 +179,11 @@ public class CXGlobalInfo {
                 requestObj.put("data",customVars);
                 return;
             }
-            JSONObject dataMappingArray = new JSONObject(dataMappingPref);
+            JSONObject dataMappingObj = new JSONObject(dataMappingPref);
             for (DataMapping dataMapping : dataMappings) {
-                if(dataMappingArray.has(dataMapping.displayName.trim())){
+                if(hasKeyIgnoreCase(dataMappingObj, dataMapping.displayName.trim())){
                     JSONObject customVar = new JSONObject();
-                    String value = dataMappingArray.getString(dataMapping.displayName.trim());
+                    String value = dataMappingObj.getString(dataMapping.displayName.trim());
                     customVar.put("variableName",dataMapping.variable);
                     customVar.put("value",value);
                     customVars.put(customVar);
@@ -192,6 +193,15 @@ public class CXGlobalInfo {
         }catch (Exception e){e.printStackTrace();}
     }
 
+    private static boolean hasKeyIgnoreCase(JSONObject jsonObject, String key) {
+        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+            String currentKey = it.next();
+            if (currentKey.equalsIgnoreCase(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
     private static JSONArray getCustomVariablesFromPayload(){
         try{
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
