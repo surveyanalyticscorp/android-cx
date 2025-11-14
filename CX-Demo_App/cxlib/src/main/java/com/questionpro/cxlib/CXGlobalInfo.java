@@ -171,7 +171,7 @@ public class CXGlobalInfo {
 
     private static void setCustomVariable(JSONObject requestObj, Intercept intercept, Context context){
         try {
-            JSONArray customVars = setCustomVariablesFromPayload(requestObj);
+            JSONArray customVars = getCustomVariablesFromPayload();
             ArrayList<DataMapping> dataMappings = intercept.dataMappings;
             String dataMappingPref = SharedPreferenceManager.getInstance(context).getCustomDataMappings();
             if(CXUtils.isEmpty(dataMappingPref) || dataMappings.isEmpty()){
@@ -192,7 +192,7 @@ public class CXGlobalInfo {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    private static JSONArray setCustomVariablesFromPayload(JSONObject requestObj){
+    private static JSONArray getCustomVariablesFromPayload(){
         try{
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
             if (payloadObj.has("customVariables")) {

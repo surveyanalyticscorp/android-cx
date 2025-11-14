@@ -7,15 +7,21 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import com.questionpro.cxlib.util.CXUtils;
 
 public class ActivityLifecycleCallbacks implements Application.ActivityLifecycleCallbacks{
 
     private boolean isInForeground = true;
-    private int activityStartCount = 1;
+    private int activityStartCount;
+
+    public ActivityLifecycleCallbacks(int activityStartCount) {
+        this.activityStartCount = activityStartCount;
+    }
 
     @Override
-    public void onActivityStarted(Activity activity) {
+    public void onActivityStarted(@NonNull Activity activity) {
         if (!isInForeground && activityStartCount == 0) {
             isInForeground = true;
             // App moved to foreground

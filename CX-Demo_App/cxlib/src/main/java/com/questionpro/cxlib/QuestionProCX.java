@@ -67,9 +67,11 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         questionProInitCallback = callback;
 
         if (appContext instanceof Application) {
-            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext).registerActivityLifecycleCallbacks(
+                    new ActivityLifecycleCallbacks(getStartActivityCount(context)));
         } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(
+                    new ActivityLifecycleCallbacks(getStartActivityCount(context)));
         }
 
         if(touchPoint == null){
@@ -385,9 +387,29 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     public void cleanup() {
         if (appContext instanceof Application) {
-            ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         }
+    }
+
+    private int getStartActivityCount(Context context){
+        try {
+            Class<?> flutterActivityClass = Class.forName("io.flutter.embedding.android.FlutterActivity");
+            Class<?> flutterFragmentActivityClass = Class.forName("io.flutter.embedding.android.FlutterFragmentActivity");
+            if (flutterActivityClass.isInstance(context) || flutterFragmentActivityClass.isInstance(context)) {
+                return 1;
+            }
+        } catch (ClassNotFoundException ignored) {}
+
+        Class<?> reactActivityClass = null;
+        try {
+            reactActivityClass = Class.forName("com.facebook.react.ReactActivity");
+            if (reactActivityClass != null && reactActivityClass.isInstance(context)) {
+                return 1;
+            }
+        } catch (ClassNotFoundException ignored) {}
+
+        return 0;
     }
 }
