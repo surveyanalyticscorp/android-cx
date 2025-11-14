@@ -24,7 +24,7 @@ public class TouchPoint implements Serializable{
     private final DataCenter dataCenter;
     private final ConfigType configType;
 
-    private final Map<Integer, String> customVariables;
+    //private final Map<Integer, String> customVariables;
 
     public TouchPoint(Builder builder) {
         this.showAsDialog = builder.showAsDialog;
@@ -35,7 +35,7 @@ public class TouchPoint implements Serializable{
         this.mobile = builder.mobile;
         this.segmentCode = builder.segmentCode;
         this.transactionDate = builder.transactionDate;
-        this.customVariables = builder.customVariables;
+        //this.customVariables = builder.customVariables;
         this.themeColor = builder.themeColor;
         this.dataCenter = builder.dataCenter;
         this.configType = builder.configType;
@@ -72,9 +72,9 @@ public class TouchPoint implements Serializable{
     public String getTransactionDate() {
         return transactionDate;
     }
-    public Map<Integer, String> getCustomVariables(){
+    /*public Map<Integer, String> getCustomVariables(){
         return customVariables;
-    }
+    }*/
     public String getThemeColor(){
         return themeColor;
     }
@@ -111,7 +111,7 @@ public class TouchPoint implements Serializable{
         private DataCenter dataCenter = null;
         private ConfigType configType;
 
-        private Map<Integer, String> customVariables;
+        //private Map<Integer, String> customVariables;
 
         public Builder(DataCenter dataCenter){
             this.dataCenter = dataCenter;
@@ -146,10 +146,10 @@ public class TouchPoint implements Serializable{
             return this;
          }
 
-        public Builder customVariables(HashMap<Integer, String> customVars){
+        /*private Builder customVariables(HashMap<Integer, String> customVars){
             this.customVariables = customVars;
             return this;
-        }
+        }*/
 
         private Builder mobile(String mobile){
             this.mobile = mobile;
