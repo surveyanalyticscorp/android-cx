@@ -38,8 +38,12 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 //QuestionProCX.getInstance().launchFeedbackSurvey(13026667);
 
                 HashMap<String, String> cutVars= new HashMap<>();
-                cutVars.put("Phone Number","12345678922");
+                cutVars.put("first name","Datta");
+                cutVars.put("Last Name","kunde");
+                cutVars.put("email","a@a.com");
+
                 QuestionProCX.getInstance().setDataMappings(cutVars);
+
                 QuestionProCX.getInstance().setScreenVisited("book_cab");
             }
         });

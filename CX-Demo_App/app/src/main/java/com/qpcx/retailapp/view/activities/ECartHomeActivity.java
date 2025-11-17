@@ -193,6 +193,23 @@ public class ECartHomeActivity extends AppCompatActivity {
 		});
 	}
 
+	private void initialiseQpSdk(){
+		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
+				.isFlutterApp(true)
+				.build();
+
+		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
+			@Override
+			public void onInitializationSuccess(String message) {
+				Log.d("Datta", "Activity onInitializationSuccess: "+message);
+			}
+
+			@Override
+			public void onInitializationFailure(String error) {
+				Log.d("Datta", "Activity onInitializationFailure: "+error);
+			}
+		});
+	}
 
 	/*public AVLoadingIndicatorView getProgressBar() {
 		return progressBar;
