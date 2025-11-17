@@ -181,9 +181,10 @@ public class CXGlobalInfo {
             }
             JSONObject dataMappingObj = new JSONObject(dataMappingPref);
             for (DataMapping dataMapping : dataMappings) {
-                if(hasKeyIgnoreCase(dataMappingObj, dataMapping.displayName.trim())){
+                String value = getValueIgnoreCase(dataMappingObj, dataMapping.displayName.trim());
+                if(null != value){
                     JSONObject customVar = new JSONObject();
-                    String value = dataMappingObj.getString(dataMapping.displayName.trim());
+                    //String value = dataMappingObj.getString(dataMapping.displayName.trim());
                     customVar.put("variableName",dataMapping.variable);
                     customVar.put("value",value);
                     customVars.put(customVar);
@@ -202,6 +203,17 @@ public class CXGlobalInfo {
         }
         return false;
     }
+
+    private static String getValueIgnoreCase(JSONObject jsonObject, String key) throws JSONException {
+        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+            String currentKey = it.next();
+            if (currentKey.equalsIgnoreCase(key)) {
+                return jsonObject.getString(currentKey);
+            }
+        }
+        return null;
+    }
+
     private static JSONArray getCustomVariablesFromPayload(){
         try{
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);

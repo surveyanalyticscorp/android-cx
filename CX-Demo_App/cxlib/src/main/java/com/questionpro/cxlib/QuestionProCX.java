@@ -68,10 +68,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
         if (appContext instanceof Application) {
             ((Application) appContext).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(getStartActivityCount(context)));
+                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
         } else if (appContext.getApplicationContext() instanceof Application) {
             ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(getStartActivityCount(context)));
+                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
         }
 
         if(touchPoint == null){
@@ -92,7 +92,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     callback.onInitializationFailure(e.getMessage());
                 }
             }
-        }, 3000);
+        }, 2000);
     }
 
     private synchronized void launchFeedbackSurvey(long surveyId){
@@ -327,10 +327,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
 
-    private boolean isViewCountRuleSatisfied(Intercept intercept){
-        Set<String>  s  = interceptSatisfiedRules.get(intercept.id);
-        return s != null && s.contains(InterceptRuleType.VIEW_COUNT.name());
-    }
     private synchronized void launchFeedbackSurvey(Intercept intercept){
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){

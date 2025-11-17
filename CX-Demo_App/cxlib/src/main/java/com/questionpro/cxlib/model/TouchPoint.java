@@ -24,6 +24,8 @@ public class TouchPoint implements Serializable{
     private final DataCenter dataCenter;
     private final ConfigType configType;
 
+    private final boolean isFlutterApp;
+
     //private final Map<Integer, String> customVariables;
 
     public TouchPoint(Builder builder) {
@@ -39,43 +41,49 @@ public class TouchPoint implements Serializable{
         this.themeColor = builder.themeColor;
         this.dataCenter = builder.dataCenter;
         this.configType = builder.configType;
+        this.isFlutterApp = builder.isFlutterApp;
     }
 
-    public boolean showAsDialog() {
+    private boolean showAsDialog() {
         return showAsDialog;
     }
 
-    public String getFirstName() {
+    public boolean isFlutterApp() {
+        return isFlutterApp;
+    }
+
+
+    private String getFirstName() {
         return firstName;
     }
 
-    public String getLastName() {
+    private String getLastName() {
         return lastName;
     }
 
-    public String getEmail(){
+    private String getEmail(){
         return email;
     }
 
-    public String getTransactionLanguage(){
+    private String getTransactionLanguage(){
         return transactionLanguage;
     }
 
-    public String getMobile(){
+    private String getMobile(){
         return mobile;
     }
 
-    public String getSegmentCode(){
+    private String getSegmentCode(){
         return segmentCode;
     }
 
-    public String getTransactionDate() {
+    private String getTransactionDate() {
         return transactionDate;
     }
     /*public Map<Integer, String> getCustomVariables(){
         return customVariables;
     }*/
-    public String getThemeColor(){
+    private String getThemeColor(){
         return themeColor;
     }
 
@@ -110,12 +118,11 @@ public class TouchPoint implements Serializable{
         private String themeColor = "";
         private DataCenter dataCenter = null;
         private ConfigType configType;
-
+        private boolean isFlutterApp = false;
         //private Map<Integer, String> customVariables;
 
         public Builder(DataCenter dataCenter){
             this.dataCenter = dataCenter;
-            this.configType = configType;
         }
 
         private Builder email(String email){
@@ -137,6 +144,10 @@ public class TouchPoint implements Serializable{
             return  this;
         }
 
+        public Builder isFlutterApp(boolean isFlutterApp){
+            this.isFlutterApp = isFlutterApp;
+            return this;
+        }
         private Builder transactionLanguage(String transactionLanguage){
             this.transactionLanguage = transactionLanguage;
             return this;
