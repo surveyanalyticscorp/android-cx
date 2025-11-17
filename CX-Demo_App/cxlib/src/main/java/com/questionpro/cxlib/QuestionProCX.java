@@ -48,8 +48,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private IQuestionProInitCallback questionProInitCallback;
     private IQuestionProCallback questionProCallback;
 
-    private SharedPreferenceManager preferenceManager = null;
-
     private static final HashMap<Integer, Set<String>> interceptSatisfiedRules = new HashMap<>();
     public QuestionProCX(){
     }
@@ -69,9 +67,11 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         questionProInitCallback = callback;
 
         if (appContext instanceof Application) {
-            ((Application) appContext).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext).registerActivityLifecycleCallbacks(
+                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
         } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(
+                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
         }
 
         if(touchPoint == null){
@@ -92,7 +92,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     callback.onInitializationFailure(e.getMessage());
                 }
             }
-        }, 3000);
+        }, 2000);
     }
 
     private synchronized void launchFeedbackSurvey(long surveyId){
@@ -121,10 +121,11 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
-        if(preferenceManager == null){
-            preferenceManager = new SharedPreferenceManager(appContext);
-        }
-        MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, preferenceManager, QuestionProCX.this);
+        MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
+    }
+
+    public void setDataMappings(HashMap<String, String> customDataMappings){
+        SharedPreferenceManager.getInstance(appContext).saveCustomDataMappings(customDataMappings);
     }
 
     public void closeSurveyWindow(){
@@ -143,13 +144,11 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         isSessionAlive = false;
         MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
-        preferenceManager.resetPreferences();
+        SharedPreferenceManager.getInstance(appContext).resetPreferences();
     }
 
     protected void initialize() throws Exception{
         //mActivity = new WeakReference<>(activity);
-
-        preferenceManager = new SharedPreferenceManager(appContext);
 
         //final Context appContext = activity.getApplicationContext();
         ApplicationInfo ai = appContext.getPackageManager().getApplicationInfo(appContext.getPackageName(), PackageManager.GET_META_DATA);
@@ -172,6 +171,20 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             isSessionAlive = true;
             new CXApiHandler(appContext, this).getIntercept();
         }
+    }
+
+    protected void refreshInterceptSettings(final String tagName){
+        new CXApiHandler(appContext, new IQuestionProApiCallback() {
+            @Override
+            public void OnApiCallbackFailed(JSONObject error) {
+                Log.e("QuestionPro", "Error in fetching intercept settings: "+error.toString());
+            }
+
+            @Override
+            public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
+                setScreenVisited(tagName);
+            }
+        }).getIntercept();
     }
 
     @Override
@@ -200,24 +213,29 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void setUpIntercept(){
         try{
-            JSONObject projectObj =new JSONObject(preferenceManager.getProject());
-            JSONArray interceptArray = projectObj.getJSONArray("intercepts");
-            for(int i = 0; i < interceptArray.length(); i++){
-                JSONObject jsonObject = interceptArray.getJSONObject(i);
-                //setUpTimeSpendIntercept(obj);
-                Intercept intercept = Intercept.fromJSON(jsonObject);
-                for(InterceptRule rule: intercept.interceptRule){
-                    if(rule.name.equals(InterceptRuleType.TIME_SPENT.name())){
-                        MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
-                    } else if(rule.name.equals(InterceptRuleType.DAY.name())){
-                        checkDayRule(rule, intercept.id);
-                    } else if(rule.name.equals(InterceptRuleType.DATE.name())){
-                        checkDateRule(rule, intercept.id);
+            String projectJson = SharedPreferenceManager.getInstance(appContext).getProject();
+            if (projectJson != null && !projectJson.trim().isEmpty()) {
+                JSONObject projectObj = new JSONObject(projectJson);
+                JSONArray interceptArray = projectObj.getJSONArray("intercepts");
+                for (int i = 0; i < interceptArray.length(); i++) {
+                    JSONObject jsonObject = interceptArray.getJSONObject(i);
+                    //setUpTimeSpendIntercept(obj);
+                    Intercept intercept = Intercept.fromJSON(jsonObject);
+                    for (InterceptRule rule : intercept.interceptRule) {
+                        if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
+                            MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
+                        } else if (rule.name.equals(InterceptRuleType.DAY.name())) {
+                            checkDayRule(rule, intercept.id);
+                        } else if (rule.name.equals(InterceptRuleType.DATE.name())) {
+                            checkDateRule(rule, intercept.id);
+                        }
                     }
                 }
+            }else{
+                Log.w("QuestionProCX", "Project JSON is null or empty. Fetching the intercept settings...");
+                fetchInterceptSettings();
             }
         }catch (Exception e){e.printStackTrace();}
-
     }
 
     private void checkDateRule(InterceptRule rule, int interceptId){
@@ -271,7 +289,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     @Override
     public void onTimeSpendSatisfied(int interceptId) {
         try {
-            int surveyId = preferenceManager.getInterceptSurveyId(interceptId);
             CXUtils.printLog("Datta","Trigger the intercept as time is satisfied:"+interceptId);
             Set<String> interceptRules = new HashSet<>();
             if(interceptSatisfiedRules.containsKey(interceptId)) {
@@ -287,7 +304,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private void checkAllRulesForIntercept(int interceptId){
         try {
-            Intercept intercept = preferenceManager.getInterceptById(interceptId);
+            Intercept intercept = SharedPreferenceManager.getInstance(appContext).getInterceptById(interceptId);
+            /** TODO add check if intercept is null**/
             if(shouldSurveyLaunch(intercept)) {
                 Set<String> temp = interceptSatisfiedRules.get(interceptId);
                 assert temp != null;
@@ -303,7 +321,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     private boolean shouldSurveyLaunch(Intercept intercept){
-        boolean doesSurveyAlreadyLaunched = preferenceManager.isSurveyAlreadyLaunched(appContext, intercept.id);
+        boolean doesSurveyAlreadyLaunched = SharedPreferenceManager.getInstance(appContext).isSurveyAlreadyLaunched(intercept.id);
         boolean allowMultipleResponse = intercept.interceptSettings.allowMultipleResponse;
         return allowMultipleResponse || !doesSurveyAlreadyLaunched;
     }
@@ -365,9 +383,29 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     public void cleanup() {
         if (appContext instanceof Application) {
-            ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks());
+            ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         }
+    }
+
+    private int getStartActivityCount(Context context){
+        try {
+            Class<?> flutterActivityClass = Class.forName("io.flutter.embedding.android.FlutterActivity");
+            Class<?> flutterFragmentActivityClass = Class.forName("io.flutter.embedding.android.FlutterFragmentActivity");
+            if (flutterActivityClass.isInstance(context) || flutterFragmentActivityClass.isInstance(context)) {
+                return 1;
+            }
+        } catch (ClassNotFoundException ignored) {}
+
+        Class<?> reactActivityClass = null;
+        try {
+            reactActivityClass = Class.forName("com.facebook.react.ReactActivity");
+            if (reactActivityClass != null && reactActivityClass.isInstance(context)) {
+                return 1;
+            }
+        } catch (ClassNotFoundException ignored) {}
+
+        return 0;
     }
 }

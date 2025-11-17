@@ -16,6 +16,8 @@ import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.DataCenter;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.TouchPoint;
+
+import java.util.HashMap;
 //import com.questionpro.cxlib.model.Type;
 
 public class ShoppingCartActivity extends AppCompatActivity {
@@ -34,7 +36,15 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 //TouchPoint touchPoint = new TouchPoint.Builder(ConfigType.INTERCEPT, DataCenter.US).build();
                 //QuestionProCX.getInstance().init(ShoppingCartActivity.this, touchPoint);
                 //QuestionProCX.getInstance().launchFeedbackSurvey(13026667);
-                QuestionProCX.getInstance().setScreenVisited("Launch_Survey");
+
+                HashMap<String, String> cutVars= new HashMap<>();
+                cutVars.put("first name","Datta");
+                cutVars.put("Last Name","kunde");
+                cutVars.put("email","a@a.com");
+
+                QuestionProCX.getInstance().setDataMappings(cutVars);
+
+                QuestionProCX.getInstance().setScreenVisited("book_cab");
             }
         });
 
@@ -43,6 +53,10 @@ public class ShoppingCartActivity extends AppCompatActivity {
         buttonOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                HashMap<String, String> cutVars= new HashMap<>();
+                cutVars.put("Phone Number.","12345678922");
+                //QuestionProCX.getInstance().setDataMappings(cutVars);
+
                 QuestionProCX.getInstance().setScreenVisited("Checkout");
             }
         });

@@ -1,5 +1,6 @@
 package com.questionpro.cxlib;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -55,11 +56,11 @@ public class MonitorAppEvents {
         runnableMap.clear();
     }
 
-    protected void setTagNameCheckRules(String tagName, SharedPreferenceManager preferenceManager, final IQuestionProRulesCallback rulesCallback){
-        int viewCountForTag = preferenceManager.updateViewCountForTag(tagName);
+    protected void setTagNameCheckRules(String tagName, Context context, final IQuestionProRulesCallback rulesCallback){
+        int viewCountForTag = SharedPreferenceManager.getInstance(context).updateViewCountForTag(tagName);
         //Log.d("Datta", "View count for tag name: "+tagName+" is: "+viewCountForTag);
         try {
-            String projectJson = preferenceManager.getProject();
+            String projectJson = SharedPreferenceManager.getInstance(context).getProject();
             if (projectJson != null && !projectJson.trim().isEmpty()) {
                 JSONObject interceptObj = new JSONObject(projectJson);
                 JSONArray interceptArray = interceptObj.getJSONArray("intercepts");
@@ -73,12 +74,13 @@ public class MonitorAppEvents {
                                 Integer.parseInt(rule.value) <= viewCountForTag) {
                             //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
                             rulesCallback.onViewCountRuleSatisfied(intercept.id);
-                            preferenceManager.resetViewCountForTag(tagName);
+                            SharedPreferenceManager.getInstance(context).resetViewCountForTag(tagName);
                         }
                     }
                 }
             }else{
-                Log.e("QuestionProCX", "Project JSON is null or empty.");
+                Log.w("QuestionProCX", "Project JSON is null or empty. Fetching the intercept settings...");
+                QuestionProCX.getInstance().refreshInterceptSettings(tagName);
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();

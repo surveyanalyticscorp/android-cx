@@ -3,10 +3,12 @@ package com.questionpro.cxlib;
 import static com.questionpro.cxlib.CXConstants.JSONUploadFields.SURVEY_ID;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.questionpro.cxlib.dataconnect.CXPayload;
+import com.questionpro.cxlib.model.DataMapping;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
 import com.questionpro.cxlib.model.TouchPoint;
@@ -16,7 +18,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 
@@ -146,7 +150,7 @@ public class CXGlobalInfo {
         try {
             JSONObject payloadObj = new JSONObject();
             payloadObj.put("packageName", context.getPackageName());
-            payloadObj.put("visitedUserId",new SharedPreferenceManager(context).getVisitorsUUID());
+            payloadObj.put("visitedUserId",SharedPreferenceManager.getInstance(context).getVisitorsUUID());
             payloadObj.put("interceptId",intercept.id);
             payloadObj.put("surveyId",intercept.surveyId);
             if(intercept.interceptSettings != null) {
@@ -155,7 +159,7 @@ public class CXGlobalInfo {
                     setAppLanguage(payloadObj, context);
                 }
             }
-            CXGlobalInfo.setCustomVariable(payloadObj);
+            CXGlobalInfo.setCustomVariable(payloadObj, intercept, context);
 
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
@@ -166,30 +170,76 @@ public class CXGlobalInfo {
         requestObj.put("surveyLanguage", CXUtils.getAppLanguage(context));
     }
 
-    private static void setCustomVariable(JSONObject requestObj){
+    private static void setCustomVariable(JSONObject requestObj, Intercept intercept, Context context){
         try {
+            JSONArray customVars = getCustomVariablesFromPayload();
+            ArrayList<DataMapping> dataMappings = intercept.dataMappings;
+            String dataMappingPref = SharedPreferenceManager.getInstance(context).getCustomDataMappings();
+            if(CXUtils.isEmpty(dataMappingPref) || dataMappings.isEmpty()){
+                requestObj.put("data",customVars);
+                return;
+            }
+            JSONObject dataMappingObj = new JSONObject(dataMappingPref);
+            for (DataMapping dataMapping : dataMappings) {
+                String value = getValueIgnoreCase(dataMappingObj, dataMapping.displayName.trim());
+                if(null != value){
+                    JSONObject customVar = new JSONObject();
+                    //String value = dataMappingObj.getString(dataMapping.displayName.trim());
+                    customVar.put("variableName",dataMapping.variable);
+                    customVar.put("value",value);
+                    customVars.put(customVar);
+                }
+            }
+            requestObj.put("data",customVars);
+        }catch (Exception e){e.printStackTrace();}
+    }
+
+    private static boolean hasKeyIgnoreCase(JSONObject jsonObject, String key) {
+        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+            String currentKey = it.next();
+            if (currentKey.equalsIgnoreCase(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static String getValueIgnoreCase(JSONObject jsonObject, String key) throws JSONException {
+        for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+            String currentKey = it.next();
+            if (currentKey.equalsIgnoreCase(key)) {
+                return jsonObject.getString(currentKey);
+            }
+        }
+        return null;
+    }
+
+    private static JSONArray getCustomVariablesFromPayload(){
+        try{
             JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
             if (payloadObj.has("customVariables")) {
-                //String inputString = "key1=value1,key2=value2,key3=value3";
                 String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
-
-                Map<String, String> myMap = new HashMap<>();
                 String[] pairs = inputString.split(",");
-                JSONArray customVars = new JSONArray();
-                for (String pair : pairs) {
-                    JSONObject customVar = new JSONObject();
-                    String[] keyValue = pair.split("=");
-                    if (keyValue.length == 2) {
-                        String key = "custom"+keyValue[0].trim();
-                        String value = keyValue[1].trim();
-                        //myMap.put(key, value);
-                        customVar.put("variableName",key);
-                        customVar.put("value",value);
-                        customVars.put(customVar);
-                    }
-                }
-                requestObj.put("data",customVars);
+                return getCustomVars(pairs);
             }
-        }catch (Exception e){}
+        }catch (Exception e){e.printStackTrace();}
+        return new JSONArray();
+    }
+
+    @NonNull
+    private static JSONArray getCustomVars(String[] pairs) throws JSONException {
+        JSONArray customVars = new JSONArray();
+        for (String pair : pairs) {
+            JSONObject customVar = new JSONObject();
+            String[] keyValue = pair.split("=");
+            if (keyValue.length == 2) {
+                String key = "custom"+keyValue[0].trim();
+                String value = keyValue[1].trim();
+                customVar.put("variableName",key);
+                customVar.put("value",value);
+                customVars.put(customVar);
+            }
+        }
+        return customVars;
     }
 }

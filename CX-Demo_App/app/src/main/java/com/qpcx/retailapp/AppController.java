@@ -68,26 +68,21 @@ public class AppController extends Application {
 	}
 
 	private void initialiseQpSdk(AppController appController){
-		HashMap<Integer, String> cutVars= new HashMap<>();
-		cutVars.put(2, "Datta");
-		cutVars.put(3,"Kunde");
-
 		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
-				.customVariables(cutVars)
+				.isFlutterApp(false)
 				.build();
+
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
 			@Override
 			public void onInitializationSuccess(String message) {
-				Log.d("Datta", "onInitializationSuccess: "+message);
+				Log.d("Datta", "Application onInitializationSuccess: "+message);
 			}
 
 			@Override
 			public void onInitializationFailure(String error) {
-				Log.d("Datta", "onInitializationFailure: "+error);
+				Log.d("Datta", "Application onInitializationFailure: "+error);
 			}
 		});
-
-		//QuestionProCX.getInstance().init(getApplication(), touchPoint);
 	}
 
 	public static synchronized AppController getInstance() {

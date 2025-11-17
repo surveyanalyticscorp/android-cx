@@ -118,7 +118,7 @@ class CXApiHandler {
                     HashMap<String, String> headers = new HashMap<>();
                     headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
                     headers.put("package-name", mContext.getPackageName());
-                    headers.put("visitor-id", new SharedPreferenceManager(mContext).getVisitorsUUID());
+                    headers.put("visitor-id", SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
 
                     URL url = new URL(CXConstants.getFeedbackUrl());
 
@@ -134,8 +134,6 @@ class CXApiHandler {
 
     private void getInterceptConfigurations(){
         try {
-            SharedPreferenceManager sharedPreferenceManager=new SharedPreferenceManager(mContext);
-
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
             headers.put("package-name", mContext.getPackageName());
@@ -146,10 +144,10 @@ class CXApiHandler {
             if (response.isSuccessful()) {
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
-                    JSONObject responseJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
-                    sharedPreferenceManager.saveProject(responseJson.toString());
+                    JSONObject projectJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
+                    SharedPreferenceManager.getInstance(mContext).saveProject(projectJson.toString());
                 }
-                sharedPreferenceManager.saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
+                SharedPreferenceManager.getInstance(mContext).saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
                 mQuestionProApiCall.onApiCallbackSuccess(null, "SDK is Initialised");
             }else if(response.isRejectedPermanently()){
                 JSONObject jsonObject = new JSONObject(response.getContent());

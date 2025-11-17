@@ -16,6 +16,7 @@ public class Intercept implements Serializable {
     public InterceptSettings interceptSettings = new InterceptSettings();
     public ArrayList<InterceptRule> interceptRule = new ArrayList<>();
 
+    public ArrayList<DataMapping> dataMappings = new ArrayList<>();
 
     public static Intercept fromJSON(JSONObject interceptJson) throws Exception{
         Intercept intercept=new Intercept();
@@ -32,6 +33,9 @@ public class Intercept implements Serializable {
             intercept.interceptRule.add(InterceptRule.fromJSON(interceptRule.getJSONObject(i)));
         }
 
+        if(interceptJson.has("dataMappings") && !interceptJson.isNull("dataMappings")){
+            intercept.dataMappings = DataMapping.fromJSON(interceptJson.getJSONArray("dataMappings"));
+        }
         return intercept;
     }
 }

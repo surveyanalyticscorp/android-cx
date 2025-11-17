@@ -6,18 +6,16 @@ import android.content.Context;
 import com.questionpro.cxlib.enums.DataCenter;
 
 public class CXConstants {
-
     private static final String CX_TRANSACTION_SURVEY_URL = "/a/api/v2/cx/transactions/survey-url";
     private static final String SURVEYS_URL = "/a/api/v2/surveys/";
     private static final String GET_MOBILE_INTERCEPTS = "/api/v1/visitor/mobile";
     private static final String CX_INTERCEPT_SURVEY_URL = "/api/v1/data-mapping/mobile/survey-url";
     private static final String SUBMIT_SURVEY_FEEDBACK = "/api/v1/visitor/mobile/survey-feedback";
-    protected static final String PREF_NAME="questionpro_cx";
     //public static final String PREF_KEY_API_KEY="cx_pref_api_key";
     protected static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
-    protected static final String PREF_KEY_APP_ACTIVITY_STATE_QUEUE="cx_key_app_activity_state_queue";
-    //public static final String PREF_KEY_PAYLOAD="cx_pref_key_payload";
+
     protected static final String CX_INTERACTION_CONTENT="cx_interaction_content";
+    public static final String CUSTOM_DATA_MAPPINGS = "customDataMappings";
 
 
     protected static String getInterceptSurveyUrl(Context context) {
