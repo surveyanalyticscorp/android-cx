@@ -22,6 +22,7 @@ class SharedPreferenceManager {
     private final String KEY_VISITORS_UUID = "visitors_uuid";
     private final String KEY_LAUNCHED_SURVEYS = "launched_surveys";
     private static String interceptProjectStr;
+    private static String visitorUUID;
     private final Context context;
     private static SharedPreferenceManager instance;
 
@@ -54,11 +55,15 @@ class SharedPreferenceManager {
     }
 
     void saveVisitorsUUID(String uuid){
+        visitorUUID = uuid;
         getPrefs().edit().putString(KEY_VISITORS_UUID, uuid).apply();
     }
 
     String getVisitorsUUID(){
-        return getPrefs().getString(KEY_VISITORS_UUID, "");
+        if(CXUtils.isEmpty(visitorUUID)){
+            visitorUUID = getPrefs().getString(KEY_VISITORS_UUID, "");
+        }
+        return visitorUUID;
     }
 
     Intercept getInterceptById(int interceptId) throws Exception{
