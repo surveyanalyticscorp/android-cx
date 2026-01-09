@@ -136,7 +136,10 @@ class CXApiHandler {
         try {
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
+            headers.put("visitor-id",SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
             headers.put("package-name", mContext.getPackageName());
+            headers.put("x-platform", getPlatformType());
+            headers.put("x-device-id", CXUtils.getUniqueDeviceId(mContext));
 
             java.net.URL url = new URL(CXConstants.getInterceptsUrl());
             CXHttpResponse response = CXUploadClient.getCxApi(url, headers);
@@ -247,5 +250,9 @@ class CXApiHandler {
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";
+    }
+
+    private String getPlatformType(){
+        return "1";
     }
 }
