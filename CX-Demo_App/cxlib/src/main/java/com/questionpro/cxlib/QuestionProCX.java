@@ -39,6 +39,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
     private static boolean isSessionAlive = false;
+    private static boolean isInitialised = false;
     private ProgressDialog progressDialog;
 
     private static Context appContext;
@@ -121,7 +122,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
-        MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
+        if(isInitialised) {
+            MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
+        }
     }
 
     public void setDataMappings(HashMap<String, String> customDataMappings){
@@ -142,6 +145,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     protected void clearSession(){
         Log.i("QuestionPro","Clearing session.");
         isSessionAlive = false;
+        isInitialised = false;
         MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
         SharedPreferenceManager.getInstance(appContext).resetPreferences();
@@ -189,6 +193,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     @Override
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
+        isInitialised = true;
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
             new CXApiHandler(appContext, this).submitFeedback(intercept, "MATCHED");
             if(questionProCallback != null) {
