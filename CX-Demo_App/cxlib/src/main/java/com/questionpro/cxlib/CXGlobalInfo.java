@@ -78,7 +78,19 @@ public class CXGlobalInfo {
         }catch (Exception e){e.printStackTrace();}
     }
 
-    protected static long getSurveyIDFromPayload(){
+    protected int getRestingPeriodFromPayload(){
+        try {
+            JSONObject jsonObject = new JSONObject(CXGlobalInfo.payload);
+            if(jsonObject.has("restingPeriodInDays")){
+                return jsonObject.getInt("restingPeriodInDays");
+            }
+        } catch (Exception e){
+            //eat it
+        }
+        return 0;
+    }
+
+    protected long getSurveyIDFromPayload(){
         try {
             JSONObject jsonObject = new JSONObject(CXGlobalInfo.payload);
             if(jsonObject.has(SURVEY_ID)){
@@ -158,6 +170,7 @@ public class CXGlobalInfo {
             payloadObj.remove("apiBaseUrl");
             payloadObj.remove("port");
             payloadObj.remove("accessToken");
+            payloadObj.remove("restingPeriodInDays");
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";
