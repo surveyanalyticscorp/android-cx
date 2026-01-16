@@ -41,6 +41,7 @@ public class CXPayload {
             jsonObject.put("apiBaseUrl", touchPoint.getApiBaseUrl());
             jsonObject.put("port", touchPoint.getPort());
             jsonObject.put("customVariables", touchPoint.getCustomVariables());
+            jsonObject.put("restingPeriodInDays", touchPoint.getRestingPeriodInDays());
             CXUtils.printLogs("Payload json: "+jsonObject.toString());
 
             return jsonObject;
