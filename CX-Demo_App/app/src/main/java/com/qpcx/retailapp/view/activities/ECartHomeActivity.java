@@ -216,6 +216,7 @@ public class ECartHomeActivity extends AppCompatActivity {
 		Activity activity =  ECartHomeActivity.this;
 		TouchPoint touchPoint = new TouchPoint.Builder(apiBaseUrl, accessToken)
 				.port("")
+				.restingPeriodInDays(1)
 				.email("mobile.android@questionpro.com")
 				.transactionLanguage("Arebic")
 				.customVariables(customVars)

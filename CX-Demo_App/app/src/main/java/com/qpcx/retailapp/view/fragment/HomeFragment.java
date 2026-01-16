@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment {
 
 
 						QuestionProCX.getInstance().launchFeedbackSurvey(12174640);
-						closeSurveyWindow();
+						//closeSurveyWindow();
 					}
 				});
 
