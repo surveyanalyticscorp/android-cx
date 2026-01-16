@@ -234,6 +234,8 @@ public class InteractionActivity extends FragmentActivity implements MyWebChrome
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        SharedPreferenceManager.getInstance(InteractionActivity.this)
+                .putSurveyTimestamp(CXGlobalInfo.getInstance().getSurveyIDFromPayload());
         QuestionProCX.unregisterInteractionActivity();
     }
 }
