@@ -88,7 +88,7 @@ public class QuestionProCX {
 
     protected void handleTokenExpiry(){
         questionProCallback.refreshToken();
-        QuestionProCX.getInstance().launchFeedbackSurvey(CXGlobalInfo.getSurveyIDFromPayload());
+        QuestionProCX.getInstance().launchFeedbackSurvey(CXGlobalInfo.getInstance().getSurveyIDFromPayload());
     }
 
     protected void onError(JSONObject response) throws JSONException {
@@ -147,8 +147,32 @@ public class QuestionProCX {
 
     public synchronized void launchFeedbackSurvey(long surveyId){
         //showProgress();
+        if(checkIfSurveyInRestingPeriod(surveyId)){
+            Log.d("Datta","Survey launch aborted due to resting period.");
+            if(null != progressDialog && progressDialog.isShowing()){
+                progressDialog.cancel();
+            }
+            return;
+        }
         CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
         CXPayloadWorker.appWentToForeground(mActivity.get());
+    }
+
+    private boolean checkIfSurveyInRestingPeriod(long surveyId){
+        int storedRestingPeriod = CXGlobalInfo.getInstance().getRestingPeriodFromPayload();
+        Log.d("Datta","Resting period stored in payload: " + storedRestingPeriod);
+        Long lastSurveyTime = SharedPreferenceManager.getInstance(mActivity.get()).getSurveyTimestamp(surveyId);
+        if(lastSurveyTime != null){
+            long currentTime = System.currentTimeMillis();
+            long diffInMillis = currentTime - lastSurveyTime;
+            Log.d("Datta","Time since survey answered in Hours: " + diffInMillis / (1000 * 60 * 60));
+            long diffInDays = diffInMillis / (1000 * 60 * 60 * 24);
+            if(diffInDays < storedRestingPeriod){
+                Log.d("Datta","Survey is in resting period. Days left: " + (storedRestingPeriod - diffInDays));
+                return true;
+            }
+        }
+        return false;
     }
 
     public void closeSurveyWindow(){
