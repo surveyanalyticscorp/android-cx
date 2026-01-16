@@ -17,8 +17,9 @@ public class TouchPoint implements Serializable{
 
     private final String apiBaseUrl;
     private final String port;
+    private final String accessToken;
 
-    private String accessToken;
+    private final int restingPeriodInDays;
 
     private final Map<Integer, String> customVariables;
 
@@ -40,6 +41,7 @@ public class TouchPoint implements Serializable{
         this.apiBaseUrl = builder.apiBaseUrl;
         this.port = builder.port;
         this.accessToken = builder.accessToken;
+        this.restingPeriodInDays = builder.restingPeriodInDays;
     }
 
     public boolean showAsDialog() {
@@ -87,6 +89,9 @@ public class TouchPoint implements Serializable{
     public String getAccessToken(){
         return accessToken;
     }
+    public int getRestingPeriodInDays(){
+        return restingPeriodInDays;
+    }
     public String getPort(){
         return port;
     }
@@ -120,6 +125,8 @@ public class TouchPoint implements Serializable{
         private final String apiBaseUrl;
         private final String accessToken;
         private String port = null;
+
+        private int restingPeriodInDays;
 
         public Builder(String apiBaseUrl, String accessToken){
             this.apiBaseUrl = apiBaseUrl;
@@ -158,6 +165,11 @@ public class TouchPoint implements Serializable{
             this.customVariables = customVars;
             return this;
         }
+
+        public Builder restingPeriodInDays(int days){
+            this.restingPeriodInDays = days;
+            return this;
+         }
 
          public Builder mobile(String mobile){
             this.mobile = mobile;
