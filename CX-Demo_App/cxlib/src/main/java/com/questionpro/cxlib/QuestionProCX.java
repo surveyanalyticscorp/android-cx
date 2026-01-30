@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.questionpro.cxlib.enums.ConfigType;
 
+import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.Intercept;
@@ -66,13 +67,12 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
         appContext = context;
         questionProInitCallback = callback;
-
         if (appContext instanceof Application) {
             ((Application) appContext).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
+                    new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint)));
         } else if (appContext.getApplicationContext() instanceof Application) {
             ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
+                    new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint)));
         }
 
         if(touchPoint == null){
@@ -162,9 +162,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
             CXUtils.printLog(LOG_TAG, "API key: " + apiKey);
             CXGlobalInfo.getInstance().setApiKey(apiKey);
-            CXGlobalInfo.getInstance().setAppPackage(appContext.getPackageName());
             CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
-            CXGlobalInfo.getInstance().setInitialized(true);
         }
 
         fetchInterceptSettings();
@@ -386,31 +384,22 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
     }
 
-    public void cleanup() {
+    /*public void cleanup() {
         if (appContext instanceof Application) {
             ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         } else if (appContext.getApplicationContext() instanceof Application) {
             ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         }
-    }
+    }*/
 
-    private int getStartActivityCount(Context context){
-        try {
-            Class<?> flutterActivityClass = Class.forName("io.flutter.embedding.android.FlutterActivity");
-            Class<?> flutterFragmentActivityClass = Class.forName("io.flutter.embedding.android.FlutterFragmentActivity");
-            if (flutterActivityClass.isInstance(context) || flutterFragmentActivityClass.isInstance(context)) {
-                return 1;
-            }
-        } catch (ClassNotFoundException ignored) {}
+    private int getStartActivityCount(TouchPoint touchPoint){
+        if(touchPoint.getPlatform().equals(Platform.FLUTTER)){
+            return 1;
+        }
 
-        Class<?> reactActivityClass = null;
-        try {
-            reactActivityClass = Class.forName("com.facebook.react.ReactActivity");
-            if (reactActivityClass != null && reactActivityClass.isInstance(context)) {
-                return 1;
-            }
-        } catch (ClassNotFoundException ignored) {}
-
+        if(touchPoint.getPlatform().equals(Platform.REACT_NATIVE)){
+            return 1;
+        }
         return 0;
     }
 }
