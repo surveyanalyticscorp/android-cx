@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.questionpro.cxlib.dataconnect.CXPayload;
+import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.model.DataMapping;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
@@ -25,9 +26,7 @@ import java.util.Map;
 
 
 public class CXGlobalInfo {
-    private static boolean initialized = false;
     private static String UUID;
-    private static String appPackage;
     private static String apiKey = null;
     private static String payload;
 
@@ -57,20 +56,12 @@ public class CXGlobalInfo {
         return CXGlobalInfo.apiKey;
     }
 
-    public void setAppPackage(String appPackage){
-        CXGlobalInfo.appPackage = appPackage;
-    }
-
     public void setUUID(String uuid){
         CXGlobalInfo.UUID = uuid;
     }
 
     public String getUUID(){
         return CXGlobalInfo.UUID;
-    }
-
-    public void setInitialized(boolean initialized){
-        CXGlobalInfo.initialized = initialized;
     }
 
     /**
@@ -95,31 +86,15 @@ public class CXGlobalInfo {
         return "";
     }
 
-    public static String getConfigType(){
+    protected Platform getPlatform(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("configType");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
-    }
-
-    @NonNull
-    public static boolean isShowDialog(Context context){
-        try{
-            JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getBoolean("showAsDialog");
-        }catch (Exception e){e.printStackTrace();}
-        return false;
-    }
-
-    @NonNull
-    public static String getThemeColour(Context context){
-        try{
-            //AppCompatActivity activity = (AppCompatActivity) context;
-            JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("themeColor");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
+            String platformStr = payloadObj.getString("platform");
+            return Platform.valueOf(platformStr);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Platform.ANDROID;
     }
 
     /**
@@ -216,7 +191,7 @@ public class CXGlobalInfo {
 
     private static JSONArray getCustomVariablesFromPayload(){
         try{
-            JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
             if (payloadObj.has("customVariables")) {
                 String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
                 String[] pairs = inputString.split(",");
