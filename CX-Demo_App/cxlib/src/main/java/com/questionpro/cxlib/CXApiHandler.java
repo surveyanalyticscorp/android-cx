@@ -16,6 +16,7 @@ import com.questionpro.cxlib.IQuestionProApiCallback;
 
 import com.questionpro.cxlib.dataconnect.CXHttpResponse;
 import com.questionpro.cxlib.dataconnect.CXUploadClient;
+import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 
@@ -253,6 +254,13 @@ class CXApiHandler {
     }
 
     private String getPlatformType(){
-        return "1";
+        if(CXGlobalInfo.getInstance().getPlatform().equals(Platform.REACT_NATIVE))
+            return "react-native";
+        else if (CXGlobalInfo.getInstance().getPlatform().equals(Platform.IOS))
+            return "ios";
+        else if (CXGlobalInfo.getInstance().getPlatform().equals(Platform.FLUTTER))
+            return "flutter";
+        else
+            return "android";
     }
 }
