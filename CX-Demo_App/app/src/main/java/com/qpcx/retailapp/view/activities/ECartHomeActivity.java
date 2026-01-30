@@ -28,6 +28,7 @@ import com.qpcx.retailapp.util.Utils.AnimationType;
 import com.qpcx.retailapp.view.fragment.HomeFragment;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.enums.ConfigType;
+import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.enums.DataCenter;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
@@ -195,7 +196,6 @@ public class ECartHomeActivity extends AppCompatActivity {
 
 	private void initialiseQpSdk(){
 		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
-				.isFlutterApp(true)
 				.build();
 
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {

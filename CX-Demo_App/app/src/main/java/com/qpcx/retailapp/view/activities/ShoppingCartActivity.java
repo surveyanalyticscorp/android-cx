@@ -29,7 +29,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shopping_cart);
 
         Button button = findViewById(R.id.launch_survey);
-        button.setText("Launch Survey");
+        button.setText("survey");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +44,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
 
                 QuestionProCX.getInstance().setDataMappings(cutVars);
 
-                QuestionProCX.getInstance().setScreenVisited("book_cab");
+                QuestionProCX.getInstance().setScreenVisited("survey");
             }
         });
 
