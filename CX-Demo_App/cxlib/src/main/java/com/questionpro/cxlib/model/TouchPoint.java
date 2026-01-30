@@ -4,178 +4,65 @@ import androidx.annotation.NonNull;
 
 import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.DataCenter;
+import com.questionpro.cxlib.enums.Platform;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TouchPoint implements Serializable{
-    private final String transactionLanguage;
-    private final String firstName;
-    private final String lastName;
-    private final String email;
-    private final String mobile;
-    private final String segmentCode;
+
     private final String transactionDate;
 
     /** Setting related variables */
-    private final boolean showAsDialog;
-    private final String themeColor;
     private final DataCenter dataCenter;
-    private final ConfigType configType;
-
-    private final boolean isFlutterApp;
-
-    //private final Map<Integer, String> customVariables;
+    private  final Platform platform;
 
     public TouchPoint(Builder builder) {
-        this.showAsDialog = builder.showAsDialog;
-        this.firstName = builder.firstName;
-        this.lastName = builder.lastName;
-        this.email = builder.email;
-        this.transactionLanguage = builder.transactionLanguage;
-        this.mobile = builder.mobile;
-        this.segmentCode = builder.segmentCode;
         this.transactionDate = builder.transactionDate;
-        //this.customVariables = builder.customVariables;
-        this.themeColor = builder.themeColor;
         this.dataCenter = builder.dataCenter;
-        this.configType = builder.configType;
-        this.isFlutterApp = builder.isFlutterApp;
-    }
-
-    private boolean showAsDialog() {
-        return showAsDialog;
-    }
-
-    public boolean isFlutterApp() {
-        return isFlutterApp;
-    }
-
-
-    private String getFirstName() {
-        return firstName;
-    }
-
-    private String getLastName() {
-        return lastName;
-    }
-
-    private String getEmail(){
-        return email;
-    }
-
-    private String getTransactionLanguage(){
-        return transactionLanguage;
-    }
-
-    private String getMobile(){
-        return mobile;
-    }
-
-    private String getSegmentCode(){
-        return segmentCode;
+        this.platform = builder.platform;
     }
 
     private String getTransactionDate() {
         return transactionDate;
     }
-    /*public Map<Integer, String> getCustomVariables(){
-        return customVariables;
-    }*/
-    private String getThemeColor(){
-        return themeColor;
-    }
 
     public DataCenter getDataCenter(){
         return dataCenter;
     }
-    public ConfigType getConfigType(){return configType;}
+
+    public Platform getPlatform(){
+        return platform;
+    }
 
     @NonNull
     @Override
     public String toString() {
-        return "User: "/*+this.touchPointID+",*/ +this.showAsDialog+",  "+this.firstName+", "+this.lastName+", "
-                +this.email+", "+this.transactionLanguage+", "+this.transactionDate
-                +", "+this.mobile+", "+this.segmentCode;
+        return "User: "+this.transactionDate
+                +", ";
     }
 
     /**
      * TouchPoint Builder class
      */
     public static class Builder{
-        //private final long touchPointID;
-        private String email;
-        private String firstName;
-        private String lastName;
-        private String transactionLanguage;
+
         private String transactionDate;
 
-        private String mobile;
-        private String segmentCode;
-
-        private  boolean showAsDialog;
-        private String themeColor = "";
         private DataCenter dataCenter = null;
-        private ConfigType configType;
-        private boolean isFlutterApp = false;
+
+        private Platform platform = Platform.ANDROID;
         //private Map<Integer, String> customVariables;
 
         public Builder(DataCenter dataCenter){
             this.dataCenter = dataCenter;
         }
 
-        private Builder email(String email){
-            this.email = email;
+        public Builder setPlatform(Platform platform){
+            this.platform = platform;
             return this;
         }
-        private Builder firstName(String fName){
-            this.firstName = fName;
-            return this;
-        }
-
-        private Builder lastName(String lName){
-            this.lastName = lName;
-            return this;
-        }
-
-        private Builder showAsDialog(boolean showAsDialog){
-            this.showAsDialog = showAsDialog;
-            return  this;
-        }
-
-        public Builder isFlutterApp(boolean isFlutterApp){
-            this.isFlutterApp = isFlutterApp;
-            return this;
-        }
-        private Builder transactionLanguage(String transactionLanguage){
-            this.transactionLanguage = transactionLanguage;
-            return this;
-        }
-         private Builder transactionDate(String transactionDate){
-            this.transactionDate = transactionDate;
-            return this;
-         }
-
-        /*private Builder customVariables(HashMap<Integer, String> customVars){
-            this.customVariables = customVars;
-            return this;
-        }*/
-
-        private Builder mobile(String mobile){
-            this.mobile = mobile;
-            return this;
-         }
-
-         private Builder segmentCode(String segmentCode){
-            this.segmentCode = segmentCode;
-            return this;
-         }
-
-         private Builder themeColor (String themeColor){
-            this.themeColor = themeColor;
-            return this;
-         }
 
         //Return the finally constructed object
         public TouchPoint build(){
