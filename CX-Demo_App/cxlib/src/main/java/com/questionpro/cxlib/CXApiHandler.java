@@ -135,15 +135,15 @@ class CXApiHandler {
 
     private void getInterceptConfigurations(){
         try {
-            HashMap<String, String> headers = new HashMap<>();
+            /*HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
             headers.put("visitor-id",SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
             headers.put("package-name", mContext.getPackageName());
             headers.put("x-platform", getPlatformType());
-            headers.put("x-device-id", CXUtils.getUniqueDeviceId(mContext));
+            headers.put("x-device-id", CXUtils.getUniqueDeviceId(mContext));*/
 
             java.net.URL url = new URL(CXConstants.getInterceptsUrl());
-            CXHttpResponse response = CXUploadClient.getCxApi(url, headers);
+            CXHttpResponse response = CXUploadClient.getCxApi(url, CXGlobalInfo.getInstance().getInterceptApiPayload(mContext));
 
             if (response.isSuccessful()) {
                 JSONObject jsonObject = new JSONObject(response.getContent());
@@ -166,7 +166,7 @@ class CXApiHandler {
 
     private void getInterceptSurveyUrl(Intercept intercept){
         try {
-            String payload = CXGlobalInfo.getInterceptApiPayload(intercept, mContext);
+            String payload = CXGlobalInfo.getInstance().getSurveyApiPayload(intercept, mContext);
 
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
@@ -251,16 +251,5 @@ class CXApiHandler {
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";
-    }
-
-    private String getPlatformType(){
-        if(CXGlobalInfo.getInstance().getPlatform().equals(Platform.REACT_NATIVE))
-            return "react-native";
-        else if (CXGlobalInfo.getInstance().getPlatform().equals(Platform.IOS))
-            return "ios";
-        else if (CXGlobalInfo.getInstance().getPlatform().equals(Platform.FLUTTER))
-            return "flutter";
-        else
-            return "android";
     }
 }
