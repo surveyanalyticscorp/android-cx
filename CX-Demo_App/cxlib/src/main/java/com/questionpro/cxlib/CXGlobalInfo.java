@@ -121,7 +121,7 @@ public class CXGlobalInfo {
         return "";
     }
 
-    protected HashMap<String, String> getInterceptApiPayload(Context mContext){
+    protected HashMap<String, String> getInterceptApiHeaders(Context mContext){
         try{
             HashMap<String, String> headers = new HashMap<>();
             headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
