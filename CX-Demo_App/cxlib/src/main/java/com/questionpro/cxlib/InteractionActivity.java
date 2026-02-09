@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import androidx.fragment.app.FragmentActivity;
 
 import com.questionpro.cxlib.enums.ConfigType;
+import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interaction.MyWebChromeClient;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
@@ -197,7 +198,7 @@ public class InteractionActivity extends FragmentActivity implements
     private void launchSurvey(String url){
         SharedPreferenceManager.getInstance(this).saveInterceptIdForLaunchedSurvey(
                 intercept.id, CXUtils.getCurrentLocalTimeInMillis());
-        new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, "LAUNCHED");
+        new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, VisitorStatus.LAUNCHED.name());
 
         webView.loadUrl(url);
     }
