@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.questionpro.cxlib.enums.ConfigType;
 
 import com.questionpro.cxlib.enums.Platform;
+import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.Intercept;
@@ -193,7 +194,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
         isInitialised = true;
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
-            new CXApiHandler(appContext, this).submitFeedback(intercept, "MATCHED");
+            new CXApiHandler(appContext, this).submitFeedback(intercept, VisitorStatus.MATCHED.name());
             if(questionProCallback != null) {
                 questionProCallback.getSurveyUrl(surveyUrl);
             }
@@ -224,14 +225,19 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     JSONObject jsonObject = interceptArray.getJSONObject(i);
                     //setUpTimeSpendIntercept(obj);
                     Intercept intercept = Intercept.fromJSON(jsonObject);
-                    for (InterceptRule rule : intercept.interceptRule) {
-                        if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
-                            MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
-                        } else if (rule.name.equals(InterceptRuleType.DAY.name())) {
-                            checkDayRule(rule, intercept.id);
-                        } else if (rule.name.equals(InterceptRuleType.DATE.name())) {
-                            checkDateRule(rule, intercept.id);
+                    CXUtils.printLog("Datta","checkShouldShowSampling: " +checkShouldShowSampling(intercept));
+                    if(checkShouldShowSampling(intercept)) {
+                        for (InterceptRule rule : intercept.interceptRule) {
+                            if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
+                                MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
+                            } else if (rule.name.equals(InterceptRuleType.DAY.name())) {
+                                checkDayRule(rule, intercept.id);
+                            } else if (rule.name.equals(InterceptRuleType.DATE.name())) {
+                                checkDateRule(rule, intercept.id);
+                            }
                         }
+                    }else{
+                        new CXApiHandler(appContext, this).excludedFeedback(intercept);
                     }
                 }
             }else{
@@ -239,6 +245,22 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 fetchInterceptSettings();
             }
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    private boolean checkShouldShowSampling(Intercept intercept){
+        int samplingRate = intercept.interceptSettings.samplingRate;
+        //Log.d("Datta","Sampling Rate: " +samplingRate);
+        if(null == intercept.interceptMetadata.visitorStatus) {
+            if (samplingRate >= 100) {
+                return true;
+            } else {
+                int matchedCount = intercept.interceptMetadata.matchedCount;
+                int excludedCount = intercept.interceptMetadata.excludedCount;
+                //Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount);
+                return (matchedCount * 100) / (matchedCount + excludedCount + 1) < samplingRate;
+            }
+        }else
+            return !intercept.interceptMetadata.visitorStatus.equals(VisitorStatus.EXCLUDED.name());
     }
 
     private void checkDateRule(InterceptRule rule, int interceptId){
