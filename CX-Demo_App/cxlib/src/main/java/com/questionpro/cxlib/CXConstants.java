@@ -10,7 +10,8 @@ public class CXConstants {
     private static final String SURVEYS_URL = "/a/api/v2/surveys/";
     private static final String GET_MOBILE_INTERCEPTS = "/api/v1/visitor/mobile";
     private static final String CX_INTERCEPT_SURVEY_URL = "/api/v1/data-mapping/mobile/survey-url";
-    private static final String SUBMIT_SURVEY_FEEDBACK = "/api/v1/visitor/mobile/survey-feedback";
+    private static final String SURVEY_FEEDBACK = "/api/v1/visitor/mobile/survey-feedback";
+    private static final String EXCLUDED_FEEDBACK = "/api/v1/visitor/mobile/excluded-feedback";
     //public static final String PREF_KEY_API_KEY="cx_pref_api_key";
     protected static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
 
@@ -45,9 +46,16 @@ public class CXConstants {
         return "";
     }
 
-    protected static String getFeedbackUrl(){
+    protected static String getSurveyFeedbackUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
-        return getInterceptBaseUrl(dataCenter) + SUBMIT_SURVEY_FEEDBACK;
+        return getInterceptBaseUrl(dataCenter) + SURVEY_FEEDBACK;
+        //return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
+    }
+
+    protected static String getExcludedFeedbackUrl(){
+        String dataCenter = CXGlobalInfo.getDataCenter();
+        return getInterceptBaseUrl(dataCenter) + EXCLUDED_FEEDBACK;
+        //return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
     }
 
     private static String getInterceptBaseUrl(String dataCenter){
