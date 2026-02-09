@@ -18,6 +18,8 @@ public class Intercept implements Serializable {
 
     public ArrayList<DataMapping> dataMappings = new ArrayList<>();
 
+    public InterceptMetadata interceptMetadata;
+
     public static Intercept fromJSON(JSONObject interceptJson) throws Exception{
         Intercept intercept=new Intercept();
         intercept.id = interceptJson.getInt("id");
@@ -36,6 +38,11 @@ public class Intercept implements Serializable {
         if(interceptJson.has("dataMappings") && !interceptJson.isNull("dataMappings")){
             intercept.dataMappings = DataMapping.fromJSON(interceptJson.getJSONArray("dataMappings"));
         }
+
+        if(interceptJson.has("meta")){
+            intercept.interceptMetadata = InterceptMetadata.fromJSON(interceptJson.getJSONObject("meta"));
+        }
+
         return intercept;
     }
 }

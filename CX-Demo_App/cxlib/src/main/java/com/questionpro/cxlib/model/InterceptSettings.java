@@ -9,7 +9,7 @@ public class InterceptSettings implements Serializable {
     public boolean autoLanguageSelection;
     public int triggerDelayInSeconds;
 
-    int samplingRate = 100;
+    public int samplingRate = 100;
 
     public static InterceptSettings fromJSON(JSONObject settingsJson) throws Exception{
         InterceptSettings settings = new InterceptSettings();

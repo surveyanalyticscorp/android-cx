@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import android.os.Handler;
+import android.util.Log;
 
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.CXConstants;
@@ -17,9 +18,11 @@ import com.questionpro.cxlib.IQuestionProApiCallback;
 import com.questionpro.cxlib.dataconnect.CXHttpResponse;
 import com.questionpro.cxlib.dataconnect.CXUploadClient;
 import com.questionpro.cxlib.enums.Platform;
+import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.util.CXUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -108,7 +111,7 @@ class CXApiHandler {
         });
     }
 
-    public void submitFeedback(final Intercept intercept, final String type){
+    protected void submitFeedback(final Intercept intercept, final String type){
         ExecutorService myExecutor = Executors.newSingleThreadExecutor();
         myExecutor.execute(new Runnable() {
             @Override
@@ -121,12 +124,39 @@ class CXApiHandler {
                     headers.put("package-name", mContext.getPackageName());
                     headers.put("visitor-id", SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
 
-                    URL url = new URL(CXConstants.getFeedbackUrl());
+                    URL url = new URL(CXConstants.getSurveyFeedbackUrl());
 
                     CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
 
                     if (response != null) {
                         JSONObject jsonObject = new JSONObject(response.getContent());
+                        Log.d("Datta", "Survey feedback response: "+jsonObject.toString());
+                    }
+                }catch (Exception e){}
+            }
+        });
+    }
+
+    protected void excludedFeedback(final Intercept intercept){
+        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
+        myExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String payload = getExcludedFeedbackApiPayload(intercept);
+
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
+                    headers.put("package-name", mContext.getPackageName());
+                    headers.put("visitor-id", SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
+
+                    URL url = new URL(CXConstants.getExcludedFeedbackUrl());
+
+                    CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
+
+                    if (response != null) {
+                        JSONObject jsonObject = new JSONObject(response.getContent());
+                        Log.d("Datta", "Excluded feedback response: "+jsonObject.toString());
                     }
                 }catch (Exception e){}
             }
@@ -242,6 +272,21 @@ class CXApiHandler {
             payloadObj.put("surveyType",surveyType);
 
             return payloadObj.toString();
+        }catch (Exception e){e.printStackTrace();}
+        return "";
+    }
+
+    private String getExcludedFeedbackApiPayload (Intercept intercept){
+        try {
+            JSONArray jsonArray = new JSONArray();
+            JSONObject payloadObj = new JSONObject();
+            payloadObj.put("interceptId",intercept.id);
+            payloadObj.put("ruleGroupId", intercept.ruleGroupId);
+            payloadObj.put("surveyId",intercept.surveyId);
+            payloadObj.put("surveyType", VisitorStatus.EXCLUDED.name());
+
+            jsonArray.put(payloadObj);
+            return jsonArray.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";
     }
