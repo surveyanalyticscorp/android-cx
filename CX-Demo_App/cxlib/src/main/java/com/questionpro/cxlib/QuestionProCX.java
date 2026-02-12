@@ -249,8 +249,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private boolean checkShouldShowSampling(Intercept intercept){
         int samplingRate = intercept.interceptSettings.samplingRate;
-        //Log.d("Datta","Sampling Rate: " +samplingRate);
-        if(null == intercept.interceptMetadata.visitorStatus) {
+        Log.d("Datta","Sampling Rate: " +samplingRate);
+        if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
             if (samplingRate >= 100) {
                 return true;
             } else {

@@ -39,8 +39,8 @@ public class Intercept implements Serializable {
             intercept.dataMappings = DataMapping.fromJSON(interceptJson.getJSONArray("dataMappings"));
         }
 
-        if(interceptJson.has("meta")){
-            intercept.interceptMetadata = InterceptMetadata.fromJSON(interceptJson.getJSONObject("meta"));
+        if(interceptJson.has("metaData")){
+            intercept.interceptMetadata = InterceptMetadata.fromJSON(interceptJson.getJSONObject("metaData"));
         }
 
         return intercept;
