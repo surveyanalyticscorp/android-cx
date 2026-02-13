@@ -236,8 +236,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                                 checkDateRule(rule, intercept.id);
                             }
                         }
-                    }else if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
-                        new CXApiHandler(appContext, this).excludedFeedback(intercept);
                     }
                 }
             }else{
@@ -247,7 +245,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }catch (Exception e){e.printStackTrace();}
     }
 
-    private boolean checkShouldShowSampling(Intercept intercept){
+    protected boolean checkShouldShowSampling(Intercept intercept){
         int samplingRate = intercept.interceptSettings.samplingRate;
         Log.d("Datta","Sampling Rate: " +samplingRate+ " Status: "+intercept.interceptMetadata.visitorStatus);
         if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
@@ -256,8 +254,12 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             } else {
                 int matchedCount = intercept.interceptMetadata.matchedCount;
                 int excludedCount = intercept.interceptMetadata.excludedCount;
-                Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount);
-                return (matchedCount * 100) / (matchedCount + excludedCount + 1) < samplingRate;
+                boolean isIncluded =  (matchedCount * 100) / (matchedCount + excludedCount + 1) < samplingRate;
+                Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount + " Is included in sampling: " + isIncluded);
+                if(!isIncluded){
+                    new CXApiHandler(appContext, this).excludedFeedback(intercept);
+                }
+                return isIncluded;
             }
         }else
             return !intercept.interceptMetadata.visitorStatus.equals(VisitorStatus.EXCLUDED.name());

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptRule;
+import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -68,13 +69,15 @@ public class MonitorAppEvents {
                     JSONObject jsonObject = interceptArray.getJSONObject(i);
                     Intercept intercept = Intercept.fromJSON(jsonObject);
                     //Log.d("Datta", "Intercept Id for tag "+tagName+" : "+intercept.id);
-                    for (InterceptRule rule : intercept.interceptRule) {
-                        if (rule.name.equals(InterceptRuleType.VIEW_COUNT.name()) &&
-                                rule.key.equals(tagName) &&
-                                Integer.parseInt(rule.value) <= viewCountForTag) {
-                            //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
-                            rulesCallback.onViewCountRuleSatisfied(intercept.id);
-                            SharedPreferenceManager.getInstance(context).resetViewCountForTag(tagName);
+                    if(QuestionProCX.getInstance().checkShouldShowSampling(intercept)) {
+                        for (InterceptRule rule : intercept.interceptRule) {
+                            if (rule.name.equals(InterceptRuleType.VIEW_COUNT.name()) &&
+                                    rule.key.equals(tagName) &&
+                                    Integer.parseInt(rule.value) <= viewCountForTag) {
+                                //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
+                                rulesCallback.onViewCountRuleSatisfied(intercept.id);
+                                SharedPreferenceManager.getInstance(context).resetViewCountForTag(tagName);
+                            }
                         }
                     }
                 }
