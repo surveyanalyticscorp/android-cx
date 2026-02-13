@@ -225,7 +225,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     JSONObject jsonObject = interceptArray.getJSONObject(i);
                     //setUpTimeSpendIntercept(obj);
                     Intercept intercept = Intercept.fromJSON(jsonObject);
-                    CXUtils.printLog("Datta","checkShouldShowSampling: " +checkShouldShowSampling(intercept));
+                    //CXUtils.printLog("Datta","checkShouldShowSampling: " +checkShouldShowSampling(intercept));
                     if(checkShouldShowSampling(intercept)) {
                         for (InterceptRule rule : intercept.interceptRule) {
                             if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
@@ -236,7 +236,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                                 checkDateRule(rule, intercept.id);
                             }
                         }
-                    }else{
+                    }else if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
                         new CXApiHandler(appContext, this).excludedFeedback(intercept);
                     }
                 }
@@ -249,14 +249,14 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private boolean checkShouldShowSampling(Intercept intercept){
         int samplingRate = intercept.interceptSettings.samplingRate;
-        Log.d("Datta","Sampling Rate: " +samplingRate);
+        Log.d("Datta","Sampling Rate: " +samplingRate+ " Status: "+intercept.interceptMetadata.visitorStatus);
         if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
             if (samplingRate >= 100) {
                 return true;
             } else {
                 int matchedCount = intercept.interceptMetadata.matchedCount;
                 int excludedCount = intercept.interceptMetadata.excludedCount;
-                //Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount);
+                Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount);
                 return (matchedCount * 100) / (matchedCount + excludedCount + 1) < samplingRate;
             }
         }else

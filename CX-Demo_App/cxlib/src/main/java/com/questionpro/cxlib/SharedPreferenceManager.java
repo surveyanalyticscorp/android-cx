@@ -56,12 +56,14 @@ class SharedPreferenceManager {
 
     void saveVisitorsUUID(String uuid){
         visitorUUID = uuid;
-        getPrefs().edit().putString(KEY_VISITORS_UUID, uuid).apply();
+        SharedPreferences prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME_INTERCEPTS, Context.MODE_PRIVATE);
+        prefs.edit().putString(KEY_VISITORS_UUID, uuid).apply();
     }
 
     String getVisitorsUUID(){
         if(CXUtils.isEmpty(visitorUUID)){
-            visitorUUID = getPrefs().getString(KEY_VISITORS_UUID, "");
+            SharedPreferences prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME_INTERCEPTS, Context.MODE_PRIVATE);
+            visitorUUID = prefs.getString(KEY_VISITORS_UUID, "");
         }
         return visitorUUID;
     }
