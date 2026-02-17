@@ -8,6 +8,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.questionpro.cxlib.dataconnect.CXPayload;
+import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.model.DataMapping;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.InterceptSettings;
@@ -25,9 +26,7 @@ import java.util.Map;
 
 
 public class CXGlobalInfo {
-    private static boolean initialized = false;
     private static String UUID;
-    private static String appPackage;
     private static String apiKey = null;
     private static String payload;
 
@@ -57,20 +56,12 @@ public class CXGlobalInfo {
         return CXGlobalInfo.apiKey;
     }
 
-    public void setAppPackage(String appPackage){
-        CXGlobalInfo.appPackage = appPackage;
-    }
-
     public void setUUID(String uuid){
         CXGlobalInfo.UUID = uuid;
     }
 
     public String getUUID(){
         return CXGlobalInfo.UUID;
-    }
-
-    public void setInitialized(boolean initialized){
-        CXGlobalInfo.initialized = initialized;
     }
 
     /**
@@ -95,31 +86,15 @@ public class CXGlobalInfo {
         return "";
     }
 
-    public static String getConfigType(){
+    protected Platform getPlatform(){
         try{
             JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("configType");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
-    }
-
-    @NonNull
-    public static boolean isShowDialog(Context context){
-        try{
-            JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getBoolean("showAsDialog");
-        }catch (Exception e){e.printStackTrace();}
-        return false;
-    }
-
-    @NonNull
-    public static String getThemeColour(Context context){
-        try{
-            //AppCompatActivity activity = (AppCompatActivity) context;
-            JSONObject payloadObj = new JSONObject(getStoredPayload());
-            return payloadObj.getString("themeColor");
-        }catch (Exception e){e.printStackTrace();}
-        return "";
+            String platformStr = payloadObj.getString("platform");
+            return Platform.valueOf(platformStr);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return Platform.ANDROID;
     }
 
     /**
@@ -146,7 +121,20 @@ public class CXGlobalInfo {
         return "";
     }
 
-    public static String getInterceptApiPayload(Intercept intercept, Context context){
+    protected HashMap<String, String> getInterceptApiHeaders(Context mContext){
+        try{
+            HashMap<String, String> headers = new HashMap<>();
+            headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
+            headers.put("visitor-id",SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
+            headers.put("package-name", mContext.getPackageName());
+            headers.put("x-platform", getPlatformType());
+            headers.put("x-device-id", CXUtils.getUniqueDeviceId(mContext));
+            return headers;
+        }catch (Exception e){e.printStackTrace();}
+        return new HashMap<>();
+    }
+
+    protected String getSurveyApiPayload(Intercept intercept, Context context){
         try {
             JSONObject payloadObj = new JSONObject();
             payloadObj.put("packageName", context.getPackageName());
@@ -159,18 +147,18 @@ public class CXGlobalInfo {
                     setAppLanguage(payloadObj, context);
                 }
             }
-            CXGlobalInfo.setCustomVariable(payloadObj, intercept, context);
+            setCustomVariable(payloadObj, intercept, context);
 
             return payloadObj.toString();
         }catch (Exception e){e.printStackTrace();}
         return "";
     }
 
-    private static void setAppLanguage(JSONObject requestObj, Context context) throws JSONException{
+    private void setAppLanguage(JSONObject requestObj, Context context) throws JSONException{
         requestObj.put("surveyLanguage", CXUtils.getAppLanguage(context));
     }
 
-    private static void setCustomVariable(JSONObject requestObj, Intercept intercept, Context context){
+    private void setCustomVariable(JSONObject requestObj, Intercept intercept, Context context){
         try {
             JSONArray customVars = getCustomVariablesFromPayload();
             ArrayList<DataMapping> dataMappings = intercept.dataMappings;
@@ -204,7 +192,7 @@ public class CXGlobalInfo {
         return false;
     }
 
-    private static String getValueIgnoreCase(JSONObject jsonObject, String key) throws JSONException {
+    private String getValueIgnoreCase(JSONObject jsonObject, String key) throws JSONException {
         for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
             String currentKey = it.next();
             if (currentKey.equalsIgnoreCase(key)) {
@@ -214,9 +202,9 @@ public class CXGlobalInfo {
         return null;
     }
 
-    private static JSONArray getCustomVariablesFromPayload(){
+    private JSONArray getCustomVariablesFromPayload(){
         try{
-            JSONObject payloadObj = new JSONObject(CXGlobalInfo.payload);
+            JSONObject payloadObj = new JSONObject(getStoredPayload());
             if (payloadObj.has("customVariables")) {
                 String inputString = payloadObj.getString("customVariables").replace("{","").replace("}","");
                 String[] pairs = inputString.split(",");
@@ -227,7 +215,7 @@ public class CXGlobalInfo {
     }
 
     @NonNull
-    private static JSONArray getCustomVars(String[] pairs) throws JSONException {
+    private JSONArray getCustomVars(String[] pairs) throws JSONException {
         JSONArray customVars = new JSONArray();
         for (String pair : pairs) {
             JSONObject customVar = new JSONObject();
@@ -241,5 +229,16 @@ public class CXGlobalInfo {
             }
         }
         return customVars;
+    }
+
+    private String getPlatformType(){
+        if(getPlatform().equals(Platform.REACT_NATIVE))
+            return "react-native";
+        else if (getPlatform().equals(Platform.IOS))
+            return "ios";
+        else if (getPlatform().equals(Platform.FLUTTER))
+            return "flutter";
+        else
+            return "android";
     }
 }

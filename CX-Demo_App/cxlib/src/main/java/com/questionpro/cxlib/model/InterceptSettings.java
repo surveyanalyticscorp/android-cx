@@ -9,7 +9,9 @@ public class InterceptSettings implements Serializable {
     public boolean autoLanguageSelection;
     public int triggerDelayInSeconds;
 
-    int samplingRate = 100;
+    public boolean autoCloseOnCompletion;
+
+    public int samplingRate = 100;
 
     public static InterceptSettings fromJSON(JSONObject settingsJson) throws Exception{
         InterceptSettings settings = new InterceptSettings();
@@ -27,6 +29,10 @@ public class InterceptSettings implements Serializable {
 
         if(settingsJson.has("samplingRate") && !settingsJson.isNull("samplingRate")){
             settings.samplingRate = settingsJson.getInt("samplingRate");
+        }
+
+        if(settingsJson.has("autoCloseOnCompletion") && !settingsJson.isNull("autoCloseOnCompletion")){
+            settings.autoCloseOnCompletion = settingsJson.getBoolean("autoCloseOnCompletion");
         }
 
         return settings;

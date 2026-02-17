@@ -12,6 +12,7 @@ import com.qpcx.retailapp.util.PreferenceHelper;
 import com.questionpro.cxlib.QuestionProCX;
 import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.DataCenter;
+import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.model.TouchPoint;
 
@@ -69,7 +70,6 @@ public class AppController extends Application {
 
 	private void initialiseQpSdk(AppController appController){
 		TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US)
-				.isFlutterApp(false)
 				.build();
 
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {

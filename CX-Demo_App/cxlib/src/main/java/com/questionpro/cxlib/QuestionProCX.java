@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.questionpro.cxlib.enums.ConfigType;
 
+import com.questionpro.cxlib.enums.Platform;
+import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.interfaces.IQuestionProCallback;
 import com.questionpro.cxlib.model.Intercept;
@@ -39,6 +41,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private static final String LOG_TAG="QuestionProCX";
     private static int runningActivities;
     private static boolean isSessionAlive = false;
+    private static boolean isInitialised = false;
     private ProgressDialog progressDialog;
 
     private static Context appContext;
@@ -65,13 +68,12 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
         appContext = context;
         questionProInitCallback = callback;
-
         if (appContext instanceof Application) {
             ((Application) appContext).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
+                    new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint)));
         } else if (appContext.getApplicationContext() instanceof Application) {
             ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(touchPoint.isFlutterApp() ? 1 : 0));
+                    new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint)));
         }
 
         if(touchPoint == null){
@@ -121,7 +123,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
      * @param tagName : TagName or screen name which is set while configuring the intercept rules.
      */
     public void setScreenVisited(String tagName){
-        MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
+        if(isInitialised) {
+            MonitorAppEvents.getInstance().setTagNameCheckRules(tagName, appContext, QuestionProCX.this);
+        }
     }
 
     public void setDataMappings(HashMap<String, String> customDataMappings){
@@ -142,6 +146,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     protected void clearSession(){
         Log.i("QuestionPro","Clearing session.");
         isSessionAlive = false;
+        isInitialised = false;
         MonitorAppEvents.getInstance().stopAllTimers();
         interceptSatisfiedRules.clear();
         SharedPreferenceManager.getInstance(appContext).resetPreferences();
@@ -158,9 +163,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
             CXUtils.printLog(LOG_TAG, "API key: " + apiKey);
             CXGlobalInfo.getInstance().setApiKey(apiKey);
-            CXGlobalInfo.getInstance().setAppPackage(appContext.getPackageName());
             CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
-            CXGlobalInfo.getInstance().setInitialized(true);
         }
 
         fetchInterceptSettings();
@@ -189,8 +192,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     @Override
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
+        isInitialised = true;
         if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
-            new CXApiHandler(appContext, this).submitFeedback(intercept, "MATCHED");
+            new CXApiHandler(appContext, this).submitFeedback(intercept, VisitorStatus.MATCHED.name());
             if(questionProCallback != null) {
                 questionProCallback.getSurveyUrl(surveyUrl);
             }
@@ -221,13 +225,16 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     JSONObject jsonObject = interceptArray.getJSONObject(i);
                     //setUpTimeSpendIntercept(obj);
                     Intercept intercept = Intercept.fromJSON(jsonObject);
-                    for (InterceptRule rule : intercept.interceptRule) {
-                        if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
-                            MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
-                        } else if (rule.name.equals(InterceptRuleType.DAY.name())) {
-                            checkDayRule(rule, intercept.id);
-                        } else if (rule.name.equals(InterceptRuleType.DATE.name())) {
-                            checkDateRule(rule, intercept.id);
+                    //CXUtils.printLog("Datta","checkShouldShowSampling: " +checkShouldShowSampling(intercept));
+                    if(checkShouldShowSampling(intercept)) {
+                        for (InterceptRule rule : intercept.interceptRule) {
+                            if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
+                                MonitorAppEvents.getInstance().appSessionStarted(intercept.id, rule, QuestionProCX.this);
+                            } else if (rule.name.equals(InterceptRuleType.DAY.name())) {
+                                checkDayRule(rule, intercept.id);
+                            } else if (rule.name.equals(InterceptRuleType.DATE.name())) {
+                                checkDateRule(rule, intercept.id);
+                            }
                         }
                     }
                 }
@@ -236,6 +243,26 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 fetchInterceptSettings();
             }
         }catch (Exception e){e.printStackTrace();}
+    }
+
+    protected boolean checkShouldShowSampling(Intercept intercept){
+        int samplingRate = intercept.interceptSettings.samplingRate;
+        Log.d("Datta","Sampling Rate: " +samplingRate+ " Status: "+intercept.interceptMetadata.visitorStatus);
+        if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
+            if (samplingRate >= 100) {
+                return true;
+            } else {
+                int matchedCount = intercept.interceptMetadata.matchedCount;
+                int excludedCount = intercept.interceptMetadata.excludedCount;
+                boolean isIncluded =  (matchedCount * 100) / (matchedCount + excludedCount + 1) < samplingRate;
+                Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount + " Is included in sampling: " + isIncluded);
+                if(!isIncluded){
+                    new CXApiHandler(appContext, this).excludedFeedback(intercept);
+                }
+                return isIncluded;
+            }
+        }else
+            return !intercept.interceptMetadata.visitorStatus.equals(VisitorStatus.EXCLUDED.name());
     }
 
     private void checkDateRule(InterceptRule rule, int interceptId){
@@ -381,31 +408,22 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
     }
 
-    public void cleanup() {
+    /*public void cleanup() {
         if (appContext instanceof Application) {
             ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         } else if (appContext.getApplicationContext() instanceof Application) {
             ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
         }
-    }
+    }*/
 
-    private int getStartActivityCount(Context context){
-        try {
-            Class<?> flutterActivityClass = Class.forName("io.flutter.embedding.android.FlutterActivity");
-            Class<?> flutterFragmentActivityClass = Class.forName("io.flutter.embedding.android.FlutterFragmentActivity");
-            if (flutterActivityClass.isInstance(context) || flutterFragmentActivityClass.isInstance(context)) {
-                return 1;
-            }
-        } catch (ClassNotFoundException ignored) {}
+    private int getStartActivityCount(TouchPoint touchPoint){
+        if(touchPoint.getPlatform().equals(Platform.FLUTTER)){
+            return 1;
+        }
 
-        Class<?> reactActivityClass = null;
-        try {
-            reactActivityClass = Class.forName("com.facebook.react.ReactActivity");
-            if (reactActivityClass != null && reactActivityClass.isInstance(context)) {
-                return 1;
-            }
-        } catch (ClassNotFoundException ignored) {}
-
+        if(touchPoint.getPlatform().equals(Platform.REACT_NATIVE)){
+            return 1;
+        }
         return 0;
     }
 }

@@ -22,6 +22,7 @@ class SharedPreferenceManager {
     private final String KEY_VISITORS_UUID = "visitors_uuid";
     private final String KEY_LAUNCHED_SURVEYS = "launched_surveys";
     private static String interceptProjectStr;
+    private static String visitorUUID;
     private final Context context;
     private static SharedPreferenceManager instance;
 
@@ -41,6 +42,10 @@ class SharedPreferenceManager {
         return this.context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
+    private SharedPreferences getPersistedPrefs() {
+        return this.context.getSharedPreferences(PREF_NAME_INTERCEPTS, Context.MODE_PRIVATE);
+    }
+
     void saveProject(String project){
         interceptProjectStr = project;
         getPrefs().edit().putString(KEY_PROJECTS, project).apply();
@@ -54,11 +59,15 @@ class SharedPreferenceManager {
     }
 
     void saveVisitorsUUID(String uuid){
-        getPrefs().edit().putString(KEY_VISITORS_UUID, uuid).apply();
+        visitorUUID = uuid;
+        getPersistedPrefs().edit().putString(KEY_VISITORS_UUID, uuid).apply();
     }
 
     String getVisitorsUUID(){
-        return getPrefs().getString(KEY_VISITORS_UUID, "");
+        if(CXUtils.isEmpty(visitorUUID)){
+            visitorUUID = getPersistedPrefs().getString(KEY_VISITORS_UUID, "");
+        }
+        return visitorUUID;
     }
 
     Intercept getInterceptById(int interceptId) throws Exception{
@@ -131,7 +140,7 @@ class SharedPreferenceManager {
 
 
     void saveInterceptIdForLaunchedSurvey(int interceptId, long time){
-        SharedPreferences prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME_INTERCEPTS, Context.MODE_PRIVATE);
+        SharedPreferences prefs = getPersistedPrefs();
         Map<Integer, Long> myMap = getLaunchedSurveysMap(prefs);
 
         myMap.put(interceptId, time);
@@ -141,16 +150,14 @@ class SharedPreferenceManager {
     }
 
     long getLaunchedInterceptTime(int interceptId){
-        SharedPreferences prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME_INTERCEPTS, Context.MODE_PRIVATE);
-        Map<Integer, Long> myMap = getLaunchedSurveysMap(prefs);
+        Map<Integer, Long> myMap = getLaunchedSurveysMap(getPersistedPrefs());
         if (myMap.containsKey(interceptId))
             return myMap.get(interceptId) != null ? myMap.get(interceptId) : 0;
         return 0;
     }
 
     boolean isSurveyAlreadyLaunched(int interceptId){
-        SharedPreferences prefs = context.getApplicationContext().getSharedPreferences(PREF_NAME_INTERCEPTS, Context.MODE_PRIVATE);
-        return getLaunchedSurveysMap(prefs).containsKey(interceptId);
+        return getLaunchedSurveysMap(getPersistedPrefs()).containsKey(interceptId);
     }
 
     private Map<Integer, Long> getLaunchedSurveysMap(SharedPreferences prefs){
