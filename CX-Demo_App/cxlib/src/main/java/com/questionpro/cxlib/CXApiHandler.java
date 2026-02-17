@@ -130,7 +130,7 @@ class CXApiHandler {
 
                     if (response != null) {
                         JSONObject jsonObject = new JSONObject(response.getContent());
-                        Log.d("Datta", "Survey feedback response: "+jsonObject.toString());
+                        //Log.d("Datta", "Survey feedback response: "+jsonObject.toString());
                     }
                 }catch (Exception e){}
             }
