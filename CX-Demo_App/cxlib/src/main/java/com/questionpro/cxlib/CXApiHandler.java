@@ -156,7 +156,7 @@ class CXApiHandler {
 
                     if (response != null) {
                         JSONObject jsonObject = new JSONObject(response.getContent());
-                        Log.d("Datta", "Excluded feedback response: "+jsonObject.toString());
+                        //Log.d("Datta", "Excluded feedback response: "+jsonObject.toString());
                     }
                 }catch (Exception e){}
             }

@@ -29,14 +29,10 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by sachinsable on 29/03/16.
- */
+
 public class CXUtils {
-    public static final String PSEUDO_ISO8601_DATE_FORMAT = "yyyy-MM-dd HH:mm:ssZ"; // 2011-01-01 11:59:59-0800
     public static final String PSEUDO_ISO8601_DATE_FORMAT_MILLIS = "yyyy-MM-dd HH:mm:ss.SSSZ"; // 2011-01-01 11:59:59.123-0800 or 2011-01-01 11:59:59.23-0800
 
-    private static final int SLEEP_TIME_THRESHOLD_IN_MIN = 2;
 
     public static String getUniqueDeviceId(Context context) {
         @SuppressLint("HardwareIds")
@@ -127,25 +123,6 @@ public class CXUtils {
     public static long getCurrentLocalTimeInMillis(){
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault()); // Get current time in default time zone
         return calendar.getTimeInMillis();
-    }
-
-    public static boolean isSleepTimeOver(long prevTime){
-        if(prevTime == 0 )
-            return true;
-
-        long currentTime = CXUtils.getCurrentLocalTimeInMillis();
-
-       /* Date prevDate = new Date(prevTime);
-        Log.d("Datta"," prevDate: "+prevDate);
-        Date currentDate = new Date(currentTime);
-        Log.d("Datta"," currentDate: "+currentDate);*/
-
-        long diff = Math.abs(currentTime - prevTime);
-        //long inHours = TimeUnit.HOURS.convert(diff, TimeUnit.MILLISECONDS);
-        long inMin = TimeUnit.MINUTES.convert(diff, TimeUnit.MILLISECONDS);
-
-        //Log.d("Datta","Time difference in hours:min - "+inHours+":"+inMin);
-        return inMin > SLEEP_TIME_THRESHOLD_IN_MIN;
     }
 
     public static void printLog(String tag, String message){

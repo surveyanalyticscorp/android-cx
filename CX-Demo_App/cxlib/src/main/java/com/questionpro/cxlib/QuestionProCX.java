@@ -247,7 +247,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     protected boolean checkShouldShowSampling(Intercept intercept){
         int samplingRate = intercept.interceptSettings.samplingRate;
-        Log.d("Datta","Sampling Rate: " +samplingRate+ " Status: "+intercept.interceptMetadata.visitorStatus);
+        //Log.d("Datta","Sampling Rate: " +samplingRate+ " Status: "+intercept.interceptMetadata.visitorStatus);
         if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
             if (samplingRate >= 100) {
                 return true;
@@ -255,7 +255,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 int matchedCount = intercept.interceptMetadata.matchedCount;
                 int excludedCount = intercept.interceptMetadata.excludedCount;
                 boolean isIncluded =  (matchedCount * 100) / (matchedCount + excludedCount + 1) < samplingRate;
-                Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount + " Is included in sampling: " + isIncluded);
+                //Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount + " Is included in sampling: " + isIncluded);
                 if(!isIncluded){
                     new CXApiHandler(appContext, this).excludedFeedback(intercept);
                 }
