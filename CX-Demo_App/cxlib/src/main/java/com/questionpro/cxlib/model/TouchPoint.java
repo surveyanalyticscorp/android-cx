@@ -17,11 +17,13 @@ public class TouchPoint implements Serializable{
     /** Setting related variables */
     private final DataCenter dataCenter;
     private  final Platform platform;
+    private String apiKey = null;
 
     public TouchPoint(Builder builder) {
         this.transactionDate = builder.transactionDate;
         this.dataCenter = builder.dataCenter;
         this.platform = builder.platform;
+        this.apiKey = builder.apiKey;
     }
 
     private String getTransactionDate() {
@@ -34,6 +36,9 @@ public class TouchPoint implements Serializable{
 
     public Platform getPlatform(){
         return platform;
+    }
+    public String getApiKey(){
+        return apiKey;
     }
 
     @NonNull
@@ -53,10 +58,15 @@ public class TouchPoint implements Serializable{
         private DataCenter dataCenter = null;
 
         private Platform platform = Platform.ANDROID;
-        //private Map<Integer, String> customVariables;
+        private String apiKey = null;
 
         public Builder(DataCenter dataCenter){
             this.dataCenter = dataCenter;
+        }
+
+        public Builder(DataCenter dataCenter, String apiKey){
+            this.dataCenter = dataCenter;
+            this.apiKey = apiKey;
         }
 
         public Builder setPlatform(Platform platform){

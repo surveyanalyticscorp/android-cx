@@ -162,9 +162,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         if (metaData != null) {
             String apiKey = metaData.getString(CXConstants.MANIFEST_KEY_API_KEY);
             CXUtils.printLog(LOG_TAG, "API key: " + apiKey);
-            CXGlobalInfo.getInstance().setApiKey(apiKey);
-            CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
+            if(!CXUtils.isEmpty(apiKey))
+                CXGlobalInfo.getInstance().setApiKey(apiKey);
         }
+        CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
 
         fetchInterceptSettings();
     }
