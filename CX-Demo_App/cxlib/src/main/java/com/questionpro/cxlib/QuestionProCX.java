@@ -359,18 +359,21 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
-        } else if (runningActivities == 0 && isSessionAlive) {
+        } else {
             int triggerDelay = intercept.interceptSettings.triggerDelayInSeconds * 1000;
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        Intent intent = new Intent(appContext, InteractionActivity.class);
-                        intent.putExtra("INTERCEPT", intercept);
-                        if (!(appContext instanceof Activity)) {
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        if (runningActivities == 0 && isSessionAlive){
+                            runningActivities++;
+                            Intent intent = new Intent(appContext, InteractionActivity.class);
+                            intent.putExtra("INTERCEPT", intercept);
+                            if (!(appContext instanceof Activity)) {
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            }
+                            appContext.startActivity(intent);
                         }
-                        appContext.startActivity(intent);
                     }catch (Exception e){
                         Log.e("QuestionPro", "Failed to launch activity", e);
                     }
@@ -387,7 +390,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         if (runningActivities == 0) {
             //CXPayloadWorker.appWentToForeground(activity);
         }
-        runningActivities++;
+//        runningActivities++;
     }
 
     public void onStop(Activity activity){
