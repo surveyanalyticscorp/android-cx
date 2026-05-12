@@ -33,48 +33,45 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Dattakunde on 14/04/16.
  */
 public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRulesCallback {
     private static final String LOG_TAG="QuestionProCX";
-    private static int runningActivities;
+    private static final AtomicInteger runningActivities = new AtomicInteger(0);
     private static boolean isSessionAlive = false;
     private static boolean isInitialised = false;
     private ProgressDialog progressDialog;
 
     private static Context appContext;
 
-    private static QuestionProCX mInstance = null;
-
     private IQuestionProInitCallback questionProInitCallback;
     private IQuestionProCallback questionProCallback;
+    private ActivityLifecycleCallbacks activityLifecycleCallbacks;
 
     private static final HashMap<Integer, Set<String>> interceptSatisfiedRules = new HashMap<>();
-    public QuestionProCX(){
+
+    private QuestionProCX(){
     }
 
-    public synchronized static QuestionProCX getInstance(){
-        if(mInstance == null){
-            mInstance = new QuestionProCX();
-        }
-        return mInstance;
+    private static class Holder {
+        static final QuestionProCX INSTANCE = new QuestionProCX();
+    }
+
+    public static QuestionProCX getInstance(){
+        return Holder.INSTANCE;
     }
 
     /**
      * Initializes the SDK
      */
     public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
-        appContext = context;
+        appContext = context.getApplicationContext();
         questionProInitCallback = callback;
-        if (appContext instanceof Application) {
-            ((Application) appContext).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint)));
-        } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).registerActivityLifecycleCallbacks(
-                    new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint)));
-        }
+        activityLifecycleCallbacks = new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint));
+        ((Application) appContext).registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
         if(touchPoint == null){
             if(callback != null) {
@@ -98,7 +95,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     private synchronized void launchFeedbackSurvey(long surveyId){
-        if (runningActivities == 0) {
+        if (runningActivities.get() == 0) {
             try {
                 Intent intent = new Intent(appContext, InteractionActivity.class);
                 intent.putExtra("SURVEY_ID", surveyId);
@@ -133,7 +130,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     public void closeSurveyWindow(){
-        if (runningActivities > 0) {
+        if (runningActivities.get() > 0) {
             if (InteractionActivity.currentActivity != null && !InteractionActivity.currentActivity.isFinishing()) {
                 InteractionActivity.currentActivity.finish();
             }
@@ -333,10 +330,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private void checkAllRulesForIntercept(int interceptId){
         try {
             Intercept intercept = SharedPreferenceManager.getInstance(appContext).getInterceptById(interceptId);
-            /** TODO add check if intercept is null**/
+            if (intercept == null) return;
             if(shouldSurveyLaunch(intercept)) {
                 Set<String> temp = interceptSatisfiedRules.get(interceptId);
-                assert temp != null;
+                if (temp == null) return;
                 CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
 
                 if (intercept.condition.equals(InterceptCondition.OR.name())) {
@@ -345,7 +342,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     launchFeedbackSurvey(intercept);
                 }
             }
-        }catch (Exception e){}
+        }catch (Exception e){
+            Log.e(LOG_TAG, "Error checking rules for intercept: " + interceptId, e);
+        }
     }
 
     private boolean shouldSurveyLaunch(Intercept intercept){
@@ -356,7 +355,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
 
     private synchronized void launchFeedbackSurvey(Intercept intercept){
-        CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities);
+        CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities.get());
         if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
         } else {
@@ -365,8 +364,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 @Override
                 public void run() {
                     try {
-                        if (runningActivities == 0 && isSessionAlive){
-                            runningActivities++;
+                        if (runningActivities.get() == 0 && isSessionAlive){
+                            runningActivities.incrementAndGet();
                             Intent intent = new Intent(appContext, InteractionActivity.class);
                             intent.putExtra("INTERCEPT", intercept);
                             if (!(appContext instanceof Activity)) {
@@ -387,23 +386,21 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         //init(activity);
         CXUtils.printLog("Datta","Interaction Activity onStart");
         ActivityLifecycleManager.activityStarted(activity);
-        if (runningActivities == 0) {
+        if (runningActivities.get() == 0) {
             //CXPayloadWorker.appWentToForeground(activity);
         }
-//        runningActivities++;
     }
 
     public void onStop(Activity activity){
         CXUtils.printLog("Datta","Interaction Activity onStop");
         try {
             ActivityLifecycleManager.activityStopped(activity);
-            runningActivities--;
-            if (runningActivities < 0) {
+            if (runningActivities.decrementAndGet() < 0) {
                 Log.e(LOG_TAG,"Incorrect number of running Activities encountered. Resetting to 0. Did you make sure to call Apptentive.onStart() and Apptentive.onStop() in all your Activities?");
-                runningActivities = 0;
+                runningActivities.set(0);
             }
             // If there are no running activities, wake the thread so it can stop immediately and gracefully.
-            if (runningActivities == 0) {
+            if (runningActivities.get() == 0) {
                 //CXPayloadWorker.appWentToBackground();
             }
 
@@ -412,13 +409,12 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
     }
 
-    /*public void cleanup() {
-        if (appContext instanceof Application) {
-            ((Application) appContext).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
-        } else if (appContext.getApplicationContext() instanceof Application) {
-            ((Application) appContext.getApplicationContext()).unregisterActivityLifecycleCallbacks(new ActivityLifecycleCallbacks(getStartActivityCount(appContext)));
+    public void cleanup() {
+        if (activityLifecycleCallbacks != null && appContext != null) {
+            ((Application) appContext).unregisterActivityLifecycleCallbacks(activityLifecycleCallbacks);
+            activityLifecycleCallbacks = null;
         }
-    }*/
+    }
 
     private int getStartActivityCount(TouchPoint touchPoint){
         if(touchPoint.getPlatform().equals(Platform.FLUTTER)){

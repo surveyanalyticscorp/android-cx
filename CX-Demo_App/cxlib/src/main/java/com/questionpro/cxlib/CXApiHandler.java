@@ -200,7 +200,6 @@ class CXApiHandler {
             CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
 
             if (response != null) {
-                QuestionProCX questionProCX = new QuestionProCX();
                 if (response.isSuccessful()) {
                     JSONObject jsonObject = new JSONObject(response.getContent());
                     if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
