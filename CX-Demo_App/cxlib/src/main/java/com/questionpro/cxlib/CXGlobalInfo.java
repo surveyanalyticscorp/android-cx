@@ -52,7 +52,10 @@ public class CXGlobalInfo {
     }
 
     public void setApiKey(String apiKey){
-        CXGlobalInfo.apiKey = apiKey;
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            throw new IllegalArgumentException("API key must not be null or empty.");
+        }
+        CXGlobalInfo.apiKey = apiKey.trim();
     }
 
     public String getApiKey(){

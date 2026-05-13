@@ -160,6 +160,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             if(!CXUtils.isEmpty(apiKey))
                 CXGlobalInfo.getInstance().setApiKey(apiKey);
         }
+        if (CXUtils.isEmpty(CXGlobalInfo.getInstance().getApiKey())) {
+            throw new IllegalStateException("API key not found. Set it via AndroidManifest meta-data or TouchPoint.Builder.");
+        }
+
         CXGlobalInfo.getInstance().setUUID(CXUtils.getUniqueDeviceId(appContext));
 
         fetchInterceptSettings();
