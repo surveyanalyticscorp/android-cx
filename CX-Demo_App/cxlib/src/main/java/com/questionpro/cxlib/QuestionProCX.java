@@ -2,7 +2,6 @@ package com.questionpro.cxlib;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -43,7 +42,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private static final AtomicInteger runningActivities = new AtomicInteger(0);
     private static boolean isSessionAlive = false;
     private static boolean isInitialised = false;
-    private ProgressDialog progressDialog;
 
     private static Context appContext;
 

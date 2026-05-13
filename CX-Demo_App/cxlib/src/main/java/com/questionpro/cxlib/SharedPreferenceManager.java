@@ -92,8 +92,11 @@ class SharedPreferenceManager {
         return -1;
     }
 
+    private static final int MAX_VIEW_COUNT = 10_000;
     int updateViewCountForTag(String tag){
-        int updatedViewCount = getViewCountForTag(tag) + 1;
+        int current = getViewCountForTag(tag);
+        if (current >= MAX_VIEW_COUNT) return current;
+        int updatedViewCount = current + 1;
         getPrefs().edit().putInt(tag, updatedViewCount).apply();
         return updatedViewCount;
     }
