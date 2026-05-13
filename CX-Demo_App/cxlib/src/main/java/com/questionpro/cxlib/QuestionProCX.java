@@ -191,7 +191,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     @Override
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
         isInitialised = true;
-        if(null != intercept && intercept.type.equals(InterceptType.SURVEY_URL.name())) {
+        if(null != intercept && InterceptType.SURVEY_URL.name().equals(intercept.type)) {
             new CXApiHandler(appContext, this).submitFeedback(intercept, VisitorStatus.MATCHED.name());
             if(questionProCallback != null) {
                 questionProCallback.getSurveyUrl(surveyUrl);
@@ -356,7 +356,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     private synchronized void launchFeedbackSurvey(Intercept intercept){
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities.get());
-        if(intercept.type.equals(InterceptType.SURVEY_URL.name())){
+        if(InterceptType.SURVEY_URL.name().equals(intercept.type)){
             new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
         } else {
             int triggerDelay = intercept.interceptSettings.triggerDelayInSeconds * 1000;
