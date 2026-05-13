@@ -70,7 +70,7 @@ public class InteractionActivity extends FragmentActivity implements
             setupWebview();
             getInterceptSurveyDetails();
         }else{
-            showErrorDialog("Survey Id is null");
+            showErrorDialog(getString(R.string.cx_error_survey_id_null));
         }
     }
 
@@ -85,7 +85,7 @@ public class InteractionActivity extends FragmentActivity implements
 
             getSurveyDetails(surveyId);
         }else{
-            showErrorDialog("Survey Id is null");
+            showErrorDialog(getString(R.string.cx_error_survey_id_null));
         }
     }
     private void setupWebview(){
@@ -141,7 +141,7 @@ public class InteractionActivity extends FragmentActivity implements
     public void OnApiCallbackFailed(JSONObject response) {
         loadingSpinner.setVisibility(View.GONE);
         try {
-            String errorMessage = "Something went wrong. Unable to load the survey.";
+            String errorMessage = getString(R.string.cx_error_survey_load_failed);
             if (response.has("error") && response.getJSONObject("error").has("message")) {
                 errorMessage = "Error: " + response.getJSONObject("error").getString("message");
             }else if(response.has("message")){
@@ -196,7 +196,7 @@ public class InteractionActivity extends FragmentActivity implements
         AlertDialog.Builder builder = new AlertDialog.Builder(InteractionActivity.this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setMessage(errorMsg);
         builder.setCancelable(false);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.cx_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 InteractionActivity.this.finish();
