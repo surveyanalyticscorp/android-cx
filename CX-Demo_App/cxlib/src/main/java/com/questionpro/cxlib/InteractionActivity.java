@@ -6,20 +6,30 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interaction.MyWebChromeClient;
 import com.questionpro.cxlib.model.Intercept;
+import com.questionpro.cxlib.model.WidgetSettings;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -68,6 +78,7 @@ public class InteractionActivity extends FragmentActivity implements
                 setContentView(R.layout.cx_webview_fullscreen);
             }
             setupWebview();
+            applyWidgetSettings();
             getInterceptSurveyDetails();
         }else{
             showErrorDialog(getString(R.string.cx_error_survey_id_null));
@@ -117,6 +128,128 @@ public class InteractionActivity extends FragmentActivity implements
         /*int density = (int)getResources().getDisplayMetrics().density;
         webView.getSettings().setTextZoom(100 * density);*/
         webView.getSettings().setTextZoom(90);
+    }
+
+    private void applyWidgetSettings() {
+        if (intercept == null || intercept.widgetSettings == null) {
+            applyDefaultPromptSize();
+            return;
+        }
+        WidgetSettings ws = intercept.widgetSettings;
+
+        // --- TopBar: applies to both PROMPT and FULL_SCREEN ---
+        View topBarContainer = findViewById(R.id.topBarContainer);
+        if (topBarContainer != null && !CXUtils.isEmpty(ws.backgroundColor)) {
+            try { topBarContainer.setBackgroundColor(Color.parseColor(ws.backgroundColor)); }
+            catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid backgroundColor: " + ws.backgroundColor); }
+        }
+
+        View poweredByLayout = findViewById(R.id.poweredByLayout);
+        TextView widgetTitleText = findViewById(R.id.widgetTitleText);
+        ImageButton closeButton = findViewById(R.id.closeButton);
+
+        if (!CXUtils.isEmpty(ws.widgetTitle)) {
+            if (poweredByLayout != null) poweredByLayout.setVisibility(View.GONE);
+            if (widgetTitleText != null) {
+                widgetTitleText.setVisibility(View.VISIBLE);
+                widgetTitleText.setText(ws.widgetTitle);
+            }
+        }
+
+        if (!CXUtils.isEmpty(ws.textColor)) {
+            try {
+                int textColor = Color.parseColor(ws.textColor);
+                int iconColor = Color.parseColor(ws.iconColor);
+                if (widgetTitleText != null) widgetTitleText.setTextColor(textColor);
+                if (closeButton != null) ImageViewCompat.setImageTintList(closeButton, android.content.res.ColorStateList.valueOf(iconColor));
+            } catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid textColor: " + ws.textColor); }
+        }
+
+        // --- Size & position: PROMPT only ---
+        if (InterceptType.PROMPT.name().equals(intercept.type)) {
+            applyPromptPositionAndSize(ws);
+        }
+    }
+
+    private void applyDefaultPromptSize() {
+        if (!InterceptType.PROMPT.name().equals(intercept.type)) return;
+        LinearLayout dialogContent = findViewById(R.id.dialogContent);
+        if (dialogContent == null) return;
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int height = (int) (dm.heightPixels * 0.8);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, height);
+        params.gravity = Gravity.CENTER;
+        params.leftMargin  = (int) (20 * dm.density);
+        params.rightMargin = (int) (20 * dm.density);
+        dialogContent.setLayoutParams(params);
+    }
+
+    private void applyPromptPositionAndSize(WidgetSettings ws) {
+        LinearLayout dialogContent = findViewById(R.id.dialogContent);
+        if (dialogContent == null) return;
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+        int width  = (ws.widgetWindowWidth  > 0 && ws.widgetWindowWidth  <= 100)
+                ? (int) (dm.widthPixels  * ws.widgetWindowWidth  / 100.0)
+                : FrameLayout.LayoutParams.MATCH_PARENT;
+        int height = (ws.widgetWindowHeight > 0 && ws.widgetWindowHeight <= 100)
+                ? (int) (dm.heightPixels * ws.widgetWindowHeight / 100.0)
+                : FrameLayout.LayoutParams.WRAP_CONTENT;
+
+        int verticalGravity;
+        switch (ws.verticalPosition == null ? "" : ws.verticalPosition) {
+            case "TOP":
+                verticalGravity = Gravity.TOP;
+                break;
+            case "BOTTOM":
+                verticalGravity = Gravity.BOTTOM;
+                break;
+            default:
+                verticalGravity = Gravity.CENTER_VERTICAL;
+                break; // CENTER
+        }
+
+        int horizontalGravity;
+        switch (ws.horizontalPosition == null ? "" : ws.horizontalPosition) {
+            case "LEFT":
+                horizontalGravity = Gravity.START;
+                break;
+            case "RIGHT":
+                horizontalGravity = Gravity.END;
+                break;
+            default:
+                horizontalGravity = Gravity.CENTER_HORIZONTAL;
+                break; // CENTER
+        }
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
+        params.gravity = verticalGravity | horizontalGravity;
+
+        // InteractionActivity uses Theme.Translucent.NoTitleBar, so its window draws
+        // behind the system status bar (top) and navigation bar (bottom). For TOP and
+        // BOTTOM positions we defer layout until WindowInsets are available, then add
+        // the exact system-bar margin so the dialog content is never clipped behind them.
+        final String vPos = ws.verticalPosition == null ? "" : ws.verticalPosition;
+        if ("TOP".equals(vPos) || "BOTTOM".equals(vPos)) {
+            ViewCompat.setOnApplyWindowInsetsListener(dialogContent, (view, insets) -> {
+                Insets sysBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                if ("TOP".equals(vPos)) {
+                    params.topMargin = sysBars.top;
+                } else {
+                    params.bottomMargin = sysBars.bottom;
+                }
+                view.setLayoutParams(params);
+                ViewCompat.setOnApplyWindowInsetsListener(view, null); // one-shot
+                return insets;
+            });
+            ViewCompat.requestApplyInsets(dialogContent);
+        }
+
+        dialogContent.setLayoutParams(params);
     }
 
     private void getInterceptSurveyDetails(){

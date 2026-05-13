@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/topBarContainer"
     android:layout_width="match_parent"
     android:layout_height="50dp"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,38 +8,54 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-        <LinearLayout
+    <!-- Default "Powered by QuestionPro" — hidden when widgetTitle is set -->
+    <LinearLayout
+        android:id="@+id/poweredByLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"
+        android:layout_marginHorizontal="20dp"
+        tools:ignore="RelativeOverlap">
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_centerVertical="true"
-            android:layout_marginHorizontal="20dp"
-            tools:ignore="RelativeOverlap">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/powered_by"
-                android:textFontWeight="400"
-                android:fontFamily="@font/fira_sans_regular"
-                android:textColor="@color/text_color"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:text="@string/question_pro"
-                android:textColor="@color/text_color"
-                android:fontFamily="@font/fira_sans_semi_bold"
-                android:textFontWeight="500"/>
-        </LinearLayout>
+            android:text="@string/powered_by"
+            android:textFontWeight="400"
+            android:fontFamily="@font/fira_sans_regular"
+            android:textColor="@color/text_color"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:text="@string/question_pro"
+            android:textColor="@color/text_color"
+            android:fontFamily="@font/fira_sans_semi_bold"
+            android:textFontWeight="500"/>
+    </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/closeButton"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/close_icon"
-            android:contentDescription="@string/question_pro"
-            android:scaleType="centerInside"/>
+    <!-- Widget title — shown when widgetSettings.widgetTitle is non-empty -->
+    <TextView
+        android:id="@+id/widgetTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/text_color"
+        android:textSize="14sp"
+        android:fontFamily="@font/fira_sans_semi_bold"
+        android:textFontWeight="500"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/closeButton"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/close_icon"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:padding="8dp"
+        android:contentDescription="@string/question_pro"
+        android:scaleType="centerInside"/>
 </RelativeLayout>

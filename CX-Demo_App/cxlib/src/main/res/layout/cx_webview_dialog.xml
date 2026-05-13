@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialogOuterContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:weightSum="10"
     android:background="@color/dialog_bg_color">
 
     <LinearLayout
         android:id="@+id/dialogContent"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="8"
-        android:layout_marginHorizontal="20dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:background="@android:color/white"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/topBar"
-            layout="@layout/screen_header"/>
+        <include layout="@layout/screen_header"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -27,7 +24,6 @@
             android:layout_height="4dp"
             android:progress="50"
             android:progressDrawable="@drawable/horizontal_progress_bar" />
-
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -45,4 +41,4 @@
                 android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>

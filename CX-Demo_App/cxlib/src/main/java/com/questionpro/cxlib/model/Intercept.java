@@ -20,6 +20,7 @@ public class Intercept implements Serializable {
     public ArrayList<DataMapping> dataMappings = new ArrayList<>();
 
     public InterceptMetadata interceptMetadata;
+    public WidgetSettings widgetSettings;
 
     public static Intercept fromJSON(JSONObject interceptJson) throws Exception{
         Intercept intercept=new Intercept();
@@ -42,6 +43,10 @@ public class Intercept implements Serializable {
 
         if(interceptJson.has("metaData")){
             intercept.interceptMetadata = InterceptMetadata.fromJSON(interceptJson.getJSONObject("metaData"));
+        }
+
+        if(interceptJson.has("widgetSettings") && !interceptJson.isNull("widgetSettings")){
+            intercept.widgetSettings = WidgetSettings.fromJSON(interceptJson.getJSONObject("widgetSettings"));
         }
 
         return intercept;
