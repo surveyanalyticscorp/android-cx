@@ -30,10 +30,27 @@ class CXApiHandler {
 
     private final Context mContext;
     private final IQuestionProApiCallback mQuestionProApiCall;
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public CXApiHandler(Context context, IQuestionProApiCallback call){
         this.mContext = context;
         mQuestionProApiCall = call;
+    }
+
+    private void postSuccess(final Intercept intercept, final String surveyUrl) {
+        mainHandler.post(new Runnable() {
+            @Override public void run() {
+                mQuestionProApiCall.onApiCallbackSuccess(intercept, surveyUrl);
+            }
+        });
+    }
+
+    private void postFailure(final JSONObject error) {
+        mainHandler.post(new Runnable() {
+            @Override public void run() {
+                mQuestionProApiCall.OnApiCallbackFailed(error);
+            }
+        });
     }
 
     public void getInterceptSurvey(final Intercept intercept){
@@ -43,15 +60,15 @@ class CXApiHandler {
             public void run() {
                 try{
                     if (!CXUtils.isNetworkConnectionPresent(mContext)) {
-                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        postFailure(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
                     getInterceptSurveyUrl(intercept);
                 }catch (Exception e){
                     try {
-                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", e.getMessage()));
+                        postFailure(new JSONObject().put("error", e.getMessage()));
                     } catch (JSONException ex) {
-                        throw new RuntimeException(ex);
+                        Log.e("CXApiHandler", "Failed to build error payload", ex);
                     }
                 }
             }
@@ -65,15 +82,15 @@ class CXApiHandler {
             public void run() {
                 try{
                     if (!CXUtils.isNetworkConnectionPresent(mContext)) {
-                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        postFailure(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
                     getSurveyUrl(surveyId);
                 }catch (Exception e){
                     try {
-                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", e.getMessage()));
+                        postFailure(new JSONObject().put("error", e.getMessage()));
                     } catch (JSONException ex) {
-                        throw new RuntimeException(ex);
+                        Log.e("CXApiHandler", "Failed to build error payload", ex);
                     }
                 }
             }
@@ -82,31 +99,22 @@ class CXApiHandler {
 
     public void getIntercept(){
         ExecutorService myExecutor = Executors.newSingleThreadExecutor();
-        final Handler handler = new Handler(Looper.getMainLooper());
         myExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     if (!CXUtils.isNetworkConnectionPresent(mContext)) {
-                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        postFailure(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
                         return;
                     }
                     getInterceptConfigurations();
                 }catch (JSONException e){
                     try {
-                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error", e.getMessage()));
+                        postFailure(new JSONObject().put("error", e.getMessage()));
                     } catch (JSONException ex) {
-                        throw new RuntimeException(ex);
+                        Log.e("CXApiHandler", "Failed to build error payload", ex);
                     }
                 }
-
-                // Switch to UI thread
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        //Toast.makeText(mActivity, result, Toast.LENGTH_SHORT).show();
-                    }
-                });
             }
         });
     }
@@ -175,14 +183,14 @@ class CXApiHandler {
                     SharedPreferenceManager.getInstance(mContext).saveProject(projectJson.toString());
                 }
                 SharedPreferenceManager.getInstance(mContext).saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
-                mQuestionProApiCall.onApiCallbackSuccess(null, "SDK is Initialised");
-            }else if(response.isRejectedPermanently()){
-                JSONObject jsonObject = new JSONObject(response.getContent());
-                mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
-            }else
-                mQuestionProApiCall.OnApiCallbackFailed(new JSONObject().put("error","Error in fetching the intercept settings"));
+                postSuccess(null, "SDK is Initialised");
+            } else if (response.isRejectedPermanently()) {
+                postFailure(new JSONObject(response.getContent()));
+            } else {
+                postFailure(new JSONObject().put("error", "Error in fetching the intercept settings"));
+            }
         }catch (Exception e){
-            mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
+            postFailure(new JSONObject());
         }
     }
 
@@ -203,26 +211,25 @@ class CXApiHandler {
                 if (response.isSuccessful()) {
                     JSONObject jsonObject = new JSONObject(response.getContent());
                     if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
-                        mQuestionProApiCall.onApiCallbackSuccess(intercept, jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
-                    }else{
-                        mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
+                        postSuccess(intercept, jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
+                    } else {
+                        postFailure(jsonObject);
                     }
                 } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                    //Log.v("Rejected json:", response.getContent());
                     JSONObject jsonObject = new JSONObject(response.getContent());
                     if (jsonObject.has("response")) {
-                        mQuestionProApiCall.OnApiCallbackFailed(jsonObject.getJSONObject("response"));
-                    }else if(jsonObject.has("message")){
-                        mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
-                    }else{
-                        mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
+                        postFailure(jsonObject.getJSONObject("response"));
+                    } else if (jsonObject.has("message")) {
+                        postFailure(jsonObject);
+                    } else {
+                        postFailure(new JSONObject());
                     }
                 } else {
-                    mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
+                    postFailure(new JSONObject());
                 }
             }
         }catch (Exception e){
-            mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
+            postFailure(new JSONObject());
         }
     }
 
@@ -240,25 +247,24 @@ class CXApiHandler {
                 if (jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)) {
                     JSONObject responseObj = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
                     String surveyUrl = responseObj.getString(CXConstants.JSONResponseFields.CORE_SURVEY_URL);
-                    mQuestionProApiCall.onApiCallbackSuccess(null, surveyUrl);
-                }else{
-                    mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
+                    postSuccess(null, surveyUrl);
+                } else {
+                    postFailure(jsonObject);
                 }
             } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                //Log.v("Rejected json:", response.getContent());
                 JSONObject jsonObject = new JSONObject(response.getContent());
                 if (jsonObject.has("response")) {
-                    mQuestionProApiCall.OnApiCallbackFailed(jsonObject.getJSONObject("response"));
-                }else if(jsonObject.has("message")){
-                    mQuestionProApiCall.OnApiCallbackFailed(jsonObject);
-                }else{
-                    mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
+                    postFailure(jsonObject.getJSONObject("response"));
+                } else if (jsonObject.has("message")) {
+                    postFailure(jsonObject);
+                } else {
+                    postFailure(new JSONObject());
                 }
             } else {
-                mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
+                postFailure(new JSONObject());
             }
         }catch (Exception e){
-            mQuestionProApiCall.OnApiCallbackFailed(new JSONObject());
+            postFailure(new JSONObject());
         }
     }
 
