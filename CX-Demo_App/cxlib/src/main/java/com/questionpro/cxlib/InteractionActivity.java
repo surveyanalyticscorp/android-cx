@@ -2,7 +2,6 @@ package com.questionpro.cxlib;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -35,8 +34,7 @@ public class InteractionActivity extends FragmentActivity implements
         IQuestionProApiCallback {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
-    //private ProgressDialog progressDialog;
-    private ProgressDialog customProgressDialog;
+    private ProgressBar loadingSpinner;
 
     private WebView webView;
     private Intercept intercept;
@@ -100,8 +98,9 @@ public class InteractionActivity extends FragmentActivity implements
         });
 
         //CXUtils.lockOrientation(this);
-        progressBar =(ProgressBar) findViewById(R.id.progressBar);
-        webView = (WebView)findViewById(R.id.surveyWebView);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        loadingSpinner = (ProgressBar) findViewById(R.id.loadingSpinner);
+        webView = (WebView) findViewById(R.id.surveyWebView);
 
         webView.setWebViewClient(new CXWebViewClient());
         webView.setWebChromeClient(new MyWebChromeClient(InteractionActivity.this));
@@ -122,35 +121,25 @@ public class InteractionActivity extends FragmentActivity implements
 
     private void getInterceptSurveyDetails(){
         try {
-            customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
-            customProgressDialog.setMessage("Please wait.");
-            customProgressDialog.setCancelable(false);
-            customProgressDialog.show();
-
+            loadingSpinner.setVisibility(View.VISIBLE);
             new CXApiHandler(this, this).getInterceptSurvey(intercept);
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Failed to fetch intercept survey details", e);
         }
     }
 
     private void getSurveyDetails(long surveyId){
         try {
-            customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
-            customProgressDialog.setMessage("Please wait.");
-            customProgressDialog.setCancelable(false);
-            customProgressDialog.show();
-
+            loadingSpinner.setVisibility(View.VISIBLE);
             new CXApiHandler(this, this).getSurvey(surveyId);
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Failed to fetch survey details", e);
         }
     }
 
     @Override
     public void OnApiCallbackFailed(JSONObject response) {
-        if(null != customProgressDialog && customProgressDialog.isShowing()){
-            customProgressDialog.dismiss();
-        }
+        loadingSpinner.setVisibility(View.GONE);
         try {
             String errorMessage = "Something went wrong. Unable to load the survey.";
             if (response.has("error") && response.getJSONObject("error").has("message")) {
@@ -223,10 +212,8 @@ public class InteractionActivity extends FragmentActivity implements
         try {
             if (progressBar != null) {
                 progressBar.setProgress(progressValue);
-                if (progressValue >= 20) {
-                    if (null != customProgressDialog && customProgressDialog.isShowing()) {
-                        customProgressDialog.dismiss();
-                    }
+                if (progressValue >= 40) {
+                    loadingSpinner.setVisibility(View.GONE);
                 }
                 if (progressValue == 100) {
                     progressBar.setVisibility(View.GONE);

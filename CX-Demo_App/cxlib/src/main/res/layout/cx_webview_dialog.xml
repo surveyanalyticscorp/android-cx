@@ -29,14 +29,20 @@
             android:progressDrawable="@drawable/horizontal_progress_bar" />
 
 
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <WebView
                 android:id="@+id/surveyWebView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-            </WebView>
-        </RelativeLayout>
+                android:layout_height="match_parent" />
+            <ProgressBar
+                android:id="@+id/loadingSpinner"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>
