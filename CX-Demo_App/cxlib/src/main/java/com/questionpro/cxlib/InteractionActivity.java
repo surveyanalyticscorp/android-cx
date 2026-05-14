@@ -172,17 +172,20 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     private void applyDefaultPromptSize() {
-        if (!InterceptType.PROMPT.name().equals(intercept.type)) return;
+        if (!InterceptType.PROMPT.name().equals(intercept.type))
+            return;
+
         LinearLayout dialogContent = findViewById(R.id.dialogContent);
-        if (dialogContent == null) return;
+        if (dialogContent == null)
+            return;
+
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int height = (int) (dm.heightPixels * 0.8);
+        int height = (int) (dm.heightPixels * 0.7);
+        int width = (int) (dm.widthPixels * 0.9);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, height);
+                width, height);
         params.gravity = Gravity.CENTER;
-        params.leftMargin  = (int) (20 * dm.density);
-        params.rightMargin = (int) (20 * dm.density);
         dialogContent.setLayoutParams(params);
     }
 
