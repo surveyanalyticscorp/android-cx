@@ -81,6 +81,7 @@ public class InteractionActivity extends FragmentActivity implements
             applyWidgetSettings();
             getInterceptSurveyDetails();
         }else{
+            setContentView(R.layout.cx_webview_dialog);
             showErrorDialog(getString(R.string.cx_error_survey_id_null));
         }
     }
@@ -144,12 +145,10 @@ public class InteractionActivity extends FragmentActivity implements
             catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid backgroundColor: " + ws.backgroundColor); }
         }
 
-        View poweredByLayout = findViewById(R.id.poweredByLayout);
         TextView widgetTitleText = findViewById(R.id.widgetTitleText);
         ImageButton closeButton = findViewById(R.id.closeButton);
 
         if (!CXUtils.isEmpty(ws.widgetTitle)) {
-            if (poweredByLayout != null) poweredByLayout.setVisibility(View.GONE);
             if (widgetTitleText != null) {
                 widgetTitleText.setVisibility(View.VISIBLE);
                 widgetTitleText.setText(ws.widgetTitle);
@@ -241,9 +240,9 @@ public class InteractionActivity extends FragmentActivity implements
             ViewCompat.setOnApplyWindowInsetsListener(dialogContent, (view, insets) -> {
                 Insets sysBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
                 if ("TOP".equals(vPos)) {
-                    params.topMargin = sysBars.top;
+                    params.topMargin = sysBars.top + 10;
                 } else {
-                    params.bottomMargin = sysBars.bottom;
+                    params.bottomMargin = sysBars.bottom + 10;
                 }
                 view.setLayoutParams(params);
                 ViewCompat.setOnApplyWindowInsetsListener(view, null); // one-shot

@@ -211,35 +211,27 @@ public class InteractionActivityTest {
     // -------------------------------------------------------------------------
 
     @Test
-    public void withWidgetTitle_titleVisibleAndPoweredByHidden() {
+    public void withWidgetTitle_titleVisibleWithCorrectText() {
         WidgetSettings ws = makeWidgetSettings("", "", "", "BOTTOM_RIGHT", "Feedback");
         try (ActivityScenario<InteractionActivity> scenario =
                      launch(buildInterceptWithWidget(7, "PROMPT", ws))) {
             scenario.onActivity(activity -> {
                 TextView titleText = activity.findViewById(R.id.widgetTitleText);
-                View poweredBy    = activity.findViewById(R.id.poweredByLayout);
                 assertNotNull(titleText);
-                assertNotNull(poweredBy);
                 assertEquals("widgetTitleText must be VISIBLE when widgetTitle is set",
                         View.VISIBLE, titleText.getVisibility());
-                assertEquals("poweredByLayout must be GONE when widgetTitle is set",
-                        View.GONE, poweredBy.getVisibility());
                 assertEquals("Feedback", titleText.getText().toString());
             });
         }
     }
 
     @Test
-    public void noWidgetTitle_poweredByVisible() {
+    public void noWidgetTitle_titleTextRemainsGone() {
         WidgetSettings ws = makeWidgetSettings("", "", "", "BOTTOM_RIGHT", "");
         try (ActivityScenario<InteractionActivity> scenario =
                      launch(buildInterceptWithWidget(8, "PROMPT", ws))) {
             scenario.onActivity(activity -> {
-                View poweredBy = activity.findViewById(R.id.poweredByLayout);
                 TextView titleText = activity.findViewById(R.id.widgetTitleText);
-                assertNotNull(poweredBy);
-                assertEquals("poweredByLayout must remain VISIBLE when widgetTitle is empty",
-                        View.VISIBLE, poweredBy.getVisibility());
                 if (titleText != null) {
                     assertEquals("widgetTitleText must remain GONE when widgetTitle is empty",
                             View.GONE, titleText.getVisibility());
