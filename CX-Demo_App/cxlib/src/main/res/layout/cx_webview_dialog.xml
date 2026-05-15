@@ -10,9 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@android:color/white"
+        android:background="@drawable/cx_dialog_rounded_bg"
+        android:clipToOutline="true"
         android:orientation="vertical">
 
         <include layout="@layout/screen_header"/>
