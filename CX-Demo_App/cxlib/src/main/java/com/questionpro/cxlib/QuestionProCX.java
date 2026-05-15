@@ -68,8 +68,6 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     public synchronized void init(Context context, TouchPoint touchPoint, IQuestionProInitCallback callback){
         appContext = context.getApplicationContext();
         questionProInitCallback = callback;
-        activityLifecycleCallbacks = new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint));
-        ((Application) appContext).registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
         if(touchPoint == null){
             if(callback != null) {
@@ -77,6 +75,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             }
             return;
         }
+
+        activityLifecycleCallbacks = new ActivityLifecycleCallbacks(getStartActivityCount(touchPoint));
+        ((Application) appContext).registerActivityLifecycleCallbacks(activityLifecycleCallbacks);
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
