@@ -8,32 +8,6 @@
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
-    <!-- Default "Powered by QuestionPro" — hidden when widgetTitle is set -->
-    <LinearLayout
-        android:id="@+id/poweredByLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:layout_marginHorizontal="20dp"
-        tools:ignore="RelativeOverlap">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/powered_by"
-            android:textFontWeight="400"
-            android:fontFamily="@font/fira_sans_regular"
-            android:textColor="@color/text_color"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:text="@string/question_pro"
-            android:textColor="@color/text_color"
-            android:fontFamily="@font/fira_sans_semi_bold"
-            android:textFontWeight="500"/>
-    </LinearLayout>
-
     <!-- Widget title — shown when widgetSettings.widgetTitle is non-empty -->
     <TextView
         android:id="@+id/widgetTitleText"
@@ -42,6 +16,9 @@
         android:layout_centerInParent="true"
         android:textColor="@color/text_color"
         android:textSize="14sp"
+        android:paddingHorizontal="30dp"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:fontFamily="@font/fira_sans_semi_bold"
         android:textFontWeight="500"
         android:visibility="gone" />
