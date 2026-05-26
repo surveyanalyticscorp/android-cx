@@ -158,8 +158,13 @@ public class InteractionActivity extends FragmentActivity implements
         if (!CXUtils.isEmpty(ws.textColor)) {
             try {
                 int textColor = Color.parseColor(ws.textColor);
-                int iconColor = Color.parseColor(ws.iconColor);
                 if (widgetTitleText != null) widgetTitleText.setTextColor(textColor);
+            } catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid textColor: " + ws.textColor); }
+        }
+
+        if (!CXUtils.isEmpty(ws.iconColor)) {
+            try {
+                int iconColor = Color.parseColor(ws.iconColor);
                 if (closeButton != null) ImageViewCompat.setImageTintList(closeButton, android.content.res.ColorStateList.valueOf(iconColor));
             } catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid textColor: " + ws.textColor); }
         }
