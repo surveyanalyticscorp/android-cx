@@ -29,7 +29,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shopping_cart);
 
         Button button = findViewById(R.id.launch_survey);
-        button.setText("survey");
+        button.setText("vistaSurvey");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -42,14 +42,14 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 cutVars.put("Last Name","kunde");
                 cutVars.put("email","a@a.com");
 
-                QuestionProCX.getInstance().setDataMappings(cutVars);
+                //QuestionProCX.getInstance().setDataMappings(cutVars);
 
-                QuestionProCX.getInstance().setScreenVisited("survey");
+                QuestionProCX.getInstance().setScreenVisited("vistaSurvey");
             }
         });
 
         Button buttonOne = findViewById(R.id.launch_survey_one);
-        buttonOne.setText("Checkout");
+        buttonOne.setText("CierreSesion");
         buttonOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,7 +57,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 cutVars.put("Phone Number.","12345678922");
                 //QuestionProCX.getInstance().setDataMappings(cutVars);
 
-                QuestionProCX.getInstance().setScreenVisited("Checkout");
+                QuestionProCX.getInstance().setScreenVisited("CierreSesion");
             }
         });
 

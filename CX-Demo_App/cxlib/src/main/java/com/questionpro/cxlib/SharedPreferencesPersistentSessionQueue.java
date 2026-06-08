@@ -33,7 +33,7 @@ public class SharedPreferencesPersistentSessionQueue implements PersistentSessio
 		for (SessionEvent event : events) {
 			builder.append(generateStorableEventString(event)).append(EVENT_SEP);
 		}
-		prefs.edit().putString(PREF_KEY_APP_ACTIVITY_STATE_QUEUE, builder.toString()).commit();
+		prefs.edit().putString(PREF_KEY_APP_ACTIVITY_STATE_QUEUE, builder.toString()).apply();
 	}
 
 	public void deleteEvents(SessionEvent... events) {
@@ -50,11 +50,11 @@ public class SharedPreferencesPersistentSessionQueue implements PersistentSessio
 		for (SessionEvent event : storedEvents) {
 			builder.append(generateStorableEventString(event)).append(";");
 		}
-		getPrefs().edit().putString(PREF_KEY_APP_ACTIVITY_STATE_QUEUE, builder.toString()).commit();
+		getPrefs().edit().putString(PREF_KEY_APP_ACTIVITY_STATE_QUEUE, builder.toString()).apply();
 	}
 
 	public void deleteAllEvents() {
-		getPrefs().edit().remove(PREF_KEY_APP_ACTIVITY_STATE_QUEUE).commit();
+		getPrefs().edit().remove(PREF_KEY_APP_ACTIVITY_STATE_QUEUE).apply();
 	}
 
 	public List<SessionEvent> getAllEvents() {

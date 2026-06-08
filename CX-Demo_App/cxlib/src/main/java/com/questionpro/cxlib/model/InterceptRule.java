@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 public class InterceptRule implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     public String key;
     public String name;
@@ -16,13 +17,13 @@ public class InterceptRule implements Serializable {
 
     public static InterceptRule fromJSON(JSONObject interceptJson) throws Exception{
         InterceptRule interceptRule = new InterceptRule();
-        interceptRule.key = interceptJson.getString("key");
-        interceptRule.name = interceptJson.getString("name");
-        interceptRule.operand = interceptJson.getString("operand");
-        interceptRule.value = interceptJson.getString("value");
-        interceptRule.rangeValue = interceptJson.getString("rangeValues");
-        interceptRule.variable = interceptJson.getString("variable");
-        interceptRule.type = interceptJson.getString("type");
+        interceptRule.key = interceptJson.optString("key", "");
+        interceptRule.name = interceptJson.optString("name", "");
+        interceptRule.operand = interceptJson.optString("operand", "");
+        interceptRule.value = interceptJson.optString("value", "");
+        interceptRule.rangeValue = interceptJson.optString("rangeValues", "");
+        interceptRule.variable = interceptJson.optString("variable", "");
+        interceptRule.type = interceptJson.optString("type", "");
 
         return interceptRule;
     }

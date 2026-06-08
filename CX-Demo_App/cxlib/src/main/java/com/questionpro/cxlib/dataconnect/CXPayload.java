@@ -27,6 +27,7 @@ public class CXPayload {
             jsonObject.put("email", touchPoint.getEmail());*/
         jsonObject.put("dataCenter", touchPoint.getDataCenter());
         jsonObject.put("platform", touchPoint.getPlatform());
+        jsonObject.put("apiKey", touchPoint.getApiKey());
         //Log.d("Datta", "Payload json: "+jsonObject.toString());
 
         return jsonObject;

@@ -49,13 +49,13 @@ public class CXConstants {
     protected static String getSurveyFeedbackUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
         return getInterceptBaseUrl(dataCenter) + SURVEY_FEEDBACK;
-        //return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
+        //return "https://cx-intercept-staging-api.questionpro.com" + SURVEY_FEEDBACK;
     }
 
     protected static String getExcludedFeedbackUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
         return getInterceptBaseUrl(dataCenter) + EXCLUDED_FEEDBACK;
-        //return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
+        //return "https://cx-intercept-staging-api.questionpro.com" + EXCLUDED_FEEDBACK;
     }
 
     private static String getInterceptBaseUrl(String dataCenter){

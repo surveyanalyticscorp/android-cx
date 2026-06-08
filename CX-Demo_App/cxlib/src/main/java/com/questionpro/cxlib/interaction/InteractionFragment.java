@@ -56,7 +56,7 @@ public class InteractionFragment extends Fragment implements MyWebChromeClient.P
         url = cxInteraction.url;
 
         try {
-            RelativeLayout container = (RelativeLayout) view.findViewById(R.id.topBar);
+            RelativeLayout container = (RelativeLayout) view.findViewById(R.id.topBarContainer);
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
                     CXUtils.convertDpToPixel(getActivity(), 40));
             params.setMargins(0, CXUtils.convertDpToPixel(getActivity(), 30), 0, 0);

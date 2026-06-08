@@ -80,6 +80,10 @@ public class CXUploadClient {
             } catch (IOException ex) {
                 Log.w("IOException:", ex);
             }
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
         return cxHttpResponse;
     }
@@ -115,8 +119,12 @@ public class CXUploadClient {
                 cxHttpResponse.setContent(getErrorResponse(urlConnection, cxHttpResponse.isZipped()));
                 Log.w("Get Api Response: ", cxHttpResponse.getContent());
             }
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "GET request failed", e);
+        } finally {
+            if (urlConnection != null) {
+                urlConnection.disconnect();
+            }
         }
 
         return cxHttpResponse;

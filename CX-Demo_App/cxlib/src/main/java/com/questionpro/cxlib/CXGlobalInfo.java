@@ -46,10 +46,16 @@ public class CXGlobalInfo {
      */
     public void savePayLoad(TouchPoint touchPoint) throws JSONException {
         CXGlobalInfo.payload = CXPayload.getPayloadJSON(touchPoint).toString();
+        if(!CXUtils.isEmpty(touchPoint.getApiKey())){
+            CXGlobalInfo.apiKey = touchPoint.getApiKey();
+        }
     }
 
     public void setApiKey(String apiKey){
-        CXGlobalInfo.apiKey = apiKey;
+        if (apiKey == null || apiKey.trim().isEmpty()) {
+            throw new IllegalArgumentException("API key must not be null or empty.");
+        }
+        CXGlobalInfo.apiKey = apiKey.trim();
     }
 
     public String getApiKey(){

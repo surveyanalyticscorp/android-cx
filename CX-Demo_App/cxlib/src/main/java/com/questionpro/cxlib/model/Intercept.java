@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Intercept implements Serializable {
+    private static final long serialVersionUID = 1L;
     public int id;
     public String type;
     public String condition;
@@ -19,14 +20,15 @@ public class Intercept implements Serializable {
     public ArrayList<DataMapping> dataMappings = new ArrayList<>();
 
     public InterceptMetadata interceptMetadata;
+    public WidgetSettings widgetSettings;
 
     public static Intercept fromJSON(JSONObject interceptJson) throws Exception{
         Intercept intercept=new Intercept();
-        intercept.id = interceptJson.getInt("id");
-        intercept.surveyId = interceptJson.getInt("surveyId");
-        intercept.ruleGroupId = interceptJson.getInt("ruleGroupId");
-        intercept.type = interceptJson.getString("type");
-        intercept.condition = interceptJson.getString("condition");
+        intercept.id = interceptJson.optInt("id", 0);
+        intercept.surveyId = interceptJson.optInt("surveyId", 0);
+        intercept.ruleGroupId = interceptJson.optInt("ruleGroupId", 0);
+        intercept.type = interceptJson.optString("type", "");
+        intercept.condition = interceptJson.optString("condition", "OR");
         if(interceptJson.has("settings") && !interceptJson.isNull("settings")){
             intercept.interceptSettings = InterceptSettings.fromJSON(interceptJson.getJSONObject("settings"));
         }
@@ -41,6 +43,10 @@ public class Intercept implements Serializable {
 
         if(interceptJson.has("metaData")){
             intercept.interceptMetadata = InterceptMetadata.fromJSON(interceptJson.getJSONObject("metaData"));
+        }
+
+        if(interceptJson.has("widgetSettings") && !interceptJson.isNull("widgetSettings")){
+            intercept.widgetSettings = WidgetSettings.fromJSON(interceptJson.getJSONObject("widgetSettings"));
         }
 
         return intercept;

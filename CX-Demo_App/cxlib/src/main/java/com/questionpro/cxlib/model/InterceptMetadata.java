@@ -5,7 +5,8 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 public class InterceptMetadata implements Serializable {
-        public int matchedCount;
+    private static final long serialVersionUID = 1L;
+    public int matchedCount;
         public int excludedCount;
         public String visitorStatus;
 

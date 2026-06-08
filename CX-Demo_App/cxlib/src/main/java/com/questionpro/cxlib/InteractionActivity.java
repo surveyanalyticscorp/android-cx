@@ -2,25 +2,34 @@ package com.questionpro.cxlib;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interaction.MyWebChromeClient;
 import com.questionpro.cxlib.model.Intercept;
+import com.questionpro.cxlib.model.WidgetSettings;
 import com.questionpro.cxlib.util.CXUtils;
 
 import org.json.JSONObject;
@@ -35,8 +44,7 @@ public class InteractionActivity extends FragmentActivity implements
         IQuestionProApiCallback {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
-    //private ProgressDialog progressDialog;
-    private ProgressDialog customProgressDialog;
+    private ProgressBar loadingSpinner;
 
     private WebView webView;
     private Intercept intercept;
@@ -70,9 +78,11 @@ public class InteractionActivity extends FragmentActivity implements
                 setContentView(R.layout.cx_webview_fullscreen);
             }
             setupWebview();
+            applyWidgetSettings();
             getInterceptSurveyDetails();
         }else{
-            showErrorDialog("Survey Id is null");
+            setContentView(R.layout.cx_webview_dialog);
+            showErrorDialog(getString(R.string.cx_error_survey_id_null));
         }
     }
 
@@ -87,7 +97,7 @@ public class InteractionActivity extends FragmentActivity implements
 
             getSurveyDetails(surveyId);
         }else{
-            showErrorDialog("Survey Id is null");
+            showErrorDialog(getString(R.string.cx_error_survey_id_null));
         }
     }
     private void setupWebview(){
@@ -100,8 +110,9 @@ public class InteractionActivity extends FragmentActivity implements
         });
 
         //CXUtils.lockOrientation(this);
-        progressBar =(ProgressBar) findViewById(R.id.progressBar);
-        webView = (WebView)findViewById(R.id.surveyWebView);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        loadingSpinner = (ProgressBar) findViewById(R.id.loadingSpinner);
+        webView = (WebView) findViewById(R.id.surveyWebView);
 
         webView.setWebViewClient(new CXWebViewClient());
         webView.setWebChromeClient(new MyWebChromeClient(InteractionActivity.this));
@@ -120,39 +131,157 @@ public class InteractionActivity extends FragmentActivity implements
         webView.getSettings().setTextZoom(90);
     }
 
+    private void applyWidgetSettings() {
+        if (intercept == null || intercept.widgetSettings == null) {
+            applyDefaultPromptSize();
+            return;
+        }
+        WidgetSettings ws = intercept.widgetSettings;
+
+        // --- TopBar: applies to both PROMPT and FULL_SCREEN ---
+        View topBarContainer = findViewById(R.id.topBarContainer);
+        if (topBarContainer != null && !CXUtils.isEmpty(ws.backgroundColor)) {
+            try { topBarContainer.setBackgroundColor(Color.parseColor(ws.backgroundColor)); }
+            catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid backgroundColor: " + ws.backgroundColor); }
+        }
+
+        TextView widgetTitleText = findViewById(R.id.widgetTitleText);
+        ImageButton closeButton = findViewById(R.id.closeButton);
+
+        if (!CXUtils.isEmpty(ws.widgetTitle)) {
+            if (widgetTitleText != null) {
+                widgetTitleText.setVisibility(View.VISIBLE);
+                widgetTitleText.setText(ws.widgetTitle);
+            }
+        }
+
+        if (!CXUtils.isEmpty(ws.textColor)) {
+            try {
+                int textColor = Color.parseColor(ws.textColor);
+                if (widgetTitleText != null) widgetTitleText.setTextColor(textColor);
+            } catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid textColor: " + ws.textColor); }
+        }
+
+        if (!CXUtils.isEmpty(ws.iconColor)) {
+            try {
+                int iconColor = Color.parseColor(ws.iconColor);
+                if (closeButton != null) ImageViewCompat.setImageTintList(closeButton, android.content.res.ColorStateList.valueOf(iconColor));
+            } catch (IllegalArgumentException e) { Log.w(LOG_TAG, "Invalid textColor: " + ws.textColor); }
+        }
+
+        // --- Size & position: PROMPT only ---
+        if (InterceptType.PROMPT.name().equals(intercept.type)) {
+            applyPromptPositionAndSize(ws);
+        }
+    }
+
+    private void applyDefaultPromptSize() {
+        if (!InterceptType.PROMPT.name().equals(intercept.type))
+            return;
+
+        LinearLayout dialogContent = findViewById(R.id.dialogContent);
+        if (dialogContent == null)
+            return;
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        int height = (int) (dm.heightPixels * 0.7);
+        int width = (int) (dm.widthPixels * 0.9);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+                width, height);
+        params.gravity = Gravity.CENTER;
+        dialogContent.setLayoutParams(params);
+    }
+
+    private void applyPromptPositionAndSize(WidgetSettings ws) {
+        LinearLayout dialogContent = findViewById(R.id.dialogContent);
+        if (dialogContent == null) return;
+
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+
+        int width  = (ws.widgetWindowWidth  > 0 && ws.widgetWindowWidth  <= 100)
+                ? (int) (dm.widthPixels  * ws.widgetWindowWidth  / 100.0)
+                : FrameLayout.LayoutParams.MATCH_PARENT;
+        int height = (ws.widgetWindowHeight > 0 && ws.widgetWindowHeight <= 100)
+                ? (int) (dm.heightPixels * ws.widgetWindowHeight / 100.0)
+                : FrameLayout.LayoutParams.WRAP_CONTENT;
+
+        int verticalGravity;
+        switch (ws.verticalPosition == null ? "" : ws.verticalPosition) {
+            case "TOP":
+                verticalGravity = Gravity.TOP;
+                break;
+            case "BOTTOM":
+                verticalGravity = Gravity.BOTTOM;
+                break;
+            default:
+                verticalGravity = Gravity.CENTER_VERTICAL;
+                break; // CENTER
+        }
+
+        int horizontalGravity;
+        switch (ws.horizontalPosition == null ? "" : ws.horizontalPosition) {
+            case "LEFT":
+                horizontalGravity = Gravity.START;
+                break;
+            case "RIGHT":
+                horizontalGravity = Gravity.END;
+                break;
+            default:
+                horizontalGravity = Gravity.CENTER_HORIZONTAL;
+                break; // CENTER
+        }
+
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
+        params.gravity = verticalGravity | horizontalGravity;
+
+        // InteractionActivity uses Theme.Translucent.NoTitleBar, so its window draws
+        // behind the system status bar (top) and navigation bar (bottom). For TOP and
+        // BOTTOM positions we defer layout until WindowInsets are available, then add
+        // the exact system-bar margin so the dialog content is never clipped behind them.
+        final String vPos = ws.verticalPosition == null ? "" : ws.verticalPosition;
+        if ("TOP".equals(vPos) || "BOTTOM".equals(vPos)) {
+            ViewCompat.setOnApplyWindowInsetsListener(dialogContent, (view, insets) -> {
+                Insets sysBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                if ("TOP".equals(vPos)) {
+                    params.topMargin = sysBars.top + 10;
+                } else {
+                    params.bottomMargin = sysBars.bottom + 10;
+                }
+                view.setLayoutParams(params);
+                ViewCompat.setOnApplyWindowInsetsListener(view, null); // one-shot
+                return insets;
+            });
+            ViewCompat.requestApplyInsets(dialogContent);
+        }
+
+        dialogContent.setLayoutParams(params);
+    }
+
     private void getInterceptSurveyDetails(){
         try {
-            customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
-            customProgressDialog.setMessage("Please wait.");
-            customProgressDialog.setCancelable(false);
-            customProgressDialog.show();
-
+            loadingSpinner.setVisibility(View.VISIBLE);
             new CXApiHandler(this, this).getInterceptSurvey(intercept);
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Failed to fetch intercept survey details", e);
         }
     }
 
     private void getSurveyDetails(long surveyId){
         try {
-            customProgressDialog = new ProgressDialog(this, ProgressDialog.THEME_HOLO_LIGHT);
-            customProgressDialog.setMessage("Please wait.");
-            customProgressDialog.setCancelable(false);
-            customProgressDialog.show();
-
+            loadingSpinner.setVisibility(View.VISIBLE);
             new CXApiHandler(this, this).getSurvey(surveyId);
         }catch (Exception e){
-            e.printStackTrace();
+            Log.e(LOG_TAG, "Failed to fetch survey details", e);
         }
     }
 
     @Override
     public void OnApiCallbackFailed(JSONObject response) {
-        if(null != customProgressDialog && customProgressDialog.isShowing()){
-            customProgressDialog.dismiss();
-        }
+        loadingSpinner.setVisibility(View.GONE);
         try {
-            String errorMessage = "Something went wrong. Unable to load the survey.";
+            String errorMessage = getString(R.string.cx_error_survey_load_failed);
             if (response.has("error") && response.getJSONObject("error").has("message")) {
                 errorMessage = "Error: " + response.getJSONObject("error").getString("message");
             }else if(response.has("message")){
@@ -207,7 +336,7 @@ public class InteractionActivity extends FragmentActivity implements
         AlertDialog.Builder builder = new AlertDialog.Builder(InteractionActivity.this, AlertDialog.THEME_HOLO_LIGHT);
         builder.setMessage(errorMsg);
         builder.setCancelable(false);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.cx_dialog_ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 InteractionActivity.this.finish();
@@ -223,10 +352,8 @@ public class InteractionActivity extends FragmentActivity implements
         try {
             if (progressBar != null) {
                 progressBar.setProgress(progressValue);
-                if (progressValue >= 20) {
-                    if (null != customProgressDialog && customProgressDialog.isShowing()) {
-                        customProgressDialog.dismiss();
-                    }
+                if (progressValue >= 40) {
+                    loadingSpinner.setVisibility(View.GONE);
                 }
                 if (progressValue == 100) {
                     progressBar.setVisibility(View.GONE);
