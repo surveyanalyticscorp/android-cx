@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -49,7 +50,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private IQuestionProCallback questionProCallback;
     private ActivityLifecycleCallbacks activityLifecycleCallbacks;
 
-    private static final HashMap<Integer, Set<String>> interceptSatisfiedRules = new HashMap<>();
+    private static final ConcurrentHashMap<Integer, Set<String>> interceptSatisfiedRules = new ConcurrentHashMap<>();
 
     private QuestionProCX(){
     }
@@ -255,7 +256,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             } else {
                 int matchedCount = intercept.interceptMetadata.matchedCount;
                 int excludedCount = intercept.interceptMetadata.excludedCount;
-                boolean isIncluded =  (matchedCount * 100) / (matchedCount + excludedCount + 1) < samplingRate;
+                int total = matchedCount + excludedCount;
+                boolean isIncluded = total == 0 ? (samplingRate > 0) : (matchedCount * 100 / total) < samplingRate;
                 //Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount + " Is included in sampling: " + isIncluded);
                 if(!isIncluded){
                     new CXApiHandler(appContext, this).excludedFeedback(intercept);

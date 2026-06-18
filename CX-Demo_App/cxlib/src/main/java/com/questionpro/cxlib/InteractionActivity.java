@@ -412,7 +412,7 @@ public class InteractionActivity extends FragmentActivity implements
         @Override
         public void onPageFinished(WebView view, String url) {
             progressBar.setVisibility(View.GONE);
-            if(intercept.interceptSettings.autoCloseOnCompletion) {
+            if(intercept != null && intercept.interceptSettings != null && intercept.interceptSettings.autoCloseOnCompletion) {
                 if (url.contains("#autoClose") || !url.contains("questionpro") || url.contains("exitsurvey")) {
                     runTimer();
                 }

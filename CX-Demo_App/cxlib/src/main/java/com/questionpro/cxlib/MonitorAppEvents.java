@@ -33,7 +33,14 @@ public class MonitorAppEvents {
 
     protected void appSessionStarted(int interceptId, InterceptRule rule, IQuestionProRulesCallback rulesCallback) {
         handler = new Handler(Looper.getMainLooper());
-        long delay = Long.parseLong(rule.value) * 1000;
+        if (rule.value == null) return;
+        long delay;
+        try {
+            delay = Long.parseLong(rule.value) * 1000;
+        } catch (NumberFormatException e) {
+            Log.e("MonitorAppEvents", "Invalid TIME_SPENT rule value: " + rule.value);
+            return;
+        }
 
         Runnable runnable = createTimerRunnable(interceptId,  rulesCallback);
         runnableMap.put(interceptId, runnable);
@@ -51,8 +58,10 @@ public class MonitorAppEvents {
     }
 
     protected void stopAllTimers() {
-        for (Runnable runnable : runnableMap.values()) {
-            handler.removeCallbacks(runnable);
+        if (handler != null) {
+            for (Runnable runnable : runnableMap.values()) {
+                handler.removeCallbacks(runnable);
+            }
         }
         runnableMap.clear();
     }
@@ -73,7 +82,7 @@ public class MonitorAppEvents {
                         for (InterceptRule rule : intercept.interceptRule) {
                             if (rule.name.equals(InterceptRuleType.VIEW_COUNT.name()) &&
                                     rule.key.equals(tagName) &&
-                                    Integer.parseInt(rule.value) <= viewCountForTag) {
+                                    rule.value != null && Integer.parseInt(rule.value) <= viewCountForTag) {
                                 //Log.d("Datta", "Key of intercept "+ rule.key+" : "+rule.value);
                                 rulesCallback.onViewCountRuleSatisfied(intercept.id);
                                 SharedPreferenceManager.getInstance(context).resetViewCountForTag(tagName);
