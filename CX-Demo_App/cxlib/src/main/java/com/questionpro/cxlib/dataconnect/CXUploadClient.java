@@ -38,10 +38,11 @@ public class CXUploadClient {
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
             urlConnection.setRequestMethod("POST");
-            urlConnection.setFixedLengthStreamingMode(payload.length());
+            byte[] payloadBytes = payload.getBytes(StandardCharsets.UTF_8);
+            urlConnection.setFixedLengthStreamingMode(payloadBytes.length);
 
             OutputStream os = urlConnection.getOutputStream();
-            os.write(payload.getBytes(StandardCharsets.UTF_8));
+            os.write(payloadBytes);
             os.close();
 
             int responseCode = urlConnection.getResponseCode();
@@ -131,32 +132,36 @@ public class CXUploadClient {
     }
 
     private static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
-        if (connection != null) {
-            InputStream is = null;
-                is = new BufferedInputStream(connection.getInputStream());
+        if (connection == null) return null;
+        InputStream is = null;
+        try {
+            is = new BufferedInputStream(connection.getInputStream());
             if (isZipped) {
                 is = new GZIPInputStream(is);
             }
             return CXUtils.convertStreamToString(is);
+        } finally {
+            if (is != null) {
+                try { is.close(); } catch (IOException ignored) {}
+            }
         }
-        return null;
     }
 
-
     public static String getErrorResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
-        if (connection != null) {
-            InputStream is = null;
-
-                is = connection.getErrorStream();
-                if (is != null) {
-                    if (isZipped) {
-                        is = new GZIPInputStream(is);
-                    }
-                }
-                return CXUtils.convertStreamToString(is);
-
+        if (connection == null) return null;
+        InputStream is = null;
+        try {
+            is = connection.getErrorStream();
+            if (is == null) return null;
+            if (isZipped) {
+                is = new GZIPInputStream(is);
+            }
+            return CXUtils.convertStreamToString(is);
+        } finally {
+            if (is != null) {
+                try { is.close(); } catch (IOException ignored) {}
+            }
         }
-        return null;
     }
 
     private static void setHeadersToHttpConnection(HttpURLConnection urlConnection, HashMap<String, String> headers){

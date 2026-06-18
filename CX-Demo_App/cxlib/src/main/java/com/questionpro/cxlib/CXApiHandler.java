@@ -28,6 +28,8 @@ import org.json.JSONObject;
 
 class CXApiHandler {
 
+    private static final String LOG_TAG = "CXApiHandler";
+
     private final Context mContext;
     private final IQuestionProApiCallback mQuestionProApiCall;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
@@ -54,78 +56,77 @@ class CXApiHandler {
     }
 
     public void getInterceptSurvey(final Intercept intercept){
-        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    if (!CXUtils.isNetworkConnectionPresent(mContext)) {
-                        postFailure(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
-                        return;
-                    }
-                    getInterceptSurveyUrl(intercept);
-                }catch (Exception e){
-                    try {
-                        postFailure(new JSONObject().put("error", e.getMessage()));
-                    } catch (JSONException ex) {
-                        Log.e("CXApiHandler", "Failed to build error payload", ex);
-                    }
-                }
-            }
-        });
-    }
-
-    public void getSurvey(final long surveyId){
-        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    if (!CXUtils.isNetworkConnectionPresent(mContext)) {
-                        postFailure(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
-                        return;
-                    }
-                    getSurveyUrl(surveyId);
-                }catch (Exception e){
-                    try {
-                        postFailure(new JSONObject().put("error", e.getMessage()));
-                    } catch (JSONException ex) {
-                        Log.e("CXApiHandler", "Failed to build error payload", ex);
-                    }
-                }
-            }
-        });
-    }
-
-    public void getIntercept(){
-        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     if (!CXUtils.isNetworkConnectionPresent(mContext)) {
-                        postFailure(new JSONObject().put("error", new JSONObject().put("message", "No internet connection.")));
+                        postFailure(buildError("No internet connection."));
                         return;
                     }
-                    getInterceptConfigurations();
-                }catch (JSONException e){
-                    try {
-                        postFailure(new JSONObject().put("error", e.getMessage()));
-                    } catch (JSONException ex) {
-                        Log.e("CXApiHandler", "Failed to build error payload", ex);
-                    }
+                    getInterceptSurveyUrl(intercept);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "getInterceptSurvey failed", e);
+                    postFailure(buildError(e.getMessage()));
                 }
             }
         });
+        executor.shutdown();
+    }
+
+    public void getSurvey(final long surveyId){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!CXUtils.isNetworkConnectionPresent(mContext)) {
+                        postFailure(buildError("No internet connection."));
+                        return;
+                    }
+                    getSurveyUrl(surveyId);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "getSurvey failed", e);
+                    postFailure(buildError(e.getMessage()));
+                }
+            }
+        });
+        executor.shutdown();
+    }
+
+    public void getIntercept(){
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (!CXUtils.isNetworkConnectionPresent(mContext)) {
+                        postFailure(buildError("No internet connection."));
+                        return;
+                    }
+                    getInterceptConfigurations();
+                } catch (Exception e) {
+                    // Catches JSONException, IOException, NullPointerException, etc.
+                    Log.e(LOG_TAG, "getIntercept failed", e);
+                    postFailure(buildError(e.getMessage()));
+                }
+            }
+        });
+        executor.shutdown();
     }
 
     protected void submitFeedback(final Intercept intercept, final String type){
-        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     String payload = getSurveyFeedbackApiPayload(intercept, type);
+                    if (payload.isEmpty()) {
+                        Log.w(LOG_TAG, "submitFeedback: empty payload, skipping.");
+                        return;
+                    }
 
                     HashMap<String, String> headers = new HashMap<>();
                     headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
@@ -133,25 +134,31 @@ class CXApiHandler {
                     headers.put("visitor-id", SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
 
                     URL url = new URL(CXConstants.getSurveyFeedbackUrl());
-
                     CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
 
-                    if (response != null) {
-                        JSONObject jsonObject = new JSONObject(response.getContent());
-                        //Log.d("Datta", "Survey feedback response: "+jsonObject.toString());
+                    if (response == null || !response.isSuccessful()) {
+                        Log.w(LOG_TAG, "submitFeedback: non-success response code: " +
+                                (response != null ? response.getCode() : "null"));
                     }
-                }catch (Exception e){}
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "submitFeedback failed", e);
+                }
             }
         });
+        executor.shutdown();
     }
 
     protected void excludedFeedback(final Intercept intercept){
-        ExecutorService myExecutor = Executors.newSingleThreadExecutor();
-        myExecutor.execute(new Runnable() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     String payload = getExcludedFeedbackApiPayload(intercept);
+                    if (payload.isEmpty()) {
+                        Log.w(LOG_TAG, "excludedFeedback: empty payload, skipping.");
+                        return;
+                    }
 
                     HashMap<String, String> headers = new HashMap<>();
                     headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
@@ -159,140 +166,176 @@ class CXApiHandler {
                     headers.put("visitor-id", SharedPreferenceManager.getInstance(mContext).getVisitorsUUID());
 
                     URL url = new URL(CXConstants.getExcludedFeedbackUrl());
-
                     CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
 
-                    if (response != null) {
-                        JSONObject jsonObject = new JSONObject(response.getContent());
-                        //Log.d("Datta", "Excluded feedback response: "+jsonObject.toString());
+                    if (response == null || !response.isSuccessful()) {
+                        Log.w(LOG_TAG, "excludedFeedback: non-success response code: " +
+                                (response != null ? response.getCode() : "null"));
                     }
-                }catch (Exception e){}
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "excludedFeedback failed", e);
+                }
             }
         });
+        executor.shutdown();
     }
 
-    private void getInterceptConfigurations(){
-        try {
-            java.net.URL url = new URL(CXConstants.getInterceptsUrl());
-            CXHttpResponse response = CXUploadClient.getCxApi(url, CXGlobalInfo.getInstance().getInterceptApiHeaders(mContext));
+    private void getInterceptConfigurations() throws Exception {
+        URL url = new URL(CXConstants.getInterceptsUrl());
+        CXHttpResponse response = CXUploadClient.getCxApi(url, CXGlobalInfo.getInstance().getInterceptApiHeaders(mContext));
 
-            if (response.isSuccessful()) {
-                JSONObject jsonObject = new JSONObject(response.getContent());
-                if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
-                    JSONObject projectJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
-                    SharedPreferenceManager.getInstance(mContext).saveProject(projectJson.toString());
+        if (response.isSuccessful()) {
+            String content = response.getContent();
+            if (CXUtils.isEmpty(content)) {
+                postFailure(buildError("Empty response body from intercepts API."));
+                return;
+            }
+            JSONObject jsonObject = new JSONObject(content);
+            if (jsonObject.has(CXConstants.JSONResponseFields.PROJECT)) {
+                JSONObject projectJson = jsonObject.getJSONObject(CXConstants.JSONResponseFields.PROJECT);
+                SharedPreferenceManager.getInstance(mContext).saveProject(projectJson.toString());
+            }
+            if (jsonObject.has(CXConstants.JSONResponseFields.VISITOR)) {
+                String uuid = jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).optString("uuid", "");
+                if (!CXUtils.isEmpty(uuid)) {
+                    SharedPreferenceManager.getInstance(mContext).saveVisitorsUUID(uuid);
                 }
-                SharedPreferenceManager.getInstance(mContext).saveVisitorsUUID(jsonObject.getJSONObject(CXConstants.JSONResponseFields.VISITOR).getString("uuid"));
-                postSuccess(null, "SDK is Initialised");
-            } else if (response.isRejectedPermanently()) {
-                postFailure(new JSONObject(response.getContent()));
+            }
+            postSuccess(null, "SDK is Initialised");
+        } else if (response.isRejectedPermanently()) {
+            String content = response.getContent();
+            postFailure(CXUtils.isEmpty(content) ? buildError("Request rejected (4xx).") : new JSONObject(content));
+        } else {
+            Log.w(LOG_TAG, "getInterceptConfigurations: unexpected response code " + response.getCode());
+            postFailure(buildError("Unexpected error fetching intercept settings. Code: " + response.getCode()));
+        }
+    }
+
+    private void getInterceptSurveyUrl(Intercept intercept) throws Exception {
+        String payload = CXGlobalInfo.getInstance().getSurveyApiPayload(intercept, mContext);
+
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
+        headers.put("package-name", mContext.getPackageName());
+
+        URL url = new URL(CXConstants.getInterceptSurveyUrl(mContext));
+        CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
+
+        String content = response.getContent();
+
+        if (response.isSuccessful()) {
+            if (CXUtils.isEmpty(content)) {
+                postFailure(buildError("Empty response body from survey URL API."));
+                return;
+            }
+            JSONObject jsonObject = new JSONObject(content);
+            if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
+                postSuccess(intercept, jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
             } else {
-                postFailure(new JSONObject().put("error", "Error in fetching the intercept settings"));
+                Log.w(LOG_TAG, "getInterceptSurveyUrl: surveyURL key missing in response.");
+                postFailure(jsonObject);
             }
-        }catch (Exception e){
-            postFailure(new JSONObject());
+        } else if (response.isRejectedPermanently() || response.isBadPayload()) {
+            Log.w(LOG_TAG, "getInterceptSurveyUrl: rejected with code " + response.getCode());
+            if (CXUtils.isEmpty(content)) {
+                postFailure(buildError("Request rejected. Code: " + response.getCode()));
+                return;
+            }
+            JSONObject jsonObject = new JSONObject(content);
+            if (jsonObject.has("response")) {
+                postFailure(jsonObject.getJSONObject("response"));
+            } else {
+                postFailure(jsonObject);
+            }
+        } else {
+            Log.w(LOG_TAG, "getInterceptSurveyUrl: unexpected response code " + response.getCode());
+            postFailure(buildError("Unexpected error fetching survey URL. Code: " + response.getCode()));
         }
     }
 
+    private void getSurveyUrl(long surveyId) throws Exception {
+        HashMap<String, String> headers = new HashMap<>();
+        headers.put("Content-Type", "application/json; charSet=UTF-8");
+        headers.put("api-key", CXGlobalInfo.getInstance().getApiKey());
 
-    private void getInterceptSurveyUrl(Intercept intercept){
-        try {
-            String payload = CXGlobalInfo.getInstance().getSurveyApiPayload(intercept, mContext);
+        URL url = new URL(CXConstants.getSurveyUrl(surveyId));
+        CXHttpResponse response = CXUploadClient.getCxApi(url, headers);
 
-            HashMap<String, String> headers = new HashMap<>();
-            headers.put("x-app-key",CXGlobalInfo.getInstance().getApiKey());
-            headers.put("package-name", mContext.getPackageName());
+        String content = response.getContent();
 
-            URL url = new URL(CXConstants.getInterceptSurveyUrl(mContext));
-
-            CXHttpResponse response = CXUploadClient.uploadCXApi(url, headers, payload);
-
-            if (response != null) {
-                if (response.isSuccessful()) {
-                    JSONObject jsonObject = new JSONObject(response.getContent());
-                    if (jsonObject.has(CXConstants.JSONResponseFields.CX_SURVEY_URL)) {
-                        postSuccess(intercept, jsonObject.getString(CXConstants.JSONResponseFields.CX_SURVEY_URL));
-                    } else {
-                        postFailure(jsonObject);
-                    }
-                } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                    JSONObject jsonObject = new JSONObject(response.getContent());
-                    if (jsonObject.has("response")) {
-                        postFailure(jsonObject.getJSONObject("response"));
-                    } else if (jsonObject.has("message")) {
-                        postFailure(jsonObject);
-                    } else {
-                        postFailure(new JSONObject());
-                    }
+        if (response.isSuccessful()) {
+            if (CXUtils.isEmpty(content)) {
+                postFailure(buildError("Empty response body from survey API."));
+                return;
+            }
+            JSONObject jsonObject = new JSONObject(content);
+            if (jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)) {
+                JSONObject responseObj = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
+                String surveyUrl = responseObj.optString(CXConstants.JSONResponseFields.CORE_SURVEY_URL, "");
+                if (CXUtils.isEmpty(surveyUrl)) {
+                    postFailure(buildError("Survey URL not found in response."));
                 } else {
-                    postFailure(new JSONObject());
-                }
-            }
-        }catch (Exception e){
-            postFailure(new JSONObject());
-        }
-    }
-
-    private void getSurveyUrl(long surveyId){
-        try {
-            HashMap<String, String> headers = new HashMap<>();
-            headers.put("Content-Type", "application/json; charSet=UTF-8");
-            headers.put("api-key", CXGlobalInfo.getInstance().getApiKey());
-
-            URL url = new URL(CXConstants.getSurveyUrl(surveyId));
-            CXHttpResponse response = CXUploadClient.getCxApi(url, headers);
-
-            if (response.isSuccessful()) {
-                JSONObject jsonObject = new JSONObject(response.getContent());
-                if (jsonObject.has(CXConstants.JSONResponseFields.RESPONSE)) {
-                    JSONObject responseObj = jsonObject.getJSONObject(CXConstants.JSONResponseFields.RESPONSE);
-                    String surveyUrl = responseObj.getString(CXConstants.JSONResponseFields.CORE_SURVEY_URL);
                     postSuccess(null, surveyUrl);
-                } else {
-                    postFailure(jsonObject);
-                }
-            } else if (response.isRejectedPermanently() || response.isBadPayload()) {
-                JSONObject jsonObject = new JSONObject(response.getContent());
-                if (jsonObject.has("response")) {
-                    postFailure(jsonObject.getJSONObject("response"));
-                } else if (jsonObject.has("message")) {
-                    postFailure(jsonObject);
-                } else {
-                    postFailure(new JSONObject());
                 }
             } else {
-                postFailure(new JSONObject());
+                Log.w(LOG_TAG, "getSurveyUrl: 'response' key missing.");
+                postFailure(jsonObject);
             }
-        }catch (Exception e){
-            postFailure(new JSONObject());
+        } else if (response.isRejectedPermanently() || response.isBadPayload()) {
+            Log.w(LOG_TAG, "getSurveyUrl: rejected with code " + response.getCode());
+            if (CXUtils.isEmpty(content)) {
+                postFailure(buildError("Request rejected. Code: " + response.getCode()));
+                return;
+            }
+            JSONObject jsonObject = new JSONObject(content);
+            if (jsonObject.has("response")) {
+                postFailure(jsonObject.getJSONObject("response"));
+            } else {
+                postFailure(jsonObject);
+            }
+        } else {
+            Log.w(LOG_TAG, "getSurveyUrl: unexpected response code " + response.getCode());
+            postFailure(buildError("Unexpected error fetching survey URL. Code: " + response.getCode()));
         }
     }
+
+    // --- Payload builders ---
 
     private String getSurveyFeedbackApiPayload(Intercept intercept, String surveyType){
         try {
             JSONObject payloadObj = new JSONObject();
-            payloadObj.put("interceptId",intercept.id);
+            payloadObj.put("interceptId", intercept.id);
             payloadObj.put("ruleGroupId", intercept.ruleGroupId);
-            payloadObj.put("surveyId",intercept.surveyId);
-            payloadObj.put("surveyType",surveyType);
-
+            payloadObj.put("surveyId", intercept.surveyId);
+            payloadObj.put("surveyType", surveyType);
             return payloadObj.toString();
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to build survey feedback payload", e);
+        }
         return "";
     }
 
-    private String getExcludedFeedbackApiPayload (Intercept intercept){
+    private String getExcludedFeedbackApiPayload(Intercept intercept){
         try {
             JSONArray jsonArray = new JSONArray();
             JSONObject payloadObj = new JSONObject();
-            payloadObj.put("interceptId",intercept.id);
+            payloadObj.put("interceptId", intercept.id);
             payloadObj.put("ruleGroupId", intercept.ruleGroupId);
-            payloadObj.put("surveyId",intercept.surveyId);
+            payloadObj.put("surveyId", intercept.surveyId);
             payloadObj.put("surveyType", VisitorStatus.EXCLUDED.name());
-
             jsonArray.put(payloadObj);
             return jsonArray.toString();
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to build excluded feedback payload", e);
+        }
         return "";
+    }
+
+    private JSONObject buildError(String message) {
+        try {
+            return new JSONObject().put("error", message != null ? message : "Unknown error");
+        } catch (JSONException e) {
+            return new JSONObject();
+        }
     }
 }
