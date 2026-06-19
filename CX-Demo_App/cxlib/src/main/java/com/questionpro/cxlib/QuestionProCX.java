@@ -10,10 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.questionpro.cxlib.enums.ConfigType;
-
 import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
@@ -30,7 +26,6 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -192,27 +187,22 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }).getIntercept();
     }
 
+    // Called only for getIntercept() — initialization path
     @Override
     public void onApiCallbackSuccess(Intercept intercept, String surveyUrl) {
         isInitialised = true;
-        if(null != intercept && InterceptType.SURVEY_URL.name().equals(intercept.type)) {
-            new CXApiHandler(appContext, this).submitFeedback(intercept, VisitorStatus.MATCHED.name());
-            if(questionProCallback != null) {
-                questionProCallback.getSurveyUrl(surveyUrl);
-            }
-        }else{
-            CXUtils.printLog("Datta", "Initialization API response: "+surveyUrl);
-            if(questionProInitCallback != null) {
-                questionProInitCallback.onInitializationSuccess(surveyUrl);
-            }
-            setUpIntercept();
+        CXUtils.printLog("Datta", "Initialization API response: " + surveyUrl);
+        if (questionProInitCallback != null) {
+            questionProInitCallback.onInitializationSuccess(surveyUrl);
         }
+        setUpIntercept();
     }
 
+    // Called only for getIntercept() — initialization path
     @Override
     public void OnApiCallbackFailed(JSONObject error) {
-        CXUtils.printLog("Datta", "Error in initialization: "+error.toString());
-        if(questionProInitCallback != null) {
+        Log.e(LOG_TAG, "Intercept fetch failed during init: " + error.toString());
+        if (questionProInitCallback != null) {
             questionProInitCallback.onInitializationFailure(error.toString());
         }
     }
@@ -248,24 +238,44 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     }
 
     protected boolean checkShouldShowSampling(Intercept intercept){
-        int samplingRate = intercept.interceptSettings.samplingRate;
-        //Log.d("Datta","Sampling Rate: " +samplingRate+ " Status: "+intercept.interceptMetadata.visitorStatus);
-        if(CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
-            if (samplingRate >= 100) {
-                return true;
-            } else {
-                int matchedCount = intercept.interceptMetadata.matchedCount;
-                int excludedCount = intercept.interceptMetadata.excludedCount;
-                int total = matchedCount + excludedCount;
-                boolean isIncluded = total == 0 ? (samplingRate > 0) : (matchedCount * 100 / total) < samplingRate;
-                //Log.d("Datta", "Matched Count: " + matchedCount + " Excluded Count: " + excludedCount + " Is included in sampling: " + isIncluded);
-                if(!isIncluded){
-                    new CXApiHandler(appContext, this).excludedFeedback(intercept);
-                }
-                return isIncluded;
-            }
-        }else
+        // 1. Server-provided status takes priority (set on previous sessions or fetched fresh)
+        if (!CXUtils.isEmpty(intercept.interceptMetadata.visitorStatus)) {
             return !intercept.interceptMetadata.visitorStatus.equals(VisitorStatus.EXCLUDED.name());
+        }
+
+        // 2. Check locally cached status from this session to avoid re-computing and re-sending feedback
+        String cachedStatus = SharedPreferenceManager.getInstance(appContext).getVisitorStatusForIntercept(intercept.id);
+        if (!CXUtils.isEmpty(cachedStatus)) {
+            return !cachedStatus.equals(VisitorStatus.EXCLUDED.name());
+        }
+
+        // 3. First time this session: compute sampling decision and cache it
+        int samplingRate = intercept.interceptSettings.samplingRate;
+        if (samplingRate >= 100) {
+            return true;
+        }
+
+        int matchedCount = intercept.interceptMetadata.matchedCount;
+        int excludedCount = intercept.interceptMetadata.excludedCount;
+        int total = matchedCount + excludedCount;
+        boolean isIncluded = total == 0 ? (samplingRate > 0) : (matchedCount * 100 / total) < samplingRate;
+
+        if (!isIncluded) {
+            SharedPreferenceManager.getInstance(appContext)
+                    .saveVisitorStatusForIntercept(intercept.id, VisitorStatus.EXCLUDED.name());
+            new CXApiHandler(appContext).excludedFeedback(intercept);
+        }
+        return isIncluded;
+    }
+
+    private void markRuleSatisfied(int interceptId, String ruleType) {
+        synchronized (interceptSatisfiedRules) {
+            Set<String> existingSet = interceptSatisfiedRules.get(interceptId);
+            Set<String> updatedSet = (existingSet != null) ? new HashSet<>(existingSet) : new HashSet<>();
+            updatedSet.add(ruleType);
+            interceptSatisfiedRules.put(interceptId, updatedSet);
+        }
+        checkAllRulesForIntercept(interceptId);
     }
 
     private void checkDateRule(InterceptRule rule, int interceptId){
@@ -273,14 +283,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             String[] dates = rule.value.split(",");
             for(String date: dates) {
                 if (Integer.parseInt(date) == Integer.parseInt(DateTimeUtils.getCurrentDayOfMonth())) {
-                    Set<String> interceptRules = new HashSet<>();
-                    if (interceptSatisfiedRules.containsKey(interceptId)) {
-                        interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
-                    }
-                    interceptRules.add(InterceptRuleType.DATE.name());
-
-                    interceptSatisfiedRules.put(interceptId, interceptRules);
-                    checkAllRulesForIntercept(interceptId);
+                    markRuleSatisfied(interceptId, InterceptRuleType.DATE.name());
                 }
             }
         }
@@ -291,14 +294,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             String[] days = rule.value.split(",");
             for (String day : days) {
                 if (day.equalsIgnoreCase(DateTimeUtils.getCurrentDayOfWeek())) {
-                    Set<String> interceptRules = new HashSet<>();
-                    if (interceptSatisfiedRules.containsKey(interceptId)) {
-                        interceptRules.addAll(interceptSatisfiedRules.get(interceptId));
-                    }
-                    interceptRules.add(InterceptRuleType.DAY.name());
-
-                    interceptSatisfiedRules.put(interceptId, interceptRules);
-                    checkAllRulesForIntercept(interceptId);
+                    markRuleSatisfied(interceptId, InterceptRuleType.DAY.name());
                 }
             }
         }
@@ -306,30 +302,13 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
 
     @Override
     public void onViewCountRuleSatisfied(int interceptId) {
-        Set<String> interceptRules = new HashSet<>();
-        if(interceptSatisfiedRules.containsKey(interceptId)) {
-            interceptRules.addAll(Objects.requireNonNull(interceptSatisfiedRules.get(interceptId)));
-        }
-        interceptRules.add(InterceptRuleType.VIEW_COUNT.name());
-
-        interceptSatisfiedRules.put(interceptId, interceptRules);
-        checkAllRulesForIntercept(interceptId);
+        markRuleSatisfied(interceptId, InterceptRuleType.VIEW_COUNT.name());
     }
 
     @Override
     public void onTimeSpendSatisfied(int interceptId) {
-        try {
-            CXUtils.printLog("Datta","Trigger the intercept as time is satisfied:"+interceptId);
-            Set<String> interceptRules = new HashSet<>();
-            if(interceptSatisfiedRules.containsKey(interceptId)) {
-                interceptRules.addAll(Objects.requireNonNull(interceptSatisfiedRules.get(interceptId)));
-            }
-            interceptRules.add(InterceptRuleType.TIME_SPENT.name());
-
-            interceptSatisfiedRules.put(interceptId, interceptRules);
-
-            checkAllRulesForIntercept(interceptId);
-        }catch (Exception e){}
+        CXUtils.printLog("Datta", "Trigger the intercept as time is satisfied: " + interceptId);
+        markRuleSatisfied(interceptId, InterceptRuleType.TIME_SPENT.name());
     }
 
     private void checkAllRulesForIntercept(int interceptId){
@@ -337,7 +316,11 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
             Intercept intercept = SharedPreferenceManager.getInstance(appContext).getInterceptById(interceptId);
             if (intercept == null) return;
             if(shouldSurveyLaunch(intercept)) {
-                Set<String> temp = interceptSatisfiedRules.get(interceptId);
+                Set<String> temp;
+                synchronized (interceptSatisfiedRules) {
+                    Set<String> existing = interceptSatisfiedRules.get(interceptId);
+                    temp = (existing != null) ? new HashSet<>(existing) : null;
+                }
                 if (temp == null) return;
                 CXUtils.printLog("Datta", interceptId + " Satisfied intercepts: " + temp);
 
@@ -362,7 +345,19 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private synchronized void launchFeedbackSurvey(Intercept intercept){
         CXUtils.printLog("Datta",isSessionAlive +" Running activity count: "+runningActivities.get());
         if(InterceptType.SURVEY_URL.name().equals(intercept.type)){
-            new CXApiHandler(appContext, this).getInterceptSurvey(intercept);
+            new CXApiHandler(appContext, new IQuestionProApiCallback() {
+                @Override
+                public void onApiCallbackSuccess(Intercept interceptResult, String surveyUrl) {
+                    new CXApiHandler(appContext).submitFeedback(interceptResult, VisitorStatus.MATCHED.name());
+                    if (questionProCallback != null) {
+                        questionProCallback.getSurveyUrl(surveyUrl);
+                    }
+                }
+                @Override
+                public void OnApiCallbackFailed(JSONObject error) {
+                    Log.e(LOG_TAG, "Failed to fetch survey URL for SURVEY_URL intercept: " + error.toString());
+                }
+            }).getInterceptSurvey(intercept);
         } else {
             int triggerDelay = intercept.interceptSettings.triggerDelayInSeconds * 1000;
             new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {

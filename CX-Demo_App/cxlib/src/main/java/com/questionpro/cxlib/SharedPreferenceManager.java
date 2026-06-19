@@ -136,6 +136,14 @@ class SharedPreferenceManager {
         return getPrefs().getString(CXConstants.CUSTOM_DATA_MAPPINGS, null);
     }
 
+    void saveVisitorStatusForIntercept(int interceptId, String status) {
+        getPrefs().edit().putString("visitor_status_" + interceptId, status).apply();
+    }
+
+    String getVisitorStatusForIntercept(int interceptId) {
+        return getPrefs().getString("visitor_status_" + interceptId, "");
+    }
+
     void resetPreferences(){
         //interceptStr = null;
         getPrefs().edit().clear().apply();

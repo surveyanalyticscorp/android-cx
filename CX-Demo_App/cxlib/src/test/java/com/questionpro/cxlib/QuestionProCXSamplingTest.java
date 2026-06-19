@@ -161,10 +161,10 @@ public class QuestionProCXSamplingTest {
     }
 
     @Test
-    public void sampling_rate50_balancedHistory_included() {
-        // Math: (50 * 100) / (50 + 50 + 1) = 5000 / 101 = 49; 49 < 50 → true
+    public void sampling_rate50_balancedHistory_excluded() {
+        // Math: (50 * 100) / (50 + 50) = 50; 50 < 50 → false (already at target rate, exclude)
         Intercept intercept = buildSamplingIntercept(50, null, 50, 50);
-        assertTrue(cx.checkShouldShowSampling(intercept));
+        assertFalse(cx.checkShouldShowSampling(intercept));
     }
 
     @Test
