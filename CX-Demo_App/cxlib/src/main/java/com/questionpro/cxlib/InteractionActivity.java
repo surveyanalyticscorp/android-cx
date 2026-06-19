@@ -86,20 +86,6 @@ public class InteractionActivity extends FragmentActivity implements
         }
     }
 
-    private void initSurveys(){
-        setContentView(R.layout.cx_webview_dialog);
-        setupWebview();
-
-        Serializable surveyIdSerializable = getIntent().getSerializableExtra("SURVEY_ID");
-        if (surveyIdSerializable != null) {
-            long surveyId = (Long) surveyIdSerializable;
-            CXGlobalInfo.updateCXPayloadWithSurveyId(surveyId);
-
-            getSurveyDetails(surveyId);
-        }else{
-            showErrorDialog(getString(R.string.cx_error_survey_id_null));
-        }
-    }
     private void setupWebview(){
         ImageButton closeButton = (ImageButton)findViewById(R.id.closeButton);
         closeButton.setOnClickListener(new View.OnClickListener() {
@@ -280,29 +266,16 @@ public class InteractionActivity extends FragmentActivity implements
     @Override
     public void onSurveyUrlReady(Intercept intercept, String surveyUrl) {
         CXUtils.printLog("Datta", "Survey url: " + surveyUrl);
-        if(intercept != null && !intercept.type.equals(InterceptType.SURVEY_URL.name())) {
-            if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
-                finish();
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        launchSurvey(surveyUrl);
-                    }
-                });
-            }
-        }else{
-            if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
-                finish();
-            } else {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        webView.loadUrl(surveyUrl);
-                    }
-                });
-            }
+        if (CXUtils.isEmpty(surveyUrl)) {
+            showErrorDialog(getString(R.string.cx_error_survey_load_failed));
+            return;
         }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                launchSurvey(surveyUrl);
+            }
+        });
     }
 
     @Override
