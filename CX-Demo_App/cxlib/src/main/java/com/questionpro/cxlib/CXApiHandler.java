@@ -31,7 +31,8 @@ class CXApiHandler {
     private static final String LOG_TAG = "CXApiHandler";
 
     private final Context mContext;
-    private final IQuestionProApiCallback mQuestionProApiCall;
+    private IQuestionProApiCallback mQuestionProApiCall;
+    private IInteractionCallback iInteractionCallback;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public CXApiHandler(Context context, IQuestionProApiCallback call){
@@ -39,10 +40,23 @@ class CXApiHandler {
         mQuestionProApiCall = call;
     }
 
+    public CXApiHandler(Context context, IInteractionCallback call){
+        this.mContext = context;
+        iInteractionCallback = call;
+    }
+
+    // For fire-and-forget calls (submitFeedback, excludedFeedback) that need no callback
+    public CXApiHandler(Context context){
+        this.mContext = context;
+    }
+
     private void postSuccess(final Intercept intercept, final String surveyUrl) {
         mainHandler.post(new Runnable() {
             @Override public void run() {
-                mQuestionProApiCall.onApiCallbackSuccess(intercept, surveyUrl);
+                if(iInteractionCallback != null)
+                    iInteractionCallback.onSurveyUrlReady(intercept, surveyUrl);
+                else if(mQuestionProApiCall != null)
+                    mQuestionProApiCall.onApiCallbackSuccess(intercept, surveyUrl);
             }
         });
     }
@@ -50,7 +64,10 @@ class CXApiHandler {
     private void postFailure(final JSONObject error) {
         mainHandler.post(new Runnable() {
             @Override public void run() {
-                mQuestionProApiCall.OnApiCallbackFailed(error);
+                if(iInteractionCallback != null)
+                    iInteractionCallback.onSurveyUrlFailed(error);
+                else if(mQuestionProApiCall != null)
+                    mQuestionProApiCall.OnApiCallbackFailed(error);
             }
         });
     }

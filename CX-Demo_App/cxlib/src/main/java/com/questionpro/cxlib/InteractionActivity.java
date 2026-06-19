@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 
 public class InteractionActivity extends FragmentActivity implements
         MyWebChromeClient.ProgressListener,
-        IQuestionProApiCallback {
+        IInteractionCallback {
     private final String LOG_TAG="InteractionActivity";
     private ProgressBar progressBar;
     private ProgressBar loadingSpinner;
@@ -176,7 +176,7 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     private void applyDefaultPromptSize() {
-        if (!InterceptType.PROMPT.name().equals(intercept.type))
+        if (intercept == null || !InterceptType.PROMPT.name().equals(intercept.type))
             return;
 
         LinearLayout dialogContent = findViewById(R.id.dialogContent);
@@ -278,26 +278,7 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     @Override
-    public void OnApiCallbackFailed(JSONObject response) {
-        loadingSpinner.setVisibility(View.GONE);
-        try {
-            String errorMessage = getString(R.string.cx_error_survey_load_failed);
-            if (response.has("error") && response.getJSONObject("error").has("message")) {
-                errorMessage = "Error: " + response.getJSONObject("error").getString("message");
-            }else if(response.has("message")){
-                errorMessage = "Error: " + response.getString("message");
-            }
-            final String finalErrorMessage = errorMessage;
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    showErrorDialog(finalErrorMessage);
-                }
-            });
-        }catch (Exception e){}
-    }
-
-    @Override
-    public void onApiCallbackSuccess(Intercept intercept, final String surveyUrl) {
+    public void onSurveyUrlReady(Intercept intercept, String surveyUrl) {
         CXUtils.printLog("Datta", "Survey url: " + surveyUrl);
         if(intercept != null && !intercept.type.equals(InterceptType.SURVEY_URL.name())) {
             if (surveyUrl == null || CXUtils.isEmpty(surveyUrl)) {
@@ -324,10 +305,28 @@ public class InteractionActivity extends FragmentActivity implements
         }
     }
 
+    @Override
+    public void onSurveyUrlFailed(JSONObject response) {
+        String errorMessage = getString(R.string.cx_error_survey_load_failed);
+        try {
+            if (response != null) {
+                if (response.has("error") && response.getJSONObject("error").has("message")) {
+                    errorMessage = "Error: " + response.getJSONObject("error").getString("message");
+                } else if (response.has("message")) {
+                    errorMessage = "Error: " + response.getString("message");
+                }
+            }
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to parse error response", e);
+        }
+        loadingSpinner.setVisibility(View.GONE);
+        showErrorDialog(errorMessage);
+    }
+
     private void launchSurvey(String url){
         SharedPreferenceManager.getInstance(this).saveInterceptIdForLaunchedSurvey(
                 intercept.id, CXUtils.getCurrentLocalTimeInMillis());
-        new CXApiHandler(InteractionActivity.this, this).submitFeedback(intercept, VisitorStatus.LAUNCHED.name());
+        new CXApiHandler(InteractionActivity.this).submitFeedback(intercept, VisitorStatus.LAUNCHED.name());
 
         webView.loadUrl(url);
     }
@@ -422,7 +421,7 @@ public class InteractionActivity extends FragmentActivity implements
 
     @Override
     public void onBackPressed() {
-        if(intercept.type.equals(InterceptType.EMBED.name())){
+        if(intercept != null && intercept.type.equals(InterceptType.EMBED.name())){
             super.onBackPressed();
         }
     }
