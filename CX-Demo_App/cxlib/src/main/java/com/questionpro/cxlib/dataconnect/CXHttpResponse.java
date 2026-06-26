@@ -76,7 +76,7 @@ public class CXHttpResponse {
 
     public boolean isZipped() {
         if (headers != null) {
-            String contentEncoding = headers.get("Content-Encoding");
+            String contentEncoding = headers.get("content-encoding");
             return contentEncoding != null && contentEncoding.equalsIgnoreCase("gzip");
         }
         return false;
