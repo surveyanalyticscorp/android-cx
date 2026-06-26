@@ -25,9 +25,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.questionpro.cxlib.enums.ConfigType;
 import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interaction.MyWebChromeClient;
+import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
 import com.questionpro.cxlib.model.Intercept;
 import com.questionpro.cxlib.model.WidgetSettings;
 import com.questionpro.cxlib.util.CXUtils;
@@ -264,36 +264,46 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onSurveyUrlReady(Intercept intercept, String surveyUrl) {
+    public void onSurveyUrlReady(Intercept responseIntercept, String surveyUrl) {
         CXUtils.printLog("Datta", "Survey url: " + surveyUrl);
         if (CXUtils.isEmpty(surveyUrl)) {
-            showErrorDialog(getString(R.string.cx_error_survey_load_failed));
+            notifyError("Survey URL is empty.");
+            finish();
             return;
         }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                launchSurvey(surveyUrl);
-            }
-        });
+        launchSurvey(surveyUrl);
     }
 
     @Override
     public void onSurveyUrlFailed(JSONObject response) {
-        String errorMessage = getString(R.string.cx_error_survey_load_failed);
+        String reason = extractReason(response);
+        Log.e(LOG_TAG, "Survey load failed: " + reason);
+        notifyError(reason);
+        finish();
+    }
+
+    private void notifyError(String reason) {
+        IQuestionProInitCallback initCallback = QuestionProCX.getInstance().getInitCallback();
+        if (initCallback != null && intercept != null) {
+            initCallback.onError(intercept.id, reason);
+        }
+    }
+
+    private String extractReason(JSONObject response) {
         try {
             if (response != null) {
                 if (response.has("error") && response.getJSONObject("error").has("message")) {
-                    errorMessage = "Error: " + response.getJSONObject("error").getString("message");
+                    return response.getJSONObject("error").getString("message");
                 } else if (response.has("message")) {
-                    errorMessage = "Error: " + response.getString("message");
+                    return response.getString("message");
+                } else if (response.has("error")) {
+                    return response.getString("error");
                 }
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Failed to parse error response", e);
         }
-        loadingSpinner.setVisibility(View.GONE);
-        showErrorDialog(errorMessage);
+        return getString(R.string.cx_error_survey_load_failed);
     }
 
     private void launchSurvey(String url){

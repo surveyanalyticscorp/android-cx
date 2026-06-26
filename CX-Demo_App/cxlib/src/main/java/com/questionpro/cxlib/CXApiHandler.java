@@ -57,6 +57,8 @@ class CXApiHandler {
                     iInteractionCallback.onSurveyUrlReady(intercept, surveyUrl);
                 else if(mQuestionProApiCall != null)
                     mQuestionProApiCall.onApiCallbackSuccess(intercept, surveyUrl);
+                else
+                    Log.w(LOG_TAG, "postSuccess: no callback registered, result dropped.");
             }
         });
     }
@@ -68,6 +70,8 @@ class CXApiHandler {
                     iInteractionCallback.onSurveyUrlFailed(error);
                 else if(mQuestionProApiCall != null)
                     mQuestionProApiCall.OnApiCallbackFailed(error);
+                else
+                    Log.w(LOG_TAG, "postFailure: no callback registered. Error: " + error);
             }
         });
     }
@@ -85,7 +89,7 @@ class CXApiHandler {
                     getInterceptSurveyUrl(intercept);
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "getInterceptSurvey failed", e);
-                    postFailure(buildError(e.getMessage()));
+                    postFailure(buildError(e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName()));
                 }
             }
         });
@@ -105,7 +109,7 @@ class CXApiHandler {
                     getSurveyUrl(surveyId);
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "getSurvey failed", e);
-                    postFailure(buildError(e.getMessage()));
+                    postFailure(buildError(e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName()));
                 }
             }
         });
@@ -126,7 +130,7 @@ class CXApiHandler {
                 } catch (Exception e) {
                     // Catches JSONException, IOException, NullPointerException, etc.
                     Log.e(LOG_TAG, "getIntercept failed", e);
-                    postFailure(buildError(e.getMessage()));
+                    postFailure(buildError(e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName()));
                 }
             }
         });
@@ -201,7 +205,9 @@ class CXApiHandler {
         URL url = new URL(CXConstants.getInterceptsUrl());
         CXHttpResponse response = CXUploadClient.getCxApi(url, CXGlobalInfo.getInstance().getInterceptApiHeaders(mContext));
 
-        if (response.isSuccessful()) {
+        if (response.isException()) {
+            postFailure(buildError("Network error fetching intercept settings."));
+        } else if (response.isSuccessful()) {
             String content = response.getContent();
             if (CXUtils.isEmpty(content)) {
                 postFailure(buildError("Empty response body from intercepts API."));
@@ -221,7 +227,7 @@ class CXApiHandler {
             postSuccess(null, "SDK is Initialised");
         } else if (response.isRejectedPermanently()) {
             String content = response.getContent();
-            postFailure(CXUtils.isEmpty(content) ? buildError("Request rejected (4xx).") : new JSONObject(content));
+            postFailure(CXUtils.isEmpty(content) ? buildError("Request rejected (4xx).") : parseErrorBody(content));
         } else {
             Log.w(LOG_TAG, "getInterceptConfigurations: unexpected response code " + response.getCode());
             postFailure(buildError("Unexpected error fetching intercept settings. Code: " + response.getCode()));
@@ -240,7 +246,9 @@ class CXApiHandler {
 
         String content = response.getContent();
 
-        if (response.isSuccessful()) {
+        if (response.isException()) {
+            postFailure(buildError("Network error fetching survey URL."));
+        } else if (response.isSuccessful()) {
             if (CXUtils.isEmpty(content)) {
                 postFailure(buildError("Empty response body from survey URL API."));
                 return;
@@ -258,12 +266,8 @@ class CXApiHandler {
                 postFailure(buildError("Request rejected. Code: " + response.getCode()));
                 return;
             }
-            JSONObject jsonObject = new JSONObject(content);
-            if (jsonObject.has("response")) {
-                postFailure(jsonObject.getJSONObject("response"));
-            } else {
-                postFailure(jsonObject);
-            }
+            JSONObject errorJson = parseErrorBody(content);
+            postFailure(errorJson.has("response") ? errorJson.getJSONObject("response") : errorJson);
         } else {
             Log.w(LOG_TAG, "getInterceptSurveyUrl: unexpected response code " + response.getCode());
             postFailure(buildError("Unexpected error fetching survey URL. Code: " + response.getCode()));
@@ -280,7 +284,9 @@ class CXApiHandler {
 
         String content = response.getContent();
 
-        if (response.isSuccessful()) {
+        if (response.isException()) {
+            postFailure(buildError("Network error fetching survey URL."));
+        } else if (response.isSuccessful()) {
             if (CXUtils.isEmpty(content)) {
                 postFailure(buildError("Empty response body from survey API."));
                 return;
@@ -304,12 +310,8 @@ class CXApiHandler {
                 postFailure(buildError("Request rejected. Code: " + response.getCode()));
                 return;
             }
-            JSONObject jsonObject = new JSONObject(content);
-            if (jsonObject.has("response")) {
-                postFailure(jsonObject.getJSONObject("response"));
-            } else {
-                postFailure(jsonObject);
-            }
+            JSONObject errorJson = parseErrorBody(content);
+            postFailure(errorJson.has("response") ? errorJson.getJSONObject("response") : errorJson);
         } else {
             Log.w(LOG_TAG, "getSurveyUrl: unexpected response code " + response.getCode());
             postFailure(buildError("Unexpected error fetching survey URL. Code: " + response.getCode()));
@@ -353,6 +355,15 @@ class CXApiHandler {
             return new JSONObject().put("error", message != null ? message : "Unknown error");
         } catch (JSONException e) {
             return new JSONObject();
+        }
+    }
+
+    private JSONObject parseErrorBody(String content) {
+        try {
+            return new JSONObject(content);
+        } catch (Exception e) {
+            Log.w(LOG_TAG, "Error response body is not valid JSON: " + content);
+            return buildError("Server error (non-JSON response).");
         }
     }
 }

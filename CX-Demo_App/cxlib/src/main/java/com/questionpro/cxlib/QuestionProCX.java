@@ -104,6 +104,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         }
     }
 
+    IQuestionProInitCallback getInitCallback() {
+        return questionProInitCallback;
+    }
+
     /**
      * Returns the survey URL via callback
      */
