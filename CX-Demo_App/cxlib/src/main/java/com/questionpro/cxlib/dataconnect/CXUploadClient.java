@@ -34,7 +34,7 @@ public class CXUploadClient {
 
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
-            urlConnection.setDoOutput(false);
+            urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
             urlConnection.setRequestMethod("POST");
@@ -50,11 +50,13 @@ public class CXUploadClient {
             cxHttpResponse.setReason(urlConnection.getResponseMessage());
             CXUtils.printLog(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
 
-            // Get the Http response header values
+            // Get the Http response header values (normalize keys to lowercase for consistent lookup)
             Map<String, String> headers = new HashMap<String, String>();
             Map<String, List<String>> map = urlConnection.getHeaderFields();
             for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-                headers.put(entry.getKey(), entry.getValue().toString());
+                if (entry.getKey() != null && !entry.getValue().isEmpty()) {
+                    headers.put(entry.getKey().toLowerCase(), entry.getValue().get(0));
+                }
             }
             cxHttpResponse.setHeaders(headers);
 
@@ -106,11 +108,13 @@ public class CXUploadClient {
             cxHttpResponse.setReason(urlConnection.getResponseMessage());
             //Log.d(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
 
-            // Get the Http response header values
+            // Get the Http response header values (normalize keys to lowercase for consistent lookup)
             Map<String, String> headers = new HashMap<String, String>();
             Map<String, List<String>> map = urlConnection.getHeaderFields();
             for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-                headers.put(entry.getKey(), entry.getValue().toString());
+                if (entry.getKey() != null && !entry.getValue().isEmpty()) {
+                    headers.put(entry.getKey().toLowerCase(), entry.getValue().get(0));
+                }
             }
             cxHttpResponse.setHeaders(headers);
             if (responseCode >= 200 && responseCode < 300) {
