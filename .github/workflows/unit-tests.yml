@@ -1,0 +1,35 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ master, labs ]
+  pull_request:
+    branches: [ master, labs ]
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x CX-Demo_App/gradlew
+
+      - name: Run unit tests
+        run: cd CX-Demo_App && ./gradlew :cxlib:testDebugUnitTest
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-report
+          path: CX-Demo_App/cxlib/build/reports/tests/testDebugUnitTest/
