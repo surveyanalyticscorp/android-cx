@@ -412,7 +412,7 @@ class CXApiHandler {
             payload.put("stacktrace", exception != null ? stackTraceToString(exception) : "N/A");
 
             JSONObject context = new JSONObject();
-            context.put("platform", "android");
+            context.put("platform", CXGlobalInfo.getInstance().getPlatform().name().toLowerCase());
             context.put("sdkVersion", BuildConfig.SDK_VERSION);
             context.put("errorType", errorType != null ? errorType : "Unknown");
 

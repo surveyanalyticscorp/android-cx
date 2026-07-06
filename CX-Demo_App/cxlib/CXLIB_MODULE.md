@@ -817,6 +817,71 @@ CXApiHandler ──────────────────► QuestionP
 
 ---
 
+## Bridge / Cross-platform Integration
+
+This SDK is consumed as a native layer by the QuestionPro CX **React Native** and **Flutter** wrapper packages. The bridge layer acts as the host app from the Android SDK's perspective — it implements the SDK callbacks and forwards events across the JS/Dart bridge channel.
+
+### What the bridge must implement
+
+#### 1. `IQuestionProInitCallback` — all three methods
+
+```java
+// React Native bridge example (Java/Kotlin module)
+QuestionProCX.getInstance().init(context, touchPoint, new IQuestionProInitCallback() {
+
+    @Override
+    public void onInitializationSuccess(String message) {
+        // forward to JS via bridge channel
+        sendEvent("onInitializationSuccess", message);
+    }
+
+    @Override
+    public void onInitializationFailure(String error) {
+        sendEvent("onInitializationFailure", error);
+    }
+
+    @Override
+    public void onError(int interceptId, String errorMessage) {
+        // REQUIRED: forward SDK errors to the JS/Dart layer
+        // Without this, errors are silently swallowed inside the bridge
+        WritableMap params = Arguments.createMap();
+        params.putInt("interceptId", interceptId);
+        params.putString("errorMessage", errorMessage);
+        sendEvent("onError", params);
+    }
+});
+```
+
+**`onError` is the most commonly missed method** because it has a default no-op implementation (so the bridge compiles without it), but skipping it means SDK errors are invisible to the end developer using the RN/Flutter package.
+
+#### 2. Error log queue flushes on `init()`
+
+The SDK queues failed error log POSTs in `SharedPreferences` and flushes them automatically at the start of every `init()` call. The bridge must ensure `init()` is called **once per app session** (not on every JS reload / hot restart) to avoid double-flushing or missing the flush window.
+
+#### 3. `platform` field in `TouchPoint`
+
+The bridge must set the correct platform value so the backend can distinguish traffic sources:
+
+```java
+// React Native bridge
+touchPoint.setPlatform(Platform.REACT_NATIVE);
+
+// Flutter bridge
+touchPoint.setPlatform(Platform.FLUTTER);
+```
+
+This also flows into the `context.platform` field of every error log payload sent to `/api/v1/error-logs/mobile`, so backend error dashboards can filter by platform correctly.
+
+#### 4. `context.getPackageName()` resolves correctly
+
+The SDK uses `mContext.getPackageName()` for the `package-name` request header. When called through a bridge, this resolves to the **host app's** package name (not the bridge package), which is the correct behaviour — no special handling needed.
+
+### Error log payload platform field
+
+The `context.platform` field in every error log payload is resolved from `CXGlobalInfo.getInstance().getPlatform()`, which reads the value set on `TouchPoint`. This means error logs from a React Native bridge will carry `"react_native"` and Flutter will carry `"flutter"` — the backend error dashboard can filter by platform without any extra work from the bridge developer.
+
+---
+
 ## Notes & Limitations
 
 - The staging API base URL is hardcoded in `CXConstants`. Switching to production requires updating those constants or making them configurable per data center.
