@@ -69,4 +69,41 @@
         app:layout_anchor="@+id/scrollableview"
         app:layout_anchorGravity="bottom|left|start" />
 
+    <LinearLayout
+        android:id="@+id/app_icon_switcher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="@color/holo_gray_light"
+        android:padding="8dp"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btn_icon_default"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:text="Default Icon" />
+
+        <Button
+            android:id="@+id/btn_icon_one"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="Icon One" />
+
+        <Button
+            android:id="@+id/btn_icon_two"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:text="Icon Two" />
+
+    </LinearLayout>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

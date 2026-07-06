@@ -19,11 +19,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.qpcx.retailapp.R;
 import com.qpcx.retailapp.domain.api.ProductCategoryLoaderTask;
+import com.qpcx.retailapp.util.AppIconManager;
 import com.qpcx.retailapp.view.activities.ECartHomeActivity;
 import com.qpcx.retailapp.view.activities.ShoppingCartActivity;
 import com.questionpro.cxlib.QuestionProCX;
@@ -89,6 +91,8 @@ public class HomeFragment extends Fragment {
 				startActivity(intent);
 			}
 		});
+
+		setupAppIconSwitcher(view);
 
 		final Toolbar toolbar = (Toolbar) view.findViewById(R.id.anim_toolbar);
 		((ECartHomeActivity) getActivity()).setSupportActionBar(toolbar);
@@ -204,6 +208,40 @@ public class HomeFragment extends Fragment {
 
 		return view;
 
+	}
+
+	private void setupAppIconSwitcher(View view) {
+		Button btnDefault = view.findViewById(R.id.btn_icon_default);
+		Button btnOne = view.findViewById(R.id.btn_icon_one);
+		Button btnTwo = view.findViewById(R.id.btn_icon_two);
+
+		btnDefault.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				applyIcon(AppIconManager.IconVariant.DEFAULT, "Default");
+			}
+		});
+
+		btnOne.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				applyIcon(AppIconManager.IconVariant.ICON_ONE, "Icon One");
+			}
+		});
+
+		btnTwo.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				applyIcon(AppIconManager.IconVariant.ICON_TWO, "Icon Two");
+			}
+		});
+	}
+
+	private void applyIcon(AppIconManager.IconVariant variant, String label) {
+		AppIconManager.switchTo(getActivity(), variant);
+		Toast.makeText(getActivity(),
+				label + " icon applied — check the home screen launcher icon.",
+				Toast.LENGTH_SHORT).show();
 	}
 
 }
