@@ -92,6 +92,41 @@ class SharedPreferenceManager {
         return -1;
     }
 
+    private static final String KEY_ERROR_LOG_QUEUE = "error_log_queue";
+    private static final int MAX_ERROR_LOG_QUEUE_SIZE = 20;
+
+    synchronized void enqueueErrorLog(String payload) {
+        try {
+            JSONArray queue = getErrorLogQueue();
+            if (queue.length() >= MAX_ERROR_LOG_QUEUE_SIZE) {
+                // drop the oldest entry to make room
+                JSONArray trimmed = new JSONArray();
+                for (int i = 1; i < queue.length(); i++) trimmed.put(queue.getString(i));
+                queue = trimmed;
+            }
+            queue.put(payload);
+            getPrefs().edit().putString(KEY_ERROR_LOG_QUEUE, queue.toString()).apply();
+        } catch (Exception e) {
+            // silently ignore — queue is best-effort
+        }
+    }
+
+    synchronized JSONArray drainErrorLogQueue() {
+        JSONArray queue = getErrorLogQueue();
+        if (queue.length() > 0) {
+            getPrefs().edit().remove(KEY_ERROR_LOG_QUEUE).apply();
+        }
+        return queue;
+    }
+
+    private JSONArray getErrorLogQueue() {
+        String json = getPrefs().getString(KEY_ERROR_LOG_QUEUE, null);
+        if (json != null) {
+            try { return new JSONArray(json); } catch (Exception ignored) {}
+        }
+        return new JSONArray();
+    }
+
     private static final int MAX_VIEW_COUNT = 10_000;
     int updateViewCountForTag(String tag){
         int current = getViewCountForTag(tag);

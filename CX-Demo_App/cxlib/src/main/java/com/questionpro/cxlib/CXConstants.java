@@ -12,6 +12,15 @@ public class CXConstants {
     private static final String CX_INTERCEPT_SURVEY_URL = "/api/v1/data-mapping/mobile/survey-url";
     private static final String SURVEY_FEEDBACK = "/api/v1/visitor/mobile/survey-feedback";
     private static final String EXCLUDED_FEEDBACK = "/api/v1/visitor/mobile/excluded-feedback";
+    private static final String ERROR_LOGS = "/api/v1/error-logs/mobile";
+
+    // Path constants for error logging — passed as the `path` field in error log payloads
+    protected static final String PATH_INTERCEPTS = GET_MOBILE_INTERCEPTS;
+    protected static final String PATH_INTERCEPT_SURVEY = CX_INTERCEPT_SURVEY_URL;
+    protected static final String PATH_SURVEY = SURVEYS_URL;
+    protected static final String PATH_SURVEY_FEEDBACK = SURVEY_FEEDBACK;
+    protected static final String PATH_EXCLUDED_FEEDBACK = EXCLUDED_FEEDBACK;
+
     //public static final String PREF_KEY_API_KEY="cx_pref_api_key";
     protected static final String MANIFEST_KEY_API_KEY="cx_manifest_api_key";
 
@@ -55,7 +64,11 @@ public class CXConstants {
     protected static String getExcludedFeedbackUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
         return getInterceptBaseUrl(dataCenter) + EXCLUDED_FEEDBACK;
-        //return "https://cx-intercept-staging-api.questionpro.com" + EXCLUDED_FEEDBACK;
+    }
+
+    protected static String getErrorLogsUrl(){
+        String dataCenter = CXGlobalInfo.getDataCenter();
+        return getInterceptBaseUrl(dataCenter) + ERROR_LOGS;
     }
 
     private static String getInterceptBaseUrl(String dataCenter){
