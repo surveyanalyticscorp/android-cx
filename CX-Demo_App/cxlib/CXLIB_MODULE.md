@@ -170,6 +170,7 @@ Executes all HTTP calls on a background `ExecutorService` thread; posts results 
 | `getSurvey(surveyId)` | GET | `/a/api/v2/surveys/{surveyId}` | Get standalone survey URL |
 | `submitFeedback()` | POST | `/api/v1/visitor/mobile/survey-feedback` | Record MATCHED/LAUNCHED/EXCLUDED |
 | `excludedFeedback()` | POST | `/api/v1/visitor/mobile/excluded-feedback` | Record excluded visitor |
+| `logError(message, httpStatus, path, exception, errorType)` | POST | `/api/v1/error-logs/mobile` | Fire-and-forget error report to backend |
 
 ---
 
@@ -454,6 +455,7 @@ List<SessionEvent> getAllEvents();
 | `/api/v1/visitor/mobile/survey-feedback` | POST | Submit MATCHED/LAUNCHED/EXCLUDED status |
 | `/api/v1/visitor/mobile/excluded-feedback` | POST | Submit excluded visitor feedback |
 | `/a/api/v2/surveys/{surveyId}` | GET | Get standalone survey URL |
+| `/api/v1/error-logs/mobile` | POST | Report SDK internal errors for diagnostics |
 
 ### Request Headers
 
@@ -480,6 +482,31 @@ visitor-id: <visitorUUID>
 package-name: <app package name>
 Content-Type: application/json
 ```
+
+**POST Error Log (`/api/v1/error-logs/mobile`):**
+```
+x-app-key: <apiKey>
+visitor-id: <visitorUUID>
+package-name: <app package name>
+Content-Type: application/json
+```
+
+Request body:
+```json
+{
+  "message": "Failed to load survey: timeout",
+  "httpStatus": 504,
+  "path": "/api/v1/data-mapping/mobile/survey-url",
+  "stacktrace": "java.net.SocketTimeoutException: timeout\n  at ...",
+  "context": {
+    "platform": "android",
+    "sdkVersion": "2.3.1",
+    "errorType": "NetworkError"
+  }
+}
+```
+
+`httpStatus` values: actual HTTP code when available, `0` for no network, `500` for SDK-internal exceptions. `stacktrace` is `"N/A"` when no exception is available.
 
 ---
 
