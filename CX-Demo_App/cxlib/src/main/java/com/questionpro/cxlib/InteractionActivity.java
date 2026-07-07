@@ -292,12 +292,19 @@ public class InteractionActivity extends FragmentActivity implements
     private String extractReason(JSONObject response) {
         try {
             if (response != null) {
-                if (response.has("error") && response.getJSONObject("error").has("message")) {
-                    return response.getJSONObject("error").getString("message");
-                } else if (response.has("message")) {
+                // "error" can be a nested object {"message":"..."} or a plain string
+                if (response.has("error")) {
+                    Object error = response.get("error");
+                    if (error instanceof JSONObject) {
+                        String msg = ((JSONObject) error).optString("message", "");
+                        if (!msg.isEmpty()) return msg;
+                    } else {
+                        String msg = error.toString();
+                        if (!msg.isEmpty()) return msg;
+                    }
+                }
+                if (response.has("message")) {
                     return response.getString("message");
-                } else if (response.has("error")) {
-                    return response.getString("error");
                 }
             }
         } catch (Exception e) {
