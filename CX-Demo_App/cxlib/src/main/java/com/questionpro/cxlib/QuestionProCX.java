@@ -83,7 +83,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     CXGlobalInfo.getInstance().savePayLoad(touchPoint);
                     initialize();
                 }catch (Exception e){
-                    callback.onInitializationFailure(e.getMessage());
+                    String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+                    new CXApiHandler(appContext).logError(msg, 500, "/init", e, "InitException");
+                    callback.onInitializationFailure(msg);
                 }
             }
         }, 2000);
@@ -99,7 +101,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 }
                 appContext.startActivity(intent);
             }catch (Exception e){
+                String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
                 Log.e("QuestionPro", "Failed to launch activity", e);
+                new CXApiHandler(appContext).logError(msg, 500, "/launchSurvey", e, "ActivityLaunchException");
             }
         }
     }
@@ -181,7 +185,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
         new CXApiHandler(appContext, new IQuestionProApiCallback() {
             @Override
             public void OnApiCallbackFailed(JSONObject error) {
-                Log.e("QuestionPro", "Error in fetching intercept settings: "+error.toString());
+                String reason = error.optString("error", error.toString());
+                Log.e("QuestionPro", "Error in fetching intercept settings: " + reason);
+                new CXApiHandler(appContext).logError(reason, 0, CXConstants.PATH_INTERCEPTS, null, "RefreshFailed");
             }
 
             @Override
@@ -205,9 +211,11 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     // Called only for getIntercept() — initialization path
     @Override
     public void OnApiCallbackFailed(JSONObject error) {
-        Log.e(LOG_TAG, "Intercept fetch failed during init: " + error.toString());
+        String reason = error.optString("error", error.toString());
+        Log.e(LOG_TAG, "Intercept fetch failed during init: " + reason);
+        new CXApiHandler(appContext).logError(reason, 0, CXConstants.PATH_INTERCEPTS, null, "InitFailed");
         if (questionProInitCallback != null) {
-            questionProInitCallback.onInitializationFailure(error.toString());
+            questionProInitCallback.onInitializationFailure(reason);
         }
     }
 
@@ -335,7 +343,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 }
             }
         }catch (Exception e){
+            String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             Log.e(LOG_TAG, "Error checking rules for intercept: " + interceptId, e);
+            new CXApiHandler(appContext).logError(msg, 500, "/checkRules", e, "RuleCheckException");
         }
     }
 
@@ -359,7 +369,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                 }
                 @Override
                 public void OnApiCallbackFailed(JSONObject error) {
-                    Log.e(LOG_TAG, "Failed to fetch survey URL for SURVEY_URL intercept: " + error.toString());
+                    String reason = error.optString("error", error.toString());
+                    Log.e(LOG_TAG, "Failed to fetch survey URL for SURVEY_URL intercept: " + reason);
+                    new CXApiHandler(appContext).logError(reason, 0, CXConstants.PATH_INTERCEPT_SURVEY, null, "HttpError");
                 }
             }).getInterceptSurvey(intercept);
         } else {
@@ -378,7 +390,9 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                             appContext.startActivity(intent);
                         }
                     }catch (Exception e){
+                        String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
                         Log.e("QuestionPro", "Failed to launch activity", e);
+                        new CXApiHandler(appContext).logError(msg, 500, "/launchSurvey", e, "ActivityLaunchException");
                     }
                 }
             }, triggerDelay);
