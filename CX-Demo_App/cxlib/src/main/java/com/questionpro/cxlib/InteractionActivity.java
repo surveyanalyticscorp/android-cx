@@ -82,6 +82,7 @@ public class InteractionActivity extends FragmentActivity implements
             getInterceptSurveyDetails();
         }else{
             setContentView(R.layout.cx_webview_dialog);
+            new CXApiHandler(this).logError("Intercept data missing — activity launched without INTERCEPT extra.", 500, "/launchSurvey", null, "ActivityLaunchException");
             showErrorDialog(getString(R.string.cx_error_survey_id_null));
         }
     }
@@ -250,7 +251,11 @@ public class InteractionActivity extends FragmentActivity implements
             loadingSpinner.setVisibility(View.VISIBLE);
             new CXApiHandler(this, this).getInterceptSurvey(intercept);
         }catch (Exception e){
+            String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             Log.e(LOG_TAG, "Failed to fetch intercept survey details", e);
+            new CXApiHandler(this).logError(msg, 500, CXConstants.PATH_INTERCEPT_SURVEY, e, "Exception");
+            notifyError(msg);
+            finish();
         }
     }
 
@@ -259,7 +264,11 @@ public class InteractionActivity extends FragmentActivity implements
             loadingSpinner.setVisibility(View.VISIBLE);
             new CXApiHandler(this, this).getSurvey(surveyId);
         }catch (Exception e){
+            String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
             Log.e(LOG_TAG, "Failed to fetch survey details", e);
+            new CXApiHandler(this).logError(msg, 500, CXConstants.PATH_SURVEY, e, "Exception");
+            notifyError(msg);
+            finish();
         }
     }
 
