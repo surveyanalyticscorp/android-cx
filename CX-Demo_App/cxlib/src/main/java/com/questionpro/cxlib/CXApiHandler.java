@@ -250,7 +250,7 @@ class CXApiHandler {
         String payload = CXGlobalInfo.getInstance().getSurveyApiPayload(intercept, mContext);
 
         HashMap<String, String> headers = new HashMap<>();
-        headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
+        headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey()+"12");
         headers.put("package-name", mContext.getPackageName());
 
         URL url = new URL(CXConstants.getInterceptSurveyUrl(mContext));
@@ -277,12 +277,13 @@ class CXApiHandler {
             }
         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
             Log.w(LOG_TAG, "getInterceptSurveyUrl: rejected with code " + response.getCode());
-            logError("Survey URL request rejected.", response.getCode(), CXConstants.PATH_INTERCEPT_SURVEY, null, "HttpError");
             if (CXUtils.isEmpty(content)) {
+                logError("Survey URL request rejected. Code: " + response.getCode(), response.getCode(), CXConstants.PATH_INTERCEPT_SURVEY, null, "HttpError");
                 postFailure(buildError("Request rejected. Code: " + response.getCode()));
                 return;
             }
             JSONObject errorJson = parseErrorBody(content);
+            logError(extractReason(errorJson), response.getCode(), CXConstants.PATH_INTERCEPT_SURVEY, null, "HttpError");
             postFailure(errorJson.has("response") ? errorJson.getJSONObject("response") : errorJson);
         } else {
             String msg = "Unexpected error fetching survey URL. Code: " + response.getCode();
@@ -328,12 +329,13 @@ class CXApiHandler {
             }
         } else if (response.isRejectedPermanently() || response.isBadPayload()) {
             Log.w(LOG_TAG, "getSurveyUrl: rejected with code " + response.getCode());
-            logError("Survey request rejected.", response.getCode(), CXConstants.PATH_SURVEY, null, "HttpError");
             if (CXUtils.isEmpty(content)) {
+                logError("Survey request rejected. Code: " + response.getCode(), response.getCode(), CXConstants.PATH_SURVEY, null, "HttpError");
                 postFailure(buildError("Request rejected. Code: " + response.getCode()));
                 return;
             }
             JSONObject errorJson = parseErrorBody(content);
+            logError(extractReason(errorJson), response.getCode(), CXConstants.PATH_SURVEY, null, "HttpError");
             postFailure(errorJson.has("response") ? errorJson.getJSONObject("response") : errorJson);
         } else {
             String msg = "Unexpected error fetching survey URL. Code: " + response.getCode();
@@ -348,7 +350,6 @@ class CXApiHandler {
     void logError(String message, int httpStatus, String path, Exception exception, String errorType) {
         final String payload = buildErrorLogPayload(message, httpStatus, path, exception, errorType);
         if (payload.isEmpty()) return;
-        CXUtils.printLog(LOG_TAG, "Error log payload: " + payload);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(new Runnable() {
@@ -422,6 +423,29 @@ class CXApiHandler {
             Log.w(LOG_TAG, "Failed to build error log payload", e);
             return "";
         }
+    }
+
+    private String extractReason(JSONObject response) {
+        try {
+            if (response != null) {
+                if (response.has("error")) {
+                    Object error = response.get("error");
+                    if (error instanceof JSONObject) {
+                        String msg = ((JSONObject) error).optString("message", "");
+                        if (!msg.isEmpty()) return msg;
+                    } else {
+                        String msg = error.toString();
+                        if (!msg.isEmpty()) return msg;
+                    }
+                }
+                if (response.has("message")) {
+                    return response.getString("message");
+                }
+            }
+        } catch (Exception e) {
+            Log.w(LOG_TAG, "Failed to extract reason from error response", e);
+        }
+        return "Unknown error";
     }
 
     private String stackTraceToString(Exception e) {
