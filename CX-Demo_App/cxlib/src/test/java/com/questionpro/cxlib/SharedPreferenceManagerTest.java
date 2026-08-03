@@ -149,6 +149,54 @@ public class SharedPreferenceManagerTest {
         assertEquals("uuid-1234", prefs.getVisitorsUUID());
     }
 
+    // --- error log queue ---
+
+    @Test
+    public void enqueueErrorLog_singleEntry_canBeDrained() throws Exception {
+        prefs.enqueueErrorLog("{\"message\":\"test\"}");
+        org.json.JSONArray queue = prefs.drainErrorLogQueue();
+        assertEquals(1, queue.length());
+        assertEquals("{\"message\":\"test\"}", queue.getString(0));
+    }
+
+    @Test
+    public void drainErrorLogQueue_clearsAfterDrain() {
+        prefs.enqueueErrorLog("{\"message\":\"test\"}");
+        prefs.drainErrorLogQueue();
+        assertEquals(0, prefs.drainErrorLogQueue().length());
+    }
+
+    @Test
+    public void enqueueErrorLog_atCapacity_dropsOldestEntry() throws Exception {
+        for (int i = 0; i < 20; i++) {
+            prefs.enqueueErrorLog("{\"index\":" + i + "}");
+        }
+        prefs.enqueueErrorLog("{\"index\":20}");
+
+        org.json.JSONArray queue = prefs.drainErrorLogQueue();
+        assertEquals(20, queue.length());
+        // oldest (index 0) should be dropped; first entry is now index 1
+        assertTrue(queue.getString(0).contains("\"index\":1"));
+        assertTrue(queue.getString(19).contains("\"index\":20"));
+    }
+
+    @Test
+    public void drainErrorLogQueue_emptyQueue_returnsEmptyArray() {
+        assertEquals(0, prefs.drainErrorLogQueue().length());
+    }
+
+    @Test
+    public void enqueueErrorLog_multipleEntries_preservesOrder() throws Exception {
+        prefs.enqueueErrorLog("first");
+        prefs.enqueueErrorLog("second");
+        prefs.enqueueErrorLog("third");
+
+        org.json.JSONArray queue = prefs.drainErrorLogQueue();
+        assertEquals(3, queue.length());
+        assertEquals("first", queue.getString(0));
+        assertEquals("third", queue.getString(2));
+    }
+
     // --- reset ---
 
     @Test

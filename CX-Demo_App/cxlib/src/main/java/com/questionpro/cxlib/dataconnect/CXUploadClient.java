@@ -34,14 +34,15 @@ public class CXUploadClient {
 
             urlConnection.setConnectTimeout(DEFAULT_HTTP_CONNECT_TIMEOUT);
             urlConnection.setReadTimeout(DEFAULT_HTTP_SOCKET_TIMEOUT);
-            urlConnection.setDoOutput(false);
+            urlConnection.setDoOutput(true);
             urlConnection.setDoInput(true);
             urlConnection.setUseCaches(false);
             urlConnection.setRequestMethod("POST");
-            urlConnection.setFixedLengthStreamingMode(payload.length());
+            byte[] payloadBytes = payload.getBytes(StandardCharsets.UTF_8);
+            urlConnection.setFixedLengthStreamingMode(payloadBytes.length);
 
             OutputStream os = urlConnection.getOutputStream();
-            os.write(payload.getBytes(StandardCharsets.UTF_8));
+            os.write(payloadBytes);
             os.close();
 
             int responseCode = urlConnection.getResponseCode();
@@ -49,11 +50,13 @@ public class CXUploadClient {
             cxHttpResponse.setReason(urlConnection.getResponseMessage());
             CXUtils.printLog(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
 
-            // Get the Http response header values
+            // Get the Http response header values (normalize keys to lowercase for consistent lookup)
             Map<String, String> headers = new HashMap<String, String>();
             Map<String, List<String>> map = urlConnection.getHeaderFields();
             for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-                headers.put(entry.getKey(), entry.getValue().toString());
+                if (entry.getKey() != null && !entry.getValue().isEmpty()) {
+                    headers.put(entry.getKey().toLowerCase(), entry.getValue().get(0));
+                }
             }
             cxHttpResponse.setHeaders(headers);
 
@@ -105,11 +108,13 @@ public class CXUploadClient {
             cxHttpResponse.setReason(urlConnection.getResponseMessage());
             //Log.d(LOG_TAG,"Response Status Line: " + urlConnection.getResponseMessage());
 
-            // Get the Http response header values
+            // Get the Http response header values (normalize keys to lowercase for consistent lookup)
             Map<String, String> headers = new HashMap<String, String>();
             Map<String, List<String>> map = urlConnection.getHeaderFields();
             for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-                headers.put(entry.getKey(), entry.getValue().toString());
+                if (entry.getKey() != null && !entry.getValue().isEmpty()) {
+                    headers.put(entry.getKey().toLowerCase(), entry.getValue().get(0));
+                }
             }
             cxHttpResponse.setHeaders(headers);
             if (responseCode >= 200 && responseCode < 300) {
@@ -131,32 +136,36 @@ public class CXUploadClient {
     }
 
     private static String getResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
-        if (connection != null) {
-            InputStream is = null;
-                is = new BufferedInputStream(connection.getInputStream());
+        if (connection == null) return null;
+        InputStream is = null;
+        try {
+            is = new BufferedInputStream(connection.getInputStream());
             if (isZipped) {
                 is = new GZIPInputStream(is);
             }
             return CXUtils.convertStreamToString(is);
+        } finally {
+            if (is != null) {
+                try { is.close(); } catch (IOException ignored) {}
+            }
         }
-        return null;
     }
 
-
     public static String getErrorResponse(HttpURLConnection connection, boolean isZipped) throws IOException {
-        if (connection != null) {
-            InputStream is = null;
-
-                is = connection.getErrorStream();
-                if (is != null) {
-                    if (isZipped) {
-                        is = new GZIPInputStream(is);
-                    }
-                }
-                return CXUtils.convertStreamToString(is);
-
+        if (connection == null) return null;
+        InputStream is = null;
+        try {
+            is = connection.getErrorStream();
+            if (is == null) return null;
+            if (isZipped) {
+                is = new GZIPInputStream(is);
+            }
+            return CXUtils.convertStreamToString(is);
+        } finally {
+            if (is != null) {
+                try { is.close(); } catch (IOException ignored) {}
+            }
         }
-        return null;
     }
 
     private static void setHeadersToHttpConnection(HttpURLConnection urlConnection, HashMap<String, String> headers){

@@ -19,7 +19,7 @@ public class Intercept implements Serializable {
 
     public ArrayList<DataMapping> dataMappings = new ArrayList<>();
 
-    public InterceptMetadata interceptMetadata;
+    public InterceptMetadata interceptMetadata = new InterceptMetadata();
     public WidgetSettings widgetSettings;
 
     public static Intercept fromJSON(JSONObject interceptJson) throws Exception{

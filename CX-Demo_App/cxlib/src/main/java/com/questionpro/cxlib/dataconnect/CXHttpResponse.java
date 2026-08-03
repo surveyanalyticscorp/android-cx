@@ -2,9 +2,7 @@ package com.questionpro.cxlib.dataconnect;
 
 import java.util.Map;
 
-/**
- * Created by sachinsable on 14/04/16.
- */
+
 public class CXHttpResponse {
     private String content;
     private String reason;
@@ -78,8 +76,8 @@ public class CXHttpResponse {
 
     public boolean isZipped() {
         if (headers != null) {
-            String contentEncoding = headers.get("Content-Encoding");
-            return contentEncoding != null && contentEncoding.equalsIgnoreCase("[gzip]");
+            String contentEncoding = headers.get("content-encoding");
+            return contentEncoding != null && contentEncoding.equalsIgnoreCase("gzip");
         }
         return false;
     }
