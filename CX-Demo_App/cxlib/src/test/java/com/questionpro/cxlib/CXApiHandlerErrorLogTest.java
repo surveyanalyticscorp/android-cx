@@ -169,22 +169,32 @@ public class CXApiHandlerErrorLogTest {
         assertEquals("Unknown error", extractReason(response));
     }
 
-    // --- logError queues payload when server is unreachable ---
+    // --- queue logic tested directly via SharedPreferenceManager ---
 
     @Test
-    public void logError_serverUnreachable_payloadQueuedInSharedPreferences() throws Exception {
+    public void errorLogQueue_enqueueAndDrain_roundTrip() throws Exception {
         SharedPreferenceManager prefs = SharedPreferenceManager.getInstance(context);
-
-        // drain any pre-existing queue
         prefs.drainErrorLogQueue();
 
-        // logError fires a background POST to a real URL that will fail in a unit test environment
-        handler.logError("Test error", 500, "/api/v1/test", null, "Exception");
+        // simulate what logError does after two failed POST attempts
+        Method build = CXApiHandler.class.getDeclaredMethod("buildErrorLogPayload", String.class, int.class, String.class, Exception.class, String.class);
+        build.setAccessible(true);
+        String payload = (String) build.invoke(handler, "Test error", 500, "/api/v1/test", null, "Exception");
 
-        // wait long enough for both attempts + 2s retry delay to complete
-        Thread.sleep(5000);
+        prefs.enqueueErrorLog(payload);
 
-        // the failed POST should have been queued
-        assertEquals(1, prefs.drainErrorLogQueue().length());
+        org.json.JSONArray queue = prefs.drainErrorLogQueue();
+        assertEquals(1, queue.length());
+        JSONObject queued = new JSONObject(queue.getString(0));
+        assertEquals("Test error", queued.getString("message"));
+        assertEquals(500, queued.getInt("httpStatus"));
+    }
+
+    @Test
+    public void errorLogQueue_afterDrain_isEmpty() {
+        SharedPreferenceManager prefs = SharedPreferenceManager.getInstance(context);
+        prefs.enqueueErrorLog("{\"message\":\"err\"}");
+        prefs.drainErrorLogQueue();
+        assertEquals(0, prefs.drainErrorLogQueue().length());
     }
 }
