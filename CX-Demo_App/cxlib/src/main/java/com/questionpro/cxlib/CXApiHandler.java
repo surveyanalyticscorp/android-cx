@@ -250,7 +250,7 @@ class CXApiHandler {
         String payload = CXGlobalInfo.getInstance().getSurveyApiPayload(intercept, mContext);
 
         HashMap<String, String> headers = new HashMap<>();
-        headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey()+"12");
+        headers.put("x-app-key", CXGlobalInfo.getInstance().getApiKey());
         headers.put("package-name", mContext.getPackageName());
 
         URL url = new URL(CXConstants.getInterceptSurveyUrl(mContext));
