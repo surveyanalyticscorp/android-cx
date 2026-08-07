@@ -6,6 +6,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.qpcx.retailapp.util.PreferenceHelper;
@@ -69,7 +70,7 @@ public class AppController extends Application {
 	}
 
 	private void initialiseQpSdk(AppController appController){
-			TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US, "058d9ebc-c80e-4969-8196-f4feb7aae5e6")
+			TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US, "2042d5c1-5a1b-4fc0-80c2-6b4c4e87bd1c")
 				.build();
 
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
@@ -81,6 +82,11 @@ public class AppController extends Application {
 			@Override
 			public void onInitializationFailure(String error) {
 				Log.d("Datta", "Application onInitializationFailure: "+error);
+			}
+
+			@Override
+			public void onError(int interceptId, String errorMessage) {
+				Toast.makeText(mInstance, "SDK Error: " + errorMessage, Toast.LENGTH_LONG).show();
 			}
 		});
 	}

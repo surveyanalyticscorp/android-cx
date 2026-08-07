@@ -29,7 +29,7 @@ public class ShoppingCartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_shopping_cart);
 
         Button button = findViewById(R.id.launch_survey);
-        button.setText("vistaSurvey");
+        button.setText("test");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,26 +38,29 @@ public class ShoppingCartActivity extends AppCompatActivity {
                 //QuestionProCX.getInstance().launchFeedbackSurvey(13026667);
 
                 HashMap<String, String> cutVars= new HashMap<>();
-                cutVars.put("first name","Datta");
-                cutVars.put("Last Name","kunde");
-                cutVars.put("email","a@a.com");
+                cutVars.put("view","Datta");//André García
+                cutVars.put("Name","Dattaaaa");
+                cutVars.put("email","sample@gmail.com");
+                cutVars.put("Mobile","12345678922");
 
-                //QuestionProCX.getInstance().setDataMappings(cutVars);
+                QuestionProCX.getInstance().setDataMappings(cutVars);
 
-                QuestionProCX.getInstance().setScreenVisited("vistaSurvey");
+                QuestionProCX.getInstance().setScreenVisited("test");
             }
         });
 
         Button buttonOne = findViewById(R.id.launch_survey_one);
-        buttonOne.setText("CierreSesion");
+        buttonOne.setText("OBDNoAsistido");
         buttonOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 HashMap<String, String> cutVars= new HashMap<>();
-                cutVars.put("Phone Number.","12345678922");
-                //QuestionProCX.getInstance().setDataMappings(cutVars);
+                cutVars.put("Name","Dattaaaa");
+                cutVars.put("email","sample@gmail.com");
+                cutVars.put("Mobile","12345678922");
+                QuestionProCX.getInstance().setDataMappings(cutVars);
 
-                QuestionProCX.getInstance().setScreenVisited("CierreSesion");
+                QuestionProCX.getInstance().setScreenVisited("OBDNoAsistido");
             }
         });
 
