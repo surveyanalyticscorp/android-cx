@@ -224,7 +224,7 @@ class CXApiHandler {
                 }
             }
             postSuccess(null, "SDK is Initialised");
-            flushErrorLogQueue();
+            // flushErrorLogQueue(); // Disabled for this release to reduce backend traffic
         } else if (response.isRejectedPermanently()) {
             String content = response.getContent();
             logError("Intercept settings request rejected.", response.getCode(), CXConstants.PATH_INTERCEPTS, null, "HttpError");
@@ -340,9 +340,10 @@ class CXApiHandler {
 
     // Queue locally — flushed after next successful init to avoid thundering herd during outages
     void logError(String message, int httpStatus, String path, Exception exception, String errorType) {
-        final String payload = buildErrorLogPayload(message, httpStatus, path, exception, errorType);
+        // Disabled for this release to reduce backend traffic
+        /*final String payload = buildErrorLogPayload(message, httpStatus, path, exception, errorType);
         if (payload.isEmpty()) return;
-        SharedPreferenceManager.getInstance(mContext).enqueueErrorLog(payload);
+        SharedPreferenceManager.getInstance(mContext).enqueueErrorLog(payload);*/
     }
 
     private boolean postErrorLog(String payload) {
