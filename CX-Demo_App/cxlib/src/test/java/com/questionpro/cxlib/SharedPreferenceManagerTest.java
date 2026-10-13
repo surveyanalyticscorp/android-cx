@@ -200,9 +200,9 @@ public class SharedPreferenceManagerTest {
     // --- reset ---
 
     @Test
-    public void resetPreferences_clearsViewCounts() {
+    public void resetPreferences_preservesViewCounts() {
         prefs.updateViewCountForTag("home");
         prefs.resetPreferences();
-        assertEquals(1, prefs.updateViewCountForTag("home")); // starts from 0 again
+        assertEquals(2, prefs.updateViewCountForTag("home")); // view counts persist across sessions
     }
 }
