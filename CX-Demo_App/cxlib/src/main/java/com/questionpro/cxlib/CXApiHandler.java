@@ -27,6 +27,7 @@ import org.json.JSONObject;
 class CXApiHandler {
 
     private static final String LOG_TAG = "CXApiHandler";
+    private static final ExecutorService API_EXECUTOR = Executors.newFixedThreadPool(2);
 
     private final Context mContext;
     private IQuestionProApiCallback mQuestionProApiCall;
@@ -75,8 +76,7 @@ class CXApiHandler {
     }
 
     public void getInterceptSurvey(final Intercept intercept){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        API_EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -92,12 +92,10 @@ class CXApiHandler {
                 }
             }
         });
-        executor.shutdown();
     }
 
     public void getSurvey(final long surveyId){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        API_EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -113,12 +111,10 @@ class CXApiHandler {
                 }
             }
         });
-        executor.shutdown();
     }
 
     public void getIntercept(){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        API_EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -134,12 +130,10 @@ class CXApiHandler {
                 }
             }
         });
-        executor.shutdown();
     }
 
     protected void submitFeedback(final Intercept intercept, final String type){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        API_EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -169,12 +163,10 @@ class CXApiHandler {
                 }
             }
         });
-        executor.shutdown();
     }
 
     protected void excludedFeedback(final Intercept intercept){
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        API_EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -204,11 +196,9 @@ class CXApiHandler {
                 }
             }
         });
-        executor.shutdown();
     }
 
     private void getInterceptConfigurations() throws Exception {
-        flushErrorLogQueue();
         URL url = new URL(CXConstants.getInterceptsUrl());
         CXHttpResponse response = CXUploadClient.getCxApi(url, CXGlobalInfo.getInstance().getInterceptApiHeaders(mContext));
 
@@ -234,6 +224,7 @@ class CXApiHandler {
                 }
             }
             postSuccess(null, "SDK is Initialised");
+            flushErrorLogQueue();
         } else if (response.isRejectedPermanently()) {
             String content = response.getContent();
             logError("Intercept settings request rejected.", response.getCode(), CXConstants.PATH_INTERCEPTS, null, "HttpError");
@@ -347,26 +338,11 @@ class CXApiHandler {
 
     // --- Error logging ---
 
+    // Queue locally — flushed after next successful init to avoid thundering herd during outages
     void logError(String message, int httpStatus, String path, Exception exception, String errorType) {
         final String payload = buildErrorLogPayload(message, httpStatus, path, exception, errorType);
         if (payload.isEmpty()) return;
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (postErrorLog(payload)) return;
-
-                // retry once after 2 seconds
-                try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
-                if (postErrorLog(payload)) return;
-
-                // both attempts failed — queue for next init
-                SharedPreferenceManager.getInstance(mContext).enqueueErrorLog(payload);
-                Log.w(LOG_TAG, "Error log queued for retry on next SDK init.");
-            }
-        });
-        executor.shutdown();
+        SharedPreferenceManager.getInstance(mContext).enqueueErrorLog(payload);
     }
 
     private boolean postErrorLog(String payload) {
@@ -386,22 +362,29 @@ class CXApiHandler {
         }
     }
 
-    private void flushErrorLogQueue() {
-        JSONArray queue = SharedPreferenceManager.getInstance(mContext).drainErrorLogQueue();
-        if (queue.length() == 0) return;
+    private static final int MAX_FLUSH_PER_INIT = 5;
 
-        Log.d(LOG_TAG, "Flushing " + queue.length() + " queued error log(s).");
-        for (int i = 0; i < queue.length(); i++) {
-            try {
-                String payload = queue.getString(i);
-                if (!postErrorLog(payload)) {
-                    // server still down — re-queue and stop to avoid hammering
-                    SharedPreferenceManager.getInstance(mContext).enqueueErrorLog(payload);
-                    Log.w(LOG_TAG, "Error log flush failed at index " + i + ", re-queued remaining.");
-                    break;
+    void flushErrorLogQueue() {
+        API_EXECUTOR.execute(new Runnable() {
+            @Override
+            public void run() {
+                JSONArray queue = SharedPreferenceManager.getInstance(mContext).drainErrorLogQueue();
+                if (queue.length() == 0) return;
+
+                int limit = Math.min(queue.length(), MAX_FLUSH_PER_INIT);
+                Log.d(LOG_TAG, "Flushing " + limit + " of " + queue.length() + " queued error log(s).");
+                for (int i = 0; i < limit; i++) {
+                    try {
+                        String payload = queue.getString(i);
+                        if (!postErrorLog(payload)) {
+                            SharedPreferenceManager.getInstance(mContext).enqueueErrorLog(payload);
+                            Log.w(LOG_TAG, "Error log flush failed at index " + i + ", re-queued remaining.");
+                            break;
+                        }
+                    } catch (Exception ignored) {}
                 }
-            } catch (Exception ignored) {}
-        }
+            }
+        });
     }
 
     private String buildErrorLogPayload(String message, int httpStatus, String path, Exception exception, String errorType) {

@@ -45,6 +45,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private IQuestionProCallback questionProCallback;
     private ActivityLifecycleCallbacks activityLifecycleCallbacks;
 
+    private static final long INTERCEPT_CACHE_TTL_MS = 60 * 60 * 1000; // 60 minutes
     private static final ConcurrentHashMap<Integer, Set<String>> interceptSatisfiedRules = new ConcurrentHashMap<>();
 
     private QuestionProCX(){
@@ -177,6 +178,21 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     protected void fetchInterceptSettings(){
         if(!isSessionAlive) {
             isSessionAlive = true;
+
+            // Use cached settings if fresh enough — avoids an API call per foreground event
+            SharedPreferenceManager prefs = SharedPreferenceManager.getInstance(appContext);
+            long cacheAge = prefs.getProjectCacheAge();
+            String cachedProject = prefs.getProject();
+
+            if (cacheAge < INTERCEPT_CACHE_TTL_MS && !CXUtils.isEmpty(cachedProject)) {
+                isInitialised = true;
+                if (questionProInitCallback != null) {
+                    questionProInitCallback.onInitializationSuccess("SDK is Initialised");
+                }
+                setUpIntercept();
+                return;
+            }
+
             new CXApiHandler(appContext, this).getIntercept();
         }
     }

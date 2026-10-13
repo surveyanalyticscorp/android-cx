@@ -88,6 +88,11 @@ public class SdkInitializationIntegrationTest {
         setStaticField(CXGlobalInfo.class, "UUID",        null);
         setStaticField(CXGlobalInfo.class, "apiKey",      null);
         setStaticField(CXGlobalInfo.class, "payload",     null);
+
+        // Clear cached project so each test makes a real API call instead of hitting the TTL cache
+        setStaticField(SharedPreferenceManager.class, "interceptProjectStr", null);
+        context.getSharedPreferences("Intercepts", Context.MODE_PRIVATE)
+                .edit().remove("Projects").remove("project_cache_time").apply();
     }
 
     private void setStaticField(Class<?> clazz, String name, Object value) throws Exception {
