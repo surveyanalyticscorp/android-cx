@@ -45,7 +45,7 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
     private IQuestionProCallback questionProCallback;
     private ActivityLifecycleCallbacks activityLifecycleCallbacks;
 
-    private static final long INTERCEPT_CACHE_TTL_MS = 60 * 60 * 1000; // 60 minutes
+    private static final long INTERCEPT_CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
     private static final ConcurrentHashMap<Integer, Set<String>> interceptSatisfiedRules = new ConcurrentHashMap<>();
 
     private QuestionProCX(){
