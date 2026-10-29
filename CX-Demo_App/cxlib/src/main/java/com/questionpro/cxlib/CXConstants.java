@@ -31,8 +31,8 @@ public class CXConstants {
     protected static String getInterceptSurveyUrl(Context context) {
         try {
             String dataCenter = CXGlobalInfo.getDataCenter();
-//            return getInterceptBaseUrl(dataCenter) + CX_INTERCEPT_SURVEY_URL;
-            return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
+            return getInterceptBaseUrl(dataCenter) + CX_INTERCEPT_SURVEY_URL;
+//            return "https://cx-intercept-staging-api.questionpro.com" + CX_INTERCEPT_SURVEY_URL;
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -41,8 +41,8 @@ public class CXConstants {
 
     protected static String getInterceptsUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
-//        return getInterceptBaseUrl(dataCenter) + GET_MOBILE_INTERCEPTS;
-        return "https://cx-intercept-staging-api.questionpro.com" + GET_MOBILE_INTERCEPTS;
+        return getInterceptBaseUrl(dataCenter) + GET_MOBILE_INTERCEPTS;
+//        return "https://cx-intercept-staging-api.questionpro.com" + GET_MOBILE_INTERCEPTS;
     }
 
     protected static String getSurveyUrl(long surveyId) {
@@ -57,8 +57,8 @@ public class CXConstants {
 
     protected static String getSurveyFeedbackUrl(){
         String dataCenter = CXGlobalInfo.getDataCenter();
-//        return getInterceptBaseUrl(dataCenter) + SURVEY_FEEDBACK;
-        return "https://cx-intercept-staging-api.questionpro.com" + SURVEY_FEEDBACK;
+        return getInterceptBaseUrl(dataCenter) + SURVEY_FEEDBACK;
+//        return "https://cx-intercept-staging-api.questionpro.com" + SURVEY_FEEDBACK;
     }
 
     protected static String getExcludedFeedbackUrl(){
