@@ -70,7 +70,7 @@ public class AppController extends Application {
 	}
 
 	private void initialiseQpSdk(AppController appController){
-			TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US, "3463a18c-9a88-4892-8623-81ca14522b87")
+			TouchPoint touchPoint = new TouchPoint.Builder(DataCenter.US, "2042d5c1-5a1b-4fc0-80c2-6b4c4e87bd1c")
 				.build();
 
 		QuestionProCX.getInstance().init(this, touchPoint, new IQuestionProInitCallback() {
