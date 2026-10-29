@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import com.google.gson.JsonParser;
 import com.questionpro.cxlib.enums.Platform;
 import com.questionpro.cxlib.enums.VisitorStatus;
 import com.questionpro.cxlib.interfaces.IQuestionProInitCallback;
@@ -245,7 +247,8 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     JSONObject jsonObject = interceptArray.getJSONObject(i);
                     //setUpTimeSpendIntercept(obj);
                     Intercept intercept = Intercept.fromJSON(jsonObject);
-                    //CXUtils.printLog("Datta","checkShouldShowSampling: " +checkShouldShowSampling(intercept));
+//                    CXUtils.printLog("Datta","checkShouldShowSampling: " +checkShouldShowSampling(intercept));
+                    Log.d("Datta",  intercept.interceptRule.toString());
                     if(checkShouldShowSampling(intercept)) {
                         for (InterceptRule rule : intercept.interceptRule) {
                             if (rule.name.equals(InterceptRuleType.TIME_SPENT.name())) {
@@ -254,6 +257,10 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                                 checkDayRule(rule, intercept.id);
                             } else if (rule.name.equals(InterceptRuleType.DATE.name())) {
                                 checkDateRule(rule, intercept.id);
+                            }else if(rule.name.equals(InterceptRuleType.COUNTRY.name())){
+                                checkCountryRule(rule, intercept.id);
+                            }else if(rule.name.equals(InterceptRuleType.OS.name())){
+                                checkPlatformRule(rule, intercept.id);
                             }
                         }
                     }
@@ -325,6 +332,18 @@ public class QuestionProCX implements IQuestionProApiCallback, IQuestionProRules
                     markRuleSatisfied(interceptId, InterceptRuleType.DAY.name());
                 }
             }
+        }
+    }
+
+    private void checkCountryRule(InterceptRule rule, int interceptId){
+        if (rule.isMatching) {
+            markRuleSatisfied(interceptId, InterceptRuleType.COUNTRY.name());
+        }
+    }
+
+    private void checkPlatformRule(InterceptRule rule, int interceptId){
+        if (rule.isMatching) {
+            markRuleSatisfied(interceptId, InterceptRuleType.OS.name());
         }
     }
 

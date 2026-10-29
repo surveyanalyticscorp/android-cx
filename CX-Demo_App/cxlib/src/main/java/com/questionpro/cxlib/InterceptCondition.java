@@ -16,5 +16,8 @@ enum InterceptRuleType {
     TIME_SPENT,
     VIEW_COUNT,
     DAY,
-    DATE
+    DATE,
+    COUNTRY,
+    OS
+
 }
