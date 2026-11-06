@@ -4,9 +4,30 @@ on:
   push:
     branches: [ master, labs ]
   pull_request:
+    types: [ opened, synchronize, reopened, closed ]
     branches: [ master, labs ]
 
 jobs:
+  version-check:
+    name: Version Bump Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'master'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Fail if version already released
+        run: |
+          VERSION=$(grep 'versionName' CX-Demo_App/cxlib/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          TAG="v$VERSION"
+          echo "Checking tag: $TAG"
+          if git ls-remote --tags origin | grep -q "refs/tags/$TAG$"; then
+            echo "❌ Tag $TAG already exists. Bump versionName in cxlib/build.gradle before merging."
+            exit 1
+          fi
+          echo "✅ Tag $TAG is new. Ready to release."
+
   test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
@@ -33,3 +54,32 @@ jobs:
         with:
           name: test-report
           path: CX-Demo_App/cxlib/build/reports/tests/testDebugUnitTest/
+
+  release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.base_ref == 'master'
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read version from build.gradle
+        id: version
+        run: |
+          VERSION=$(grep 'versionName' CX-Demo_App/cxlib/build.gradle | head -1 | sed 's/.*"\(.*\)".*/\1/')
+          echo "name=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.name }}
+          name: ${{ steps.version.outputs.name }}
+          draft: false
+          generate_release_notes: true
+
+      - name: Trigger JitPack build
+        run: |
+          curl -s -X POST \
+            "https://jitpack.io/api/builds/com.github.surveyanalyticscorp/android-cx/${{ steps.version.outputs.name }}"
