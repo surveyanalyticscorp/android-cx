@@ -14,6 +14,7 @@ public class InterceptRule implements Serializable {
     public String rangeValue;
     public String variable;
     public String type;
+    public boolean isMatching;
 
     public static InterceptRule fromJSON(JSONObject interceptJson) throws Exception{
         InterceptRule interceptRule = new InterceptRule();
@@ -24,6 +25,7 @@ public class InterceptRule implements Serializable {
         interceptRule.rangeValue = interceptJson.optString("rangeValues", "");
         interceptRule.variable = interceptJson.optString("variable", "");
         interceptRule.type = interceptJson.optString("type", "");
+        interceptRule.isMatching = interceptJson.optBoolean("isMatching", false);
 
         return interceptRule;
     }

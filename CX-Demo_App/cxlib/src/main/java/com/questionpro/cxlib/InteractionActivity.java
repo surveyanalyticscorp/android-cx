@@ -108,8 +108,9 @@ public class InteractionActivity extends FragmentActivity implements
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setUseWideViewPort(true);
-        webView.clearCache(true);
-        webView.getSettings().setUserAgentString("AndroidWebView");
+        webView.clearHistory();
+        String defaultUA = webView.getSettings().getUserAgentString();
+        webView.getSettings().setUserAgentString(defaultUA + " AndroidWebView");
         webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         webView.setBackgroundColor(Color.WHITE);
 
@@ -159,7 +160,22 @@ public class InteractionActivity extends FragmentActivity implements
         // --- Size & position: PROMPT only ---
         if (InterceptType.PROMPT.name().equals(intercept.type)) {
             applyPromptPositionAndSize(ws);
+            applyRoundedCorners();
         }
+    }
+
+    private void applyRoundedCorners() {
+        LinearLayout dialogContent = findViewById(R.id.dialogContent);
+        if (dialogContent == null) return;
+
+        float radius = getResources().getDimension(R.dimen.cx_prompt_corner_radius);
+        dialogContent.setOutlineProvider(new android.view.ViewOutlineProvider() {
+            @Override
+            public void getOutline(android.view.View view, android.graphics.Outline outline) {
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), radius);
+            }
+        });
+        dialogContent.setClipToOutline(true);
     }
 
     private void applyDefaultPromptSize() {
@@ -174,10 +190,10 @@ public class InteractionActivity extends FragmentActivity implements
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int height = (int) (dm.heightPixels * 0.7);
         int width = (int) (dm.widthPixels * 0.9);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                width, height);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(width, height);
         params.gravity = Gravity.CENTER;
         dialogContent.setLayoutParams(params);
+        applyRoundedCorners();
     }
 
     private void applyPromptPositionAndSize(WidgetSettings ws) {
@@ -323,6 +339,13 @@ public class InteractionActivity extends FragmentActivity implements
     }
 
     private void launchSurvey(String url){
+        if (!CXUtils.isNetworkConnectionPresent(this)) {
+            String msg = "No internet connection. Unable to load the survey.";
+            new CXApiHandler(this).logError(msg, 0, "/launchSurvey", null, "NetworkError");
+            notifyError(msg);
+            finish();
+            return;
+        }
         SharedPreferenceManager.getInstance(this).saveInterceptIdForLaunchedSurvey(
                 intercept.id, CXUtils.getCurrentLocalTimeInMillis());
         new CXApiHandler(InteractionActivity.this).submitFeedback(intercept, VisitorStatus.LAUNCHED.name());
@@ -383,11 +406,15 @@ public class InteractionActivity extends FragmentActivity implements
                 finish();
             }
         };
-        worker.schedule(task, 4, TimeUnit.SECONDS);
+        worker.schedule(task, 3, TimeUnit.SECONDS);
     }
     private class CXWebViewClient extends WebViewClient {
+
+        private boolean pageLoadError = false;
+
         @Override
         public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            pageLoadError = false;
             progressBar.setVisibility(View.VISIBLE);
         }
 
@@ -410,11 +437,38 @@ public class InteractionActivity extends FragmentActivity implements
         @Override
         public void onPageFinished(WebView view, String url) {
             progressBar.setVisibility(View.GONE);
+            if (pageLoadError) return;
             if(intercept != null && intercept.interceptSettings != null && intercept.interceptSettings.autoCloseOnCompletion) {
                 if (url.contains("#autoClose") || !url.contains("questionpro") || url.contains("exitsurvey")) {
                     runTimer();
                 }
             }
+        }
+
+        @Override
+        public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            pageLoadError = true;
+            progressBar.setVisibility(View.GONE);
+            String msg = "Survey failed to load: " + description + " (code " + errorCode + ")";
+            Log.e(LOG_TAG, msg);
+            new CXApiHandler(InteractionActivity.this).logError(msg, errorCode, failingUrl, null, "WebViewError");
+            notifyError(msg);
+            finish();
+        }
+
+        @Override
+        public void onReceivedHttpError(WebView view, android.webkit.WebResourceRequest request,
+                                        android.webkit.WebResourceResponse errorResponse) {
+            // only handle errors on the main frame URL, not sub-resources
+            if (!request.isForMainFrame()) return;
+            pageLoadError = true;
+            progressBar.setVisibility(View.GONE);
+            int statusCode = errorResponse.getStatusCode();
+            String msg = "Survey page returned HTTP " + statusCode;
+            Log.e(LOG_TAG, msg);
+            new CXApiHandler(InteractionActivity.this).logError(msg, statusCode, request.getUrl().toString(), null, "WebViewHttpError");
+            notifyError(msg);
+            finish();
         }
     }
 

@@ -46,16 +46,28 @@ class SharedPreferenceManager {
         return this.context.getSharedPreferences(PREF_NAME_INTERCEPTS, Context.MODE_PRIVATE);
     }
 
+    private static final String KEY_PROJECT_CACHE_TIME = "project_cache_time";
+
     void saveProject(String project){
         interceptProjectStr = project;
-        getPrefs().edit().putString(KEY_PROJECTS, project).apply();
+        getPersistedPrefs().edit()
+                .putString(KEY_PROJECTS, project)
+                .putLong(KEY_PROJECT_CACHE_TIME, System.currentTimeMillis())
+                .apply();
     }
 
     String getProject(){
         if(CXUtils.isEmpty(interceptProjectStr)){
-            interceptProjectStr = getPrefs().getString(KEY_PROJECTS, "");
+            interceptProjectStr = getPersistedPrefs().getString(KEY_PROJECTS, "");
         }
         return interceptProjectStr;
+    }
+
+    long getProjectCacheAge() {
+        long savedTime = getPersistedPrefs().getLong(KEY_PROJECT_CACHE_TIME, 0);
+        if (savedTime == 0)
+            return Long.MAX_VALUE;
+        return System.currentTimeMillis() - savedTime;
     }
 
     void saveVisitorsUUID(String uuid){
@@ -132,15 +144,15 @@ class SharedPreferenceManager {
         int current = getViewCountForTag(tag);
         if (current >= MAX_VIEW_COUNT) return current;
         int updatedViewCount = current + 1;
-        getPrefs().edit().putInt(tag, updatedViewCount).apply();
+        getPersistedPrefs().edit().putInt(tag, updatedViewCount).apply();
         return updatedViewCount;
     }
 
     void resetViewCountForTag(String tag){
-        getPrefs().edit().putInt(tag, 0).apply();
+        getPersistedPrefs().edit().putInt(tag, 0).apply();
     }
     private int getViewCountForTag(String tag){
-        return getPrefs().getInt(tag,0);
+        return getPersistedPrefs().getInt(tag,0);
     }
 
     void saveCustomDataMappings(HashMap<String, String> customDataMappings){
@@ -171,12 +183,13 @@ class SharedPreferenceManager {
         return getPrefs().getString(CXConstants.CUSTOM_DATA_MAPPINGS, null);
     }
 
+    // Persisted — once excluded, never re-send for this visitor+intercept
     void saveVisitorStatusForIntercept(int interceptId, String status) {
-        getPrefs().edit().putString("visitor_status_" + interceptId, status).apply();
+        getPersistedPrefs().edit().putString("visitor_status_" + interceptId, status).apply();
     }
 
     String getVisitorStatusForIntercept(int interceptId) {
-        return getPrefs().getString("visitor_status_" + interceptId, "");
+        return getPersistedPrefs().getString("visitor_status_" + interceptId, "");
     }
 
     void resetPreferences(){
